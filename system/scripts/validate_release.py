@@ -51,6 +51,12 @@ def validate():
    actual={i.filename:z.read(i.filename) for i in z.infolist()}
    expected={f.relative_to(ROOT/'you-can-install-skill').as_posix():f.read_bytes() for f in p.rglob('*') if f.is_file() and '__pycache__' not in f.parts}
    if actual!=expected:errors.append('ZIP differs '+name)
+ # SAFETY.md promises a test behind each enforced rule; a renamed test would turn
+ # that table into a false claim without anything failing.
+ suite=(BUILD/'tests/test_tools.py').read_text(encoding='utf-8')
+ defined=set(re.findall(r'def (test_\w+)',suite))
+ cited=set(re.findall(r'`(test_\w+)`',(BUILD/'SAFETY.md').read_text(encoding='utf-8')))
+ for name in sorted(cited-defined):errors.append('SAFETY.md cites a test that does not exist: '+name)
  archives=sorted(ROOT.glob('install-*.zip'))
  if len(archives)!=4:errors.append('Expected four ZIPs')
  # The published checksums must describe the archives that are actually here.
