@@ -19,7 +19,7 @@ The archives follow the same pattern, `install-meta-ads-static-*.zip`, and the r
 
 Basic and advanced are also stated as modes rather than model tiers in this release. Any model the host exposes can run either mode; a stronger model sharpens each pass instead of unlocking it. Nothing about the required artifacts changed.
 
-This rebuild replaces the initial four distributions while preserving their Git history. The earlier source and rendering helpers remain inspectable at [the previous revision](https://github.com/Nacha192/claude-code-codex-ads-static/tree/5880cca737db1b9e290d1d8d91d8ee220fb4bf7f). They are not silently executed or installed by this release.
+This rebuild replaces the initial four distributions while preserving their Git history. The earlier source and rendering helpers remain inspectable at [the previous revision](https://github.com/Nacha192/claude-code-codex-ads-static/tree/7982c9c99540302ee2a6ea3fec912f084c22b016). They are not silently executed or installed by this release.
 
 The four current installation archives sit at the repository root, prefixed `install-`. Optional external tools are described in `you-can-install-tools.md`. Internal research, copywriting and second-brain modules are included in every pack.
 
