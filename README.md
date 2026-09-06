@@ -39,7 +39,7 @@ Follow [install-guide.md](system/install-guide.md), or choose one of the four ZI
 - [Install team starting in Codex](install-meta-ads-static-team-codex-and-claude-code.zip)
 - [Install team starting in Claude Code](install-meta-ads-static-team-claude-code-and-codex.zip)
 
-Optional capabilities are listed in [you-can-install-tools.md](system/you-can-install-tools.md). Provider subscriptions, credits and authenticated access are not included.
+The included checks are Python scripts and need Python 3.10 or newer. A pack installed from a ZIP verifies this on its first task in a project and asks before installing anything; without an interpreter it keeps working for research and copy and says plainly that the checks did not run. Optional capabilities are listed in [you-can-install-tools.md](system/you-can-install-tools.md). Provider subscriptions, credits and authenticated access are not included.
 
 ## What is inside
 
