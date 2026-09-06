@@ -113,10 +113,26 @@ not an angle: the angle comes from `hooks.md` and drops into the layout.
 | 15 | Comparison table | you versus the workaround | never versus a named competitor without documentation |
 | 16 | Native screenshot | a message, a note, a review, framed as itself | must never impersonate a real platform's interface or a real person |
 
-For layouts 1 to 8, variants A/B/C change **one** element:
-A the reference, B the headline, C the colour or the image
-(`test.one_change_rule`). Layouts 9 to 16 are single-idea concepts: one benefit,
-no price, no specification list.
+Layouts 9 to 16 are single-idea concepts: one benefit, no price, no
+specification list.
+
+### Visual variants are V1/V2/V3, and they are a different axis from copy
+
+This trips people, so the labels are deliberately different.
+
+- **Copy variants are A, B, C.** Defined in `copywriting.md`: A is the
+  reference, B changes the opening move, C changes the length.
+- **Visual variants are V1, V2, V3.** V1 is the reference, V2 changes the
+  headline treatment, V3 changes the colour or the image.
+
+**Never cross the two axes in one test.** Shipping copy B with visual V3 against
+copy A with visual V1 changes two elements, which violates
+`test.one_change_rule` and produces a result that applies to nothing. Test one
+axis at a time: hold the visual and vary the copy, or hold the copy and vary the
+visual, and say in the file which you held.
+
+Name the files accordingly: `ad-03-the-strap-holds--A-V1.png`. Ugly, and it is
+the difference between a readable test and a fortnight of noise.
 
 ---
 

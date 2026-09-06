@@ -14,7 +14,14 @@ collects only what the templates emit, strips the markup, and checks that.
 Exit code 0 when clean, 1 on a hit, 2 on a setup problem. Wire it into the
 render step so a violating creative cannot reach the export folder.
 
-Requires Node.js for the engine mode. The --text mode is pure Python.
+SECURITY, read before pointing this at a file you did not write: the engine mode
+EXECUTES the JavaScript inside the HTML, because that is the only way to see the
+text the templates actually emit. The DOM stub is minimal and there is no
+network, but this is still arbitrary code execution under your user account.
+Run it on your own engine, or on one you have read. For anything else, use
+--text, which is pure Python and executes nothing.
+
+Requires Node.js for the engine mode. The --text mode needs nothing.
 """
 
 from __future__ import annotations

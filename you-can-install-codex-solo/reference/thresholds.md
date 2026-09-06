@@ -137,10 +137,16 @@ and everybody leaves after they start.
 These exist because an image or video model will happily spend real money in a
 loop while producing worse output each pass.
 
+**They apply to paid generation only.** Rendering the HTML engine to PNG,
+running the red-line check, or building a library URL costs nothing, invents
+nothing, and is deterministic: no gate, no cap, no confirmation. Asking
+permission to run `render_ads.mjs` trains the user to click through the one
+prompt that matters.
+
 | Key | Value | Tag | Notes |
 |---|---|---|---|
-| `gen.ask_before_first_call` | **always** | [ours] | No image, video, or voice generation call is made before the user has chosen the tool and confirmed the run. Not once per session: once per run. See `generation-tools.md`. |
-| `gen.variants_per_run` | **4** | [ours] | Default batch. More than this and nobody compares them; they get skimmed. Raising it needs an explicit ask, and the ask states the cost. |
+| `gen.ask_before_first_call` | **always** | [ours] | No **paid** image, video, or voice generation call is made before the user has chosen the tool and confirmed the run. Not once per session: once per run. Local rendering of assets you already have is not a generation call. See `generation-tools.md`. |
+| `gen.variants_per_run` | **4 paid generations** | [ours] | Default batch, counted in calls to a generator, not in creatives produced. Twenty engine renders from four generated photographs is one batch of four, not twenty. More than four and nobody compares them; they get skimmed. Raising it needs an explicit ask, and the ask states the cost. |
 | `gen.max_retries_per_asset` | **2** | [ours] | Two regenerations of the same asset. On the third failure, stop and report what is wrong with the prompt rather than paying for another sample of the same mistake. |
 | `gen.no_silent_fallback` | **never substitute one generator for another** | [ours] | If the chosen tool is out of credit, blocked, or missing, **stop and say so**. Do not quietly produce the asset elsewhere: the user believes they are looking at the output of the tool they chose, and every downstream judgement inherits that belief. |
 | `gen.verify_on_disk` | **an asset does not exist until it is on disk and its dimensions were read back** | [ours] | Never report a render as done from the fact that a call returned 200. |

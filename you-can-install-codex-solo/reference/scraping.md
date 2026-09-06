@@ -71,6 +71,28 @@ Open it in a browser. Scroll in small steps until the result count stops
 growing. The library lazy-loads; a fast scroll to the bottom silently returns a
 fraction of the results.
 
+### If this session has no browser
+
+Common, and it is a hard stop for this step rather than a problem to route
+around. `curl` on the library URL returns an application shell with no ads in
+it, which is worse than nothing: it looks like a result and contains none.
+
+Three honest routes, in order:
+
+1. **Hand the URL to the human.** They open it, scroll, and paste back the
+   visible cards or a saved page. This takes them two minutes and it is by far
+   the most common resolution.
+2. **Hand the step to an agent that has a browser.** This is exactly the
+   capability fallback in the team skill: the holder performs the step, the
+   other continues its own work.
+3. **Say the research phase could not run**, and proceed on the brief alone with
+   every angle labelled `hypothesis`.
+
+What is never a route: inventing plausible competitor ads, describing what such
+ads "typically" look like as though it were observed, or substituting a general
+knowledge of the category for a pull. All three produce a document that reads
+exactly like research and contains none.
+
 ### Rules for this step
 
 - **Do not read `.env`, tokens, or `META_ACCESS_TOKEN`** for this. Public ad

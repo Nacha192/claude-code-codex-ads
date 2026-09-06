@@ -122,18 +122,64 @@ for (const ratio of wantedRatios) {
     await page.screenshot({ path: file });
     await page.close();
 
-    // gen.verify_on_disk: an asset does not exist until it is on disk.
+    // gen.verify_on_disk: an asset does not exist until it is on disk AND its
+    // dimensions were read back. A file of the right size at the wrong size is
+    // the exact failure this pack warns about, and it is silent.
     const size = fs.statSync(file).size;
+    const dims = pngSize(file);
+    let ok = true;
+
     if (size < 1024) {
       console.error(`Suspiciously small render, ${size} bytes: ${file}`);
-      process.exitCode = 1;
+      ok = false;
     }
-    written.push({ file, ratio, expected: `${w}x${h}`, bytes: size });
-    console.log(`${ratio.padEnd(7)} ${layout.slug.padEnd(28)} ${size} bytes`);
+    if (!dims) {
+      console.error(`Not a readable PNG: ${file}`);
+      ok = false;
+    } else if (dims.w !== w || dims.h !== h) {
+      console.error(
+        `WRONG SIZE ${dims.w}x${dims.h}, expected ${w}x${h}: ${file}\n` +
+        `  A layout hard-coded to one width does this. Position against the CSS variables.`
+      );
+      ok = false;
+    }
+    if (!ok) process.exitCode = 1;
+
+    written.push({ file, ratio, expected: `${w}x${h}`, actual: dims, bytes: size, ok });
+    console.log(
+      `${ok ? ' ' : '!'} ${ratio.padEnd(7)} ${layout.slug.padEnd(28)} ` +
+      `${dims ? `${dims.w}x${dims.h}` : '??'}  ${size} bytes`
+    );
   }
 }
 
 await browser.close();
 
-console.log(`\n${written.length} file(s) in ${outDir}`);
-console.log('Next: run redline_check.py before anything leaves this folder.');
+const bad = written.filter((f) => !f.ok).length;
+console.log(`\n${written.length} file(s) in ${outDir}${bad ? `, ${bad} FAILED verification` : ''}`);
+if (bad) {
+  console.error('Do not ship this batch. Fix the layout, re-render, verify again.');
+} else {
+  console.log('Next: run redline_check.py before anything leaves this folder.');
+}
+
+/**
+ * Read width and height from a PNG header. Bytes 16-23 of the IHDR chunk, which
+ * is always the first chunk. No dependency, and it fails loudly on a file that
+ * is not a PNG rather than returning a plausible number.
+ */
+function pngSize(file) {
+  let fd;
+  try {
+    fd = fs.openSync(file, 'r');
+    const buf = Buffer.alloc(24);
+    if (fs.readSync(fd, buf, 0, 24, 0) < 24) return null;
+    const signature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    if (!buf.subarray(0, 8).equals(signature)) return null;
+    return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
+  } catch {
+    return null;
+  } finally {
+    if (fd !== undefined) fs.closeSync(fd);
+  }
+}
