@@ -5,7 +5,7 @@ from build import NAMES,ROOT,BUILD
 
 def validate():
  errors=[]
- skills=list((ROOT/'skills').glob('*/SKILL.md'))
+ skills=list((ROOT/'you-can-install-skill').glob('*/SKILL.md'))
  if len(skills)!=4:errors.append('Expected exactly four installed entrypoints')
  source=json.loads((BUILD/'research/sources.json').read_text(encoding='utf-8'))
  ids={s['id'] for s in source}
@@ -14,7 +14,7 @@ def validate():
   if len(rows)!=10 or len(set(rows))!=10 or not set(rows)<=ids:errors.append('Invalid top-ten '+key)
  if len(json.loads((BUILD/'research/selections.json').read_text()))!=8:errors.append('Expected eight lists')
  for name in NAMES:
-  p=ROOT/'skills'/name;entry=(p/'SKILL.md').read_text(encoding='utf-8')
+  p=ROOT/'you-can-install-skill'/name;entry=(p/'SKILL.md').read_text(encoding='utf-8')
   if not entry.startswith('---\nname: '+name+'\n') or '\ndescription: ' not in entry:errors.append('Frontmatter '+name)
   for shared in (BUILD/'src/common').rglob('*'):
    if shared.is_file() and '__pycache__' not in shared.parts:
@@ -31,7 +31,7 @@ def validate():
   zpath=ROOT/f'install-{name}.zip'
   with zipfile.ZipFile(zpath) as z:
    actual={i.filename:z.read(i.filename) for i in z.infolist()}
-   expected={f.relative_to(ROOT/'skills').as_posix():f.read_bytes() for f in p.rglob('*') if f.is_file() and '__pycache__' not in f.parts}
+   expected={f.relative_to(ROOT/'you-can-install-skill').as_posix():f.read_bytes() for f in p.rglob('*') if f.is_file() and '__pycache__' not in f.parts}
    if actual!=expected:errors.append('ZIP differs '+name)
  if len(list(ROOT.glob('install-*.zip')))!=4:errors.append('Expected four ZIPs')
  for file in ROOT.rglob('*'):

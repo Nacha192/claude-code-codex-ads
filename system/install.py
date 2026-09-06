@@ -31,7 +31,7 @@ def install(runtime,mode='both',project=None,target_root=None,apply=False):
     names=CHOICES[runtime] if mode=='both' else [CHOICES[runtime][0 if mode=='solo' else 1]]
     plans=[]
     for name in names:
-        source=ROOT/'skills'/name
+        source=ROOT/'you-can-install-skill'/name
         if not (source/'SKILL.md').is_file():raise ValueError('Missing built skill '+name)
         expected=inventory(source);dest=target/name
         if dest.is_symlink():raise ValueError('Refusing symlinked skill destination')
@@ -46,7 +46,7 @@ def install(runtime,mode='both',project=None,target_root=None,apply=False):
             dest=Path(plan['target']);dest.mkdir(exist_ok=False)
             # Exclusive top-level reservation, then copy only known package files.
             # On I/O failure preserve partial files for inspection; never delete user data.
-            source=ROOT/'skills'/plan['skill']
+            source=ROOT/'you-can-install-skill'/plan['skill']
             for relative in inventory(source):
                 out=dest/relative;out.parent.mkdir(parents=True,exist_ok=True)
                 with out.open('xb') as f:f.write((source/relative).read_bytes())

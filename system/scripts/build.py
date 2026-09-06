@@ -83,7 +83,7 @@ Input: confirmed offer, buyer situation, market/language, current requested arti
 def main():
  build_catalog()
  for name in NAMES:
-  dest=ROOT/'skills'/name;dest.mkdir(parents=True,exist_ok=True)
+  dest=ROOT/'you-can-install-skill'/name;dest.mkdir(parents=True,exist_ok=True)
   shutil.copytree(BUILD/'src/common',dest,dirs_exist_ok=True)
   shutil.copyfile(BUILD/'src/entrypoints'/f'{name}.md',dest/'SKILL.md')
   shutil.copyfile(ROOT/'LICENSE',dest/'LICENSE')
@@ -95,9 +95,9 @@ def main():
  for name in NAMES:
   path=dist/f'install-{name}.zip'
   with zipfile.ZipFile(path,'w',compression=zipfile.ZIP_DEFLATED) as z:
-   for file in sorted((ROOT/'skills'/name).rglob('*')):
+   for file in sorted((ROOT/'you-can-install-skill'/name).rglob('*')):
     if not file.is_file() or '__pycache__' in file.parts:continue
-    info=zipfile.ZipInfo(file.relative_to(ROOT/'skills').as_posix(),date_time=(2026,9,6,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o644<<16
+    info=zipfile.ZipInfo(file.relative_to(ROOT/'you-can-install-skill').as_posix(),date_time=(2026,9,6,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o644<<16
     z.writestr(info,file.read_bytes())
   checks[path.name]=hashlib.sha256(path.read_bytes()).hexdigest()
  write(dist/'SHA256SUMS',''.join(f'{digest}  {name}\n' for name,digest in sorted(checks.items())))
