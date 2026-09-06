@@ -1,6 +1,6 @@
 # Install the four all-in-one advertising skills
 
-Choose the edition for the assistant where you start. Every edition already contains research, hooks, copywriting, static/video/voice workflows and the integrated second brain. You do not install the internal modules separately.
+Choose the edition for the assistant where you start. Every edition already contains research, hooks, copywriting, static image and carousel workflows, and the integrated second brain. You do not install the internal modules separately.
 
 | Start in | Solo | Real two-assistant team |
 |---|---|---|

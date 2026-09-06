@@ -47,30 +47,6 @@
     "inference-sh--social-media-carousel",
     "agricidaniel--ads-creative"
   ],
-  "codex-video": [
-    "remotion-dev--remotion-best-practices",
-    "iart-ai--ad-creative-video",
-    "nyosegawa--remotion-promo-video-factory",
-    "openai--speech",
-    "gooseworks-ai--review-ugc-render",
-    "coreyhaines31--video",
-    "remotion-dev--remotion-captions",
-    "inference-sh--seedance",
-    "zubair-trabzada--ads-video",
-    "yaxeen--retention-audit"
-  ],
-  "claude-video": [
-    "iart-ai--ad-creative-video",
-    "zubair-trabzada--ads-video",
-    "nyosegawa--remotion-promo-video-factory",
-    "remotion-dev--remotion-best-practices",
-    "hyperfx-ai--video-generation",
-    "inference-sh--ai-marketing-videos",
-    "inference-sh--talking-head-production",
-    "openai--speech",
-    "iart-ai--launch-video",
-    "gooseworks-ai--review-ugc-render"
-  ],
   "codex-copywriting": [
     "coreyhaines31--copywriting",
     "avectats7--copy-that-sells",

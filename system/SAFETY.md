@@ -18,7 +18,6 @@ These fail with a non-zero exit. A test in `tests/test_tools.py` covers each one
 | A testimonial without a recorded verbatim quote is refused | `check_artifact.py` | `test_fake_testimonial` |
 | Declared prohibited terms are matched on the rendered copy | `check_artifact.py` | `test_red_line_on_rendered_copy` |
 | Copy over the declared character limits is refused | `check_artifact.py` | `test_placement_length_limits` |
-| Narration longer than its scene is refused | `check_artifact.py` | `test_storyboard_measured_overrun` |
 | Installation never overwrites an existing skill or user edit | `install.py` | `test_install_preview_idempotence_and_no_overwrite` |
 | Installation refuses a symlinked target or destination | `install.py` | `test_symlinked_ancestor_allowed_but_target_refused`, `test_symlinked_skill_destination_refused` |
 | Installing writes nothing without `--apply` | `install.py` | `test_install_preview_idempotence_and_no_overwrite` |

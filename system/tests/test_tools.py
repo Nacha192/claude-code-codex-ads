@@ -34,13 +34,8 @@ class ToolTests(unittest.TestCase):
  def test_quote_requires_text(self):
   for value in [True,1,' ','',{}]:
    d=self.creative();d['claims'][0]['testimonial']=True;d['evidence'][0].update(type='customer_quote',verbatim=value);self.assertTrue(checker.check(d)[0])
- def test_storyboard_measured_overrun(self):
-  d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':2,'visual':'product','voice':'demo','measured_voice_seconds':3}]};self.assertTrue(checker.check(d)[0])
- def test_nan_and_bool_times(self):
-  for value in [float('nan'),True]:
-   d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':value,'end':2,'visual':'product'}]};self.assertTrue(checker.check(d)[0])
- def test_unmeasured_voice_warns(self):
-  d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':3,'visual':'product','voice':'demo'}]};e,w=checker.check(d);self.assertFalse(e);self.assertTrue(w)
+ def test_storyboard_kind_is_no_longer_accepted(self):
+  d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':2,'visual':'product'}]};self.assertTrue(checker.check(d)[0])
  def generation(self):return {'schema_v':'1.0.0','kind':'generation_request','provider':'a-provider','model':'a-model','account_alias':'studio-main','credits_remaining':400,'items':[{'prompt':'synthetic fixture'}],'approval':{'granted_at':'2026-09-01','provider':'a-provider','model':'a-model','account_alias':'studio-main','max_items':4,'ceiling':'200 credits'}}
  def test_generation_within_approval(self):self.assertEqual(checker.check(self.generation())[0],[])
  def test_generation_needs_recorded_approval(self):

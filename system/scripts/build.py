@@ -11,29 +11,31 @@ LISTS={
 'claude-hooks':'zubair-trabzada--ads-hooks,robpalmer99--ad-copy,yaxeen--storytelling-hooks,sergebulaev--tt-hook-scripter,realkimbarrett--headline-matrix,gooseworks-ai--trending-ad-hook-spotter,realkimbarrett--ad-angle-multiplier,realkimbarrett--mechanism-builder,realkimbarrett--objection-crusher,coreyhaines31--social',
 'codex-static':'openai--imagegen,norahe0304-art--30x-image,buluslan--gpt-image2-ecommerce,coreyhaines31--ad-creative,agricidaniel--ads-generate,agricidaniel--ads-photoshoot,hyperfx-ai--ad-creative-generation,anthropics--canvas-design,inference-sh--nano-banana-2,avectats7--copy-that-sells',
 'claude-static':'buluslan--gpt-image2-ecommerce,anthropics--canvas-design,agricidaniel--ads-photoshoot,agricidaniel--ads-generate,hyperfx-ai--ad-creative-generation,alirezarezvani--ad-creative,openai--imagegen,norahe0304-art--30x-image,inference-sh--social-media-carousel,agricidaniel--ads-creative',
-'codex-video':'remotion-dev--remotion-best-practices,iart-ai--ad-creative-video,nyosegawa--remotion-promo-video-factory,openai--speech,gooseworks-ai--review-ugc-render,coreyhaines31--video,remotion-dev--remotion-captions,inference-sh--seedance,zubair-trabzada--ads-video,yaxeen--retention-audit',
-'claude-video':'iart-ai--ad-creative-video,zubair-trabzada--ads-video,nyosegawa--remotion-promo-video-factory,remotion-dev--remotion-best-practices,hyperfx-ai--video-generation,inference-sh--ai-marketing-videos,inference-sh--talking-head-production,openai--speech,iart-ai--launch-video,gooseworks-ai--review-ugc-render',
 'codex-copywriting':'coreyhaines31--copywriting,avectats7--copy-that-sells,coreyhaines31--copy-editing,robpalmer99--copychief,robpalmer99--ad-copy,zubair-trabzada--ads-copy,sergebulaev--tt-humanizer,coreyhaines31--product-marketing,coreyhaines31--customer-research,robpalmer99--landing-page-copy',
 'claude-copywriting':'robpalmer99--ad-copy,avectats7--copy-that-sells,robpalmer99--copychief,coreyhaines31--copywriting,alirezarezvani--copywriting,zubair-trabzada--ads-copy,sergebulaev--tt-humanizer,robpalmer99--direct-response-copy,alirezarezvani--copy-editing,realkimbarrett--generic-language-killer'}
-ROUTES={'copy':'copywriting.md','research':'research.md','image':'static.md','video':'video-voice.md','voice':'video-voice.md','campaign':'campaign-operations.md'}
+ROUTES={'copy':'copywriting.md','research':'research.md','image':'static.md','campaign':'campaign-operations.md'}
 HOST={'copy':('Draft in the target language using the brief and actual source records.','Use native file/MCP tools for the same brief; no Codex-only tool names.'),
 'research':('Use available web/library tools and record actual coverage.','Discover the connected research tools; use supplied exports if unavailable.'),
 'image':('Use the actual available image tool or editable composition workflow after approval.','Use a connected image/Design tool or an explicitly requested genuine Codex peer in team mode; never simulate image generation.'),
-'video':('Use installed motion/rendering tools or an approved video provider and inspect output.','Use available rendering or video tools; transfer only an approved subtask to the real peer in team mode.'),
-'voice':('Use a verified speech tool, approved voice/script and bounded takes.','Discover an actual TTS capability; the Codex speech tool does not arrive with this text.'),
 'campaign':('Inspect authorized account tools and reconcile remote object IDs after writes.','Use actual Meta MCP/API access; negotiate a single executor if working as a team.')}
 
 def write(p,s):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(s,encoding='utf-8',newline='\n')
 def build_catalog():
- sources=json.loads((BUILD/'research/sources.json').read_text(encoding='utf-8'));byid={s['id']:s for s in sources}
+ inspected=json.loads((BUILD/'research/sources.json').read_text(encoding='utf-8'))
+ # Still creative only. Sources routed to video or voice belong to the video pack;
+ # they stay in the research record and are staged in src/video/transferred/.
+ sources=[s for s in inspected if s['route'] in ROUTES];byid={s['id']:s for s in sources}
  refs=BUILD/'src/common/references'
+ keep={s['id']+'.md' for s in sources}
+ for stale in (BUILD/'src/common/modules').glob('*.md'):
+  if stale.name not in keep:stale.unlink()
  intro='''# Research and internal skill adaptations
 
-Fresh discovery and source captures: 2026-09-06. 73 SKILL.md entrypoints inspected from 19 source repositories, plus broader discovery candidates. Eight editorial top-ten selections follow (80 positions, with deliberate overlap). These are task-fit shortlists, not a global ranking or measured campaign-performance benchmark. Repository stars are dated discovery signals, not evidence of ad quality.
+Fresh discovery and source captures: 2026-09-06. 73 SKILL.md entrypoints inspected from 19 source repositories, plus broader discovery candidates. This pack builds still creative, so it carries the 55 adaptations that apply to images and carousels; the 18 video and voice adaptations moved out to the video pack and are no longer half-present here. Six editorial top-ten selections follow (60 positions, with deliberate overlap). These are task-fit shortlists, not a global ranking or measured campaign-performance benchmark. Repository stars are dated discovery signals, not evidence of ad quality.
 
 Selection order favors advertising relevance, useful decision detail, grounded outputs/QA, and runtime portability; complementary supporting skills fill genuine workflow needs. License clarity determines what may be redistributed, not whether an idea wins. An entry labeled supporting does not create a complete ad by itself. Short prompt-only and unclear-license candidates are marked in their cards. Similar frameworks/forks are not independent proof.
 
-The Codex lists mean usable in Codex after the documented adaptation; they do NOT assert ten native Codex specialists in each category. Native origins and runtime differences are explicit in each card. Claude lists likewise include useful cross-runtime adaptations. Only original summaries and functional implementations are bundled, not upstream executables, paid connectors, copied manuals or entire unlicensed skills. Full source links and pinned revisions permit inspection. Eight selections and the remaining research records are inside every pack, not extra skills to install.
+The Codex lists mean usable in Codex after the documented adaptation; they do NOT assert ten native Codex specialists in each category. Native origins and runtime differences are explicit in each card. Claude lists likewise include useful cross-runtime adaptations. Only original summaries and functional implementations are bundled, not upstream executables, paid connectors, copied manuals or entire unlicensed skills. Full source links and pinned revisions permit inspection. Six selections and the remaining research records are inside every pack, not extra skills to install.
 
 Read a relevant card below, then execute its local workflow module. Do not load all cards for a small task. [Conversion contract](conversion.md) explains the two-way adaptation.
 '''
@@ -41,11 +43,11 @@ Read a relevant card below, then execute its local workflow module. Do not load 
   ids=raw.split(',')
   # Explicit raise, not assert: python -O would silently drop the check.
   if len(ids)!=10 or len(set(ids))!=10 or not all(x in byid for x in ids):raise ValueError('Selection '+group+' must list ten distinct known sources')
-  intro+='\n## '+group+' — ten selected methods\n\n| Priority | Internal method | Why selected | Role |\n|---|---|---|---|\n'
+  intro+='\n## '+group+': ten selected methods\n\n| Priority | Internal method | Why selected | Role |\n|---|---|---|---|\n'
   for n,ident in enumerate(ids,1):
-   s=byid[ident];support=s['route'] in ['research','voice','campaign'] or any(x in ident for x in ['captions','audit','copy-edit','copychief','canvas','copy-that'])
+   s=byid[ident];support=s['route'] in ['research','campaign'] or any(x in ident for x in ['captions','audit','copy-edit','copychief','canvas','copy-that'])
    intro+=f"| {n} | [{ident}](../modules/{ident}.md) | {s['purpose']} | {'Supporting' if support else 'Direct creative method'} |\n"
- intro+='\n## Full inspected-source index\n\n'
+ intro+='\n## Adapted-source index for still creative\n\n'
  for s in sources:
   ident=s['id'];origin='Codex-source' if ident.startswith(('openai--','norahe0304-art--')) else ('Claude-source' if ident.startswith(('anthropics--','robpalmer99--','alirezarezvani--','agricidaniel--','zubair-trabzada--','avectats7--','buluslan--')) else 'Portable/other source; host adapter required')
   license_note=s['license']
@@ -95,7 +97,7 @@ def main():
   shutil.copyfile(ROOT/'LICENSE',dest/'LICENSE')
   write(dest/'THIRD_PARTY_NOTICES.md',(BUILD/'THIRD_PARTY_NOTICES.md').read_text(encoding='utf-8').replace('(research/sources.json)','(https://github.com/Nacha192/claude-code-codex-ads/blob/main/system/research/sources.json)'))
   write(dest/'install-this-skill.md',f'# Install {name}\n\nKeep this entire folder together. Place it in the appropriate host skill directory, then restart/discover skills. See the repository install guide. The second brain and all advertising modules are already inside this folder. External provider accounts and Agent Duet for team communication are capability dependencies, not included credentials.\n')
-  write(dest/'manifest.json',json.dumps({'name':name,'version':'1.2.0','core_v':'1.0.0','schema_v':'1.0.0','integrated_second_brain':True,'source_entrypoints':73},indent=2)+'\n')
+  write(dest/'manifest.json',json.dumps({'name':name,'version':'1.3.0','core_v':'1.0.0','schema_v':'1.0.0','scope':'static','integrated_second_brain':True,'inspected_entrypoints':73,'adaptations':len(list((BUILD/'src/common/modules').glob('*.md')))},indent=2)+'\n')
  dist=ROOT
  # Drop artefacts of a previous, differently named build so the release cannot
  # ship a pack or an archive that no longer has a source.
@@ -113,5 +115,5 @@ def main():
     z.writestr(info,file.read_bytes())
   checks[path.name]=hashlib.sha256(path.read_bytes()).hexdigest()
  write(dist/'SHA256SUMS',''.join(f'{digest}  {name}\n' for name,digest in sorted(checks.items())))
- print(json.dumps({'skills':len(NAMES),'zip_files':len(checks),'source_cards':73}))
+ print(json.dumps({'skills':len(NAMES),'zip_files':len(checks),'source_cards':len(list((BUILD/'src/common/modules').glob('*.md')))}))
 if __name__=='__main__':main()

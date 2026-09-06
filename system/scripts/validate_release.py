@@ -23,10 +23,16 @@ def validate():
  source=json.loads((BUILD/'research/sources.json').read_text(encoding='utf-8'))
  ids={s['id'] for s in source}
  if len(source)!=73 or len(ids)!=73:errors.append('Expected 73 unique inspected sources')
+ # This pack is still creative only: nothing routed to video or voice may ship in it.
+ moved={s['id'] for s in source if s['route'] in ('video','voice')}
+ static_ids=ids-moved
  selections=json.loads((BUILD/'research/selections.json').read_text(encoding='utf-8'))
  for key,rows in selections.items():
-  if len(rows)!=10 or len(set(rows))!=10 or not set(rows)<=ids:errors.append('Invalid top-ten '+key)
- if len(selections)!=8:errors.append('Expected eight lists')
+  if len(rows)!=10 or len(set(rows))!=10 or not set(rows)<=static_ids:errors.append('Invalid top-ten '+key)
+ if len(selections)!=6:errors.append('Expected six lists')
+ if set((BUILD/'src/common/references').glob('video*.md')):errors.append('A video reference is still in the shared sources')
+ for ident in sorted(moved):
+  if (BUILD/'src/common/modules'/(ident+'.md')).exists():errors.append('Non-static module still built: '+ident)
  shared={f.relative_to(BUILD/'src/common').as_posix() for f in (BUILD/'src/common').rglob('*') if f.is_file() and '__pycache__' not in f.parts}
  for name in NAMES:
   p=ROOT/'you-can-install-skill'/name;entry=(p/'SKILL.md').read_text(encoding='utf-8')
