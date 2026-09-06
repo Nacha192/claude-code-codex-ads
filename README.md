@@ -15,21 +15,20 @@ There is **no separate copywriting, research or second-brain skill to install**.
 
 ## Where things are
 
-Two ways in, the same four skills.
-
-- **[`you-can-install-skill/`](you-can-install-skill/)** — the four packs
-  unpacked, with an index. Read a `SKILL.md`, a reference or a module here
-  before installing anything.
-- **The four `install-*.zip` at the root** — the same four, ready to drop into a
-  skill directory. `SHA256SUMS` covers them.
-
-Everything else is in [`system/`](system/): the installer, the source of every
-pack, the research records behind each attribution, the build and validation
-scripts, and the tests. Present and inspectable, out of the way.
-
-Four files stay at the root because they only work there: `LICENSE` and this
-README are what GitHub reads, `.gitattributes` keeps git from corrupting the ZIP
-archives, and `.gitignore` only governs the folder it sits in.
+| At the root | What it is for |
+|---|---|
+| [`you-can-install-skill/`](you-can-install-skill/) | the four packs unpacked and readable, with an index. Read a `SKILL.md` here before installing anything |
+| `install-meta-ads-codex.zip` | install this one to work in Codex, alone |
+| `install-meta-ads-claude-code.zip` | install this one to work in Claude Code, alone |
+| `install-meta-ads-team-codex-and-claude-code.zip` | both assistants on one mission, opened from Codex |
+| `install-meta-ads-team-claude-code-and-codex.zip` | the same team mission, opened from Claude Code |
+| `SHA256SUMS` | checksums for the four archives, so you can verify what you downloaded |
+| [`system/`](system/) | everything that builds the packs: the sources, the research records behind every attribution, the installer, the build and validation scripts, and the tests |
+| `README.md` | this file |
+| `LICENSE` | MIT for the original work. Upstream rights stay separate, see the notices |
+| `.gitattributes` | keeps git from corrupting the ZIP archives, and normalises line endings |
+| `.gitignore` | paths git must never track |
+| `.github/workflows/` | rebuilds and validates the release on every push |
 
 ## Install
 
