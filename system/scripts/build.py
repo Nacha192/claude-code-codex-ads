@@ -89,7 +89,7 @@ def main():
   shutil.copyfile(ROOT/'LICENSE',dest/'LICENSE')
   write(dest/'THIRD_PARTY_NOTICES.md',(BUILD/'THIRD_PARTY_NOTICES.md').read_text(encoding='utf-8').replace('(research/sources.json)','(https://github.com/Nacha192/claude-code-codex-ads/blob/main/system/research/sources.json)'))
   write(dest/'install-this-skill.md',f'# Install {name}\n\nKeep this entire folder together. Place it in the appropriate host skill directory, then restart/discover skills. See the repository install guide. The second brain and all advertising modules are already inside this folder. External provider accounts and Agent Duet for team communication are capability dependencies, not included credentials.\n')
-  write(dest/'manifest.json',json.dumps({'name':name,'version':'1.0.0','core_v':'1.0.0','schema_v':'1.0.0','integrated_second_brain':True,'source_entrypoints':73},indent=2)+'\n')
+  write(dest/'manifest.json',json.dumps({'name':name,'version':'1.1.0','core_v':'1.0.0','schema_v':'1.0.0','integrated_second_brain':True,'source_entrypoints':73},indent=2)+'\n')
  dist=ROOT
  checks={}
  for name in NAMES:
