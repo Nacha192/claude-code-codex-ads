@@ -6,26 +6,29 @@ Build campaigns around the actual business, buyer and evidence: research → hoo
 
 | Skill | Where you start | How it works |
 |---|---|---|
-| [meta-ads-codex](system/skills/meta-ads-codex/SKILL.md) | Codex | Complete solo workflow; Sol basic and Astra advanced profiles |
-| [meta-ads-claude-code](system/skills/meta-ads-claude-code/SKILL.md) | Claude Code | Complete solo workflow; available Claude model and Opus 5 advanced profile |
-| [meta-ads-team-codex-and-claude-code](system/skills/meta-ads-team-codex-and-claude-code/SKILL.md) | Codex | Both real assistants contribute and cross-review |
-| [meta-ads-team-claude-code-and-codex](system/skills/meta-ads-team-claude-code-and-codex/SKILL.md) | Claude Code | Same complete team mission, opposite starting host |
+| [meta-ads-codex](skills/meta-ads-codex/SKILL.md) | Codex | Complete solo workflow; Sol basic and Astra advanced profiles |
+| [meta-ads-claude-code](skills/meta-ads-claude-code/SKILL.md) | Claude Code | Complete solo workflow; available Claude model and Opus 5 advanced profile |
+| [meta-ads-team-codex-and-claude-code](skills/meta-ads-team-codex-and-claude-code/SKILL.md) | Codex | Both real assistants contribute and cross-review |
+| [meta-ads-team-claude-code-and-codex](skills/meta-ads-team-claude-code-and-codex/SKILL.md) | Claude Code | Same complete team mission, opposite starting host |
 
 There is **no separate copywriting, research or second-brain skill to install**. All are internal modules. Each pack includes the complete shared methods and its host-specific entrypoint. The team uses the real [Agent Duet bridge](https://github.com/Nacha192/Codex-Claude-Code-team) and available tools; it never impersonates the other assistant.
 
 ## Where things are
 
-The four ZIPs at the root are the product. Each one is a complete skill folder,
-ready to drop into a skill directory.
+Two ways in, the same four skills.
 
-Everything else is in [`system/`](system/): the same four skills unpacked and
-readable under [`system/skills/`](system/skills/), the installer, the source of
-every pack, the research records behind each attribution, the build and
-validation scripts, and the tests. Present and inspectable, out of the way.
+- **[`skills/`](skills/)** — the four packs unpacked. Read a `SKILL.md`, a
+  reference or a module here before installing anything.
+- **The four `install-*.zip` at the root** — the same four, ready to drop into a
+  skill directory. `SHA256SUMS` covers them.
+
+Everything else is in [`system/`](system/): the installer, the source of every
+pack, the research records behind each attribution, the build and validation
+scripts, and the tests. Present and inspectable, out of the way.
 
 Four files stay at the root because they only work there: `LICENSE` and this
-README are what GitHub reads, `.gitattributes` keeps git from corrupting the
-ZIP archives, and `.gitignore` only governs the folder it sits in.
+README are what GitHub reads, `.gitattributes` keeps git from corrupting the ZIP
+archives, and `.gitignore` only governs the folder it sits in.
 
 ## Install
 
@@ -52,7 +55,7 @@ Instructions are English. The assistant keeps the user's conversation language; 
 
 ## Research and adaptation
 
-A fresh GitHub search on **2026-09-06** produced a reviewed corpus of **73 SKILL.md entrypoints**. The [internal source catalog](system/skills/meta-ads-codex/references/source-catalog.md) contains eight top-ten selections: hooks, static, video and copywriting, each for Codex and Claude Code. The 80 positions deliberately overlap. Codex-compatible does not falsely mean Codex-native. Supporting skills are identified.
+A fresh GitHub search on **2026-09-06** produced a reviewed corpus of **73 SKILL.md entrypoints**. The [internal source catalog](skills/meta-ads-codex/references/source-catalog.md) contains eight top-ten selections: hooks, static, video and copywriting, each for Codex and Claude Code. The 80 positions deliberately overlap. Codex-compatible does not falsely mean Codex-native. Supporting skills are identified.
 
 Each source has a pinned revision, hash, date, provenance, caveat and original functional adaptations for both hosts. See [source inventory](system/research/sources.json), [discovery](system/research/discovery.json) and [attribution](system/THIRD_PARTY_NOTICES.md). These are reasoned task-fit selections, not an objective world ranking or proof of ad performance. Upstream tools and full unlicensed skill text are not bundled.
 

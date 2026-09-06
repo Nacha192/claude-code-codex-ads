@@ -2,8 +2,8 @@
 import argparse,hashlib,json,os,shutil
 from pathlib import Path
 # install.py lives in system/; the skill folders sit at the repository root.
-# install.py and the unpacked skill folders both live in system/.
-ROOT=Path(__file__).resolve().parent
+# install.py lives in system/; the unpacked folders are in skills/ at the root.
+ROOT=Path(__file__).resolve().parents[1]
 CHOICES={'codex':['meta-ads-codex','meta-ads-team-codex-and-claude-code'],
          'claude':['meta-ads-claude-code','meta-ads-team-claude-code-and-codex']}
 
