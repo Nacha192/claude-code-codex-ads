@@ -4,7 +4,7 @@ Release date: 2026-09-06. This is a validation of the distributed methods and lo
 
 ## Local observed checks
 
-- Python 3.11 on Windows: 21 unit tests collected; 19 passed and 2 skipped because this Windows account cannot create symbolic links. The skipped cases cover legitimate symlink ancestors and rejection of a symlinked skill destination. Linux/macOS CI is configured to exercise them; its actual result is visible in GitHub Actions.
+- Python 3.11 on Windows: 21 unit tests collected; 19 passed and 2 skipped because this Windows account cannot create symbolic links. The skipped cases cover legitimate symlink ancestors and rejection of a symlinked skill destination. The published [Linux/macOS CI run](https://github.com/Nacha192/claude-code-codex-ads/actions/runs/34026601326) then passed all 21 tests on each system, including both symlink tests. The downloaded job logs confirmed no skips.
 - The skill-creator frontmatter validator accepted all four installed `SKILL.md` entrypoints.
 - The release validator found no errors: exactly four installed skills, four ZIPs, 73 unique source records, eight selections of ten distinct valid IDs, valid internal Markdown links, and byte-identical shared modules across all four packages.
 - ZIP contents match the distributed skill folders; archive SHA-256 values are included in `dist/SHA256SUMS`. Public text uses LF line endings for consistent checkouts.
@@ -18,7 +18,7 @@ Codex coordinated the build and ran the checks. The real Claude Code CLI supplie
 
 The first review exposed a Windows argument-transport problem that stripped quotes/truncated a long prompt. The coordinator switched the local consultation transport to stdin; Claude then confirmed receipt of all five files and intact JSON. The corrected behavioral submission was accepted. Solo self-review, approval provenance and privacy ordering were clarified following that exchange.
 
-The technical review requested support for legitimate system symlink ancestors and an internal Git ignore file for private memory. Both were implemented with regression tests. Claude accepted the final four-script technical submission with no blockers. The final review explicitly left execution of the two skipped symlink cases to Linux/macOS CI.
+The technical review requested support for legitimate system symlink ancestors and an internal Git ignore file for private memory. Both were implemented with regression tests. Claude accepted the final four-script technical submission with no blockers. The final review left execution of the two Windows-skipped symlink cases to Linux/macOS CI; both were subsequently executed successfully there.
 
 ## Limits
 
