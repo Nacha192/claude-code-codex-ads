@@ -63,7 +63,7 @@ Original craft lessons from earlier static and motion projects are generalized i
 
 ## Approval and quality
 
-The assistant prepares a concrete proposal and asks before NEW media generation unless an existing scoped approval already covers it. It also respects actual account/spend authorization. A request to research does not launch campaigns. Real provider access and current specifications are checked before use.
+The approval is recorded as a `generation_request` artifact and checked by a script: generating without a recorded approval, past the approved ceiling, on a different provider or account, or on a zero-credit account all fail that check. The assistant prepares a concrete proposal and asks before NEW media generation unless an existing scoped approval already covers it. It also respects actual account/spend authorization. A request to research does not launch campaigns. Real provider access and current specifications are checked before use.
 
 Advanced modes add competing hypotheses, stronger prototypes and deeper review. They do not claim human consciousness, guaranteed 10× performance, guaranteed platform approval or elimination of every possible bug.
 
@@ -77,6 +77,6 @@ python -m unittest discover -s .build/tests -v
 python system/scripts/validate_release.py
 ```
 
-See [VALIDATION.md](system/VALIDATION.md) for actual checks, peer-review scope and known limits. Read-only/offline checks cannot prove source truth, aesthetic quality or provider access. No live ad campaign or paid media generation is performed by the tests.
+[SAFETY.md](system/SAFETY.md) separates the rules a script actually enforces, each with the test that covers it, from the ones that depend on a model behaving well, and from the ones nothing here can enforce. See [VALIDATION.md](system/VALIDATION.md) for actual checks, peer-review scope and known limits. Read-only/offline checks cannot prove source truth, aesthetic quality or provider access. No live ad campaign or paid media generation is performed by the tests.
 
 MIT for original work; upstream rights remain separate. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](system/THIRD_PARTY_NOTICES.md).
