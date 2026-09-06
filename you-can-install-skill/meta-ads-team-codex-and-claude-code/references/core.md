@@ -26,6 +26,16 @@ Use a bounded concept/critique/revision cycle. Fix concrete failures; avoid endl
 
 Keep private campaign memory in the user's project, outside public skill files. Publish reusable methods and sanitized examples only. Do not embed private conversations, customer information, account IDs, client assets or unreleased performance data in a public pack.
 
+## Machine-checked artifacts
+
+`scripts/check_artifact.py` reads one JSON file and exits non-zero on error. It knows four kinds and nothing else: `brief`, `creative`, `storyboard` and `generation_request`. Run it before delivering copy and before requesting new media. It refuses any artifact carrying a credential-shaped value, whatever the field is called.
+
+`creative` accepts `hook`, `primary_text`, `headline`, `description`, `cta`, `claims`, `evidence`, optional `limits` and optional `prohibited_terms`. Character limits default to the captured Meta truncation thresholds [platform] and can be overridden per artifact; an override under an unknown field name is an error rather than a silently disabled limit. Every material claim must reference evidence that is not `hypothesis` or `unverified`, and a testimonial needs a recorded verbatim quote. `prohibited_terms` is the campaign red line, matched as whole words against the rendered copy fields: it catches the listed wording, never a paraphrase carrying the same forbidden meaning.
+
+`generation_request` records `provider`, `model`, `account_alias`, `items`, `credits_remaining` and the `approval` covering them. The approval carries `granted_at`, the same provider, model and account, a positive `max_items`, and a `ceiling` written as text such as `200 credits`. It fails when no approval is recorded, when provider, model or account differs from the approved one, when the batch exceeds `max_items`, when the approval is dated in the future, and when the named account is at zero credits.
+
+The checker verifies structure and recorded authorization. It cannot verify that the user actually granted an approval, that a source supports a claim, that copy satisfies current platform policy, or that a creative is any good. Those stay human judgments.
+
 ## Recovery
 
 For a read-only transient failure, retry once if appropriate, then report the unavailable source and continue independent work. For ambiguous generation or campaign writes, first reconcile the provider's job/object state. Never assume a timeout means nothing happened. If the provider cannot establish a safe retry, stop that mutation and report the exact unresolved operation. Zero credits: offer a smaller plan, a different approved provider, or a switch by the user to another legitimately owned funded account; never rotate identities to evade limits.
