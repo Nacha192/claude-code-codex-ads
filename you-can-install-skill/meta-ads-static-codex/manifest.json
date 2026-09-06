@@ -1,6 +1,6 @@
 {
-  "name": "meta-ads-claude-code",
-  "version": "1.3.0",
+  "name": "meta-ads-static-codex",
+  "version": "2.0.0",
   "core_v": "1.0.0",
   "schema_v": "1.0.0",
   "scope": "static",

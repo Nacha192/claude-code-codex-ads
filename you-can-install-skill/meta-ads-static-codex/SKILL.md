@@ -1,5 +1,5 @@
 ---
-name: meta-ads-codex
+name: meta-ads-static-codex
 description: Create and improve Meta advertising as solo Codex, with an integrated second brain for business discovery, ad research, hooks, copy, static image and carousel assets, and campaign learning. Use for one-assistant advertising work; use the team edition when both Codex and Claude Code are requested.
 ---
 
@@ -25,7 +25,7 @@ Produce and inspect the requested final files. A prompt or an unrendered concept
 
 ## Basic and advanced
 
-Follow [models](references/models.md): GPT-5.6 Sol basic is a compact evidence-based workflow; GPT-6 Astra advanced develops competing hypotheses, meaningful prototypes and deeper artifact critique. Confirm the model actually available on this host. Neither profile promises human consciousness or a numerical performance multiplier. Both retain truthfulness and production QA.
+Follow [models](references/models.md). Basic is a compact evidence-based workflow; advanced develops competing hypotheses, meaningful prototypes and deeper artifact critique. The mode is a choice, not a model tier: whichever model this host exposes, `gpt-5.6-sol` or `gpt-6-astra`, can run either mode, and a stronger model sharpens the passes instead of unlocking them. Confirm the model actually available on this host and raise the reasoning effort for advanced work. Neither profile promises human consciousness or a numerical performance multiplier. Both retain truthfulness and production QA.
 
 ## Campaign and learning
 
