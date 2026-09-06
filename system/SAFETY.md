@@ -33,6 +33,8 @@ Release integrity is enforced the same way, in `scripts/validate_release.py` and
 - The committed packs must be byte-identical to what the committed sources rebuild, checked by `git diff --exit-code` in CI.
 - Windows user paths and common credential shapes must not appear in any published text.
 
+These guarantees assume a Python interpreter is present. A ZIP install can land on a machine without one, so the packs check for it on the first task in a project and ask before installing anything, following `references/runtime.md`. With no interpreter, none of the refusals above happen and the assistant must say the checks did not run rather than let silence read as a pass.
+
 ## Enforced by instruction only
 
 The skill text requires these. A model can deviate from them, and no script here will stop it. This is the honest ceiling of any Agent Skill.

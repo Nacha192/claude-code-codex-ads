@@ -1,5 +1,9 @@
 # Migration from the initial distribution
 
+## Version 2.1.0: the packs check for Python before relying on it
+
+The scripts that enforce the approval gate, the credential refusal and the copy limits are Python. A ZIP install can land on a machine with no interpreter, which turned those guarantees into silence. Each pack now checks once per project, before the first script call or the first generation, and records the result in `.ads-brain/runtime.json`. If Python is missing it says what stops working, proposes the install route for that operating system and asks; it never installs anything on its own. If the user declines, the pack keeps doing research and copy and states that the checks did not run.
+
 ## Version 2.0.0: renamed, and static by name
 
 The four skills say what they build. Update any script or documentation that names the old identifiers.

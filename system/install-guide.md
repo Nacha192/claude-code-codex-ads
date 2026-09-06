@@ -23,7 +23,9 @@ Default user locations: Codex `~/.agents/skills`; Claude Code `~/.claude/skills`
 
 ## ZIP installation without Python
 
-Download one of the four `install-*.zip` archives at the repository root archives and extract its named folder into the appropriate skill directory. Keep `SKILL.md`, `references/`, `modules/`, `scripts/` and notices together. The root `SHA256SUMS` file provides archive checksums. ZIPs are skill folders, not browser extensions or provider accounts.
+Download one of the four `install-*.zip` archives at the repository root and extract its named folder into the appropriate skill directory. Keep `SKILL.md`, `references/`, `modules/`, `scripts/` and notices together. The root `SHA256SUMS` file provides archive checksums. ZIPs are skill folders, not browser extensions or provider accounts.
+
+This route installs the pack without needing Python, but the included checks still need it. On its first task in a project the skill verifies the interpreter, and if none is there it says what stops working and asks before installing anything. See `references/runtime.md` inside the pack.
 
 ## Team prerequisite
 

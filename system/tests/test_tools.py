@@ -77,6 +77,8 @@ class ToolTests(unittest.TestCase):
    brain.initialize(t,True);self.assertEqual((Path(t)/'.ads-brain/.gitignore').read_text(),'*\n');p=Path(t)/'.ads-brain/brand.json';original=p.read_bytes()
    with self.assertRaises(ValueError):brain.initialize(t,True)
    self.assertEqual(p.read_bytes(),original);self.assertEqual(json.loads(original)['status'],'intake_required')
+   runtime=json.loads((Path(t)/'.ads-brain/runtime.json').read_text(encoding='utf-8'))
+   self.assertEqual(runtime['python']['status'],'unchecked')
  def test_install_preview_idempotence_and_no_overwrite(self):
   with tempfile.TemporaryDirectory() as t:
    target=Path(t)/'skills';installer.install('codex',target_root=target);self.assertFalse(target.exists())
