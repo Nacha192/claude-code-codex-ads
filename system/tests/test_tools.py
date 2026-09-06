@@ -41,6 +41,41 @@ class ToolTests(unittest.TestCase):
    d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':value,'end':2,'visual':'product'}]};self.assertTrue(checker.check(d)[0])
  def test_unmeasured_voice_warns(self):
   d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':3,'visual':'product','voice':'demo'}]};e,w=checker.check(d);self.assertFalse(e);self.assertTrue(w)
+ def generation(self):return {'schema_v':'1.0.0','kind':'generation_request','provider':'a-provider','model':'a-model','account_alias':'studio-main','credits_remaining':400,'items':[{'prompt':'synthetic fixture'}],'approval':{'granted_at':'2026-09-01','provider':'a-provider','model':'a-model','account_alias':'studio-main','max_items':4,'ceiling':'200 credits'}}
+ def test_generation_within_approval(self):self.assertEqual(checker.check(self.generation())[0],[])
+ def test_generation_needs_recorded_approval(self):
+  d=self.generation();d.pop('approval');self.assertTrue(checker.check(d)[0])
+ def test_generation_material_change_refused(self):
+  for field in ['provider','model','account_alias']:
+   d=self.generation();d[field]='changed-after-approval';self.assertTrue(checker.check(d)[0])
+ def test_generation_over_approved_ceiling(self):
+  d=self.generation();d['items']=[{'prompt':'x'}]*5;self.assertTrue(checker.check(d)[0])
+ def test_zero_credits_stops_generation(self):
+  d=self.generation();d['credits_remaining']=0;self.assertTrue(checker.check(d)[0])
+ def test_unknown_credits_only_warns(self):
+  d=self.generation();d['credits_remaining']=None;e,w=checker.check(d);self.assertFalse(e);self.assertTrue(any('credits' in x for x in w))
+ def test_future_dated_approval_refused(self):
+  d=self.generation();d['approval']['granted_at']='2099-01-01';self.assertTrue(checker.check(d)[0])
+ def test_invalid_credit_values(self):
+  for value in [True,-1,'many',float('inf')]:
+   d=self.generation();d['credits_remaining']=value;self.assertTrue(checker.check(d)[0])
+ def test_credentials_refused_in_every_kind(self):
+  for fixture in [self.brief,self.creative,self.generation]:
+   d=fixture();d['notes']='authorization: Bearer '+'A'*32;self.assertTrue(checker.check(d)[0])
+ def test_credential_nested_in_evidence(self):
+  d=self.creative();d['evidence'][0]['source']='api_key='+'B'*24;self.assertTrue(checker.check(d)[0])
+ def test_placement_length_limits(self):
+  d=self.creative();d['headline']='x'*41;self.assertTrue(checker.check(d)[0])
+  d['headline']='x'*40;self.assertEqual(checker.check(d)[0],[])
+  d['limits']={'headline':20};self.assertTrue(checker.check(d)[0])
+  d['limits']={'headlines':80};self.assertTrue(checker.check(d)[0])
+ def test_red_line_on_rendered_copy(self):
+  d=self.creative();d['prohibited_terms']=['cure'];d['primary_text']='This will cure the problem.'
+  self.assertTrue(checker.check(d)[0])
+  d['primary_text']='Obscure wording is still allowed.';e,w=checker.check(d)
+  self.assertEqual(e,[]);self.assertTrue(any('paraphrase' in x for x in w))
+ def test_unknown_kind_refused(self):
+  d=self.brief();d['kind']='poster';self.assertTrue(checker.check(d)[0])
  def test_brain_preview_and_preserve(self):
   with tempfile.TemporaryDirectory() as t:
    result=brain.initialize(t);self.assertFalse((Path(t)/'.ads-brain').exists())

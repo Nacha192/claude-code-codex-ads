@@ -4,7 +4,8 @@ Release date: 2026-09-06. This is a validation of the distributed methods and lo
 
 ## Local observed checks
 
-- Python 3.11 on Windows: 21 unit tests collected; 19 passed and 2 skipped because this Windows account cannot create symbolic links. The skipped cases cover legitimate symlink ancestors and rejection of a symlinked skill destination. The published [Linux/macOS CI run](https://github.com/Nacha192/claude-code-codex-ads/actions/runs/34026601326) then passed all 21 tests on each system, including both symlink tests. The downloaded job logs confirmed no skips.
+- Python 3.11 on Windows: 34 unit tests collected; 32 passed and 2 skipped because this Windows account cannot create symbolic links. The skipped cases cover legitimate symlink ancestors and rejection of a symlinked skill destination. [Linux/macOS CI](https://github.com/Nacha192/claude-code-codex-ads/actions/workflows/validate.yml) runs the whole suite on each system, including both symlink tests. An earlier [21-test run](https://github.com/Nacha192/claude-code-codex-ads/actions/runs/34026601326) confirmed no skips there.
+- Stale-artifact handling was exercised on a real tree: an orphan reference file, a pack with no source and an archive with no pack were all reported by the release validator, then removed by a rebuild. Before this release the orphan file shipped inside the archive and no check noticed.
 - The skill-creator frontmatter validator accepted all four installed `SKILL.md` entrypoints.
 - The release validator found no errors: exactly four installed skills, four ZIPs, 73 unique source records, eight selections of ten distinct valid IDs, valid internal Markdown links, and byte-identical shared modules across all four packages.
 - ZIP contents match the distributed skill folders; archive SHA-256 values are included in `SHA256SUMS`. Public text uses LF line endings for consistent checkouts.

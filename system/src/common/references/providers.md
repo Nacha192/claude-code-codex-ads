@@ -27,6 +27,8 @@ Before promising a media deliverable, record available/read-only/generate/upload
 
 Translate the proposal. When the user has already approved all these material parameters, proceed and record the existing authorization instead of repeating the question. Generation permission does not authorize a subscription purchase or campaign activation.
 
+Record the approved parameters as a `generation_request` artifact and run `scripts/check_artifact.py` on it before the first call, as described in the [shared contract](core.md). Expanding the batch past the ceiling, or switching provider, model or account after approval, fails that check by design. A zero-credit account fails it too: stop and ask the user, never fall back silently.
+
 ## Official references
 
 - [OpenAI image generation](https://developers.openai.com/api/docs/guides/image-generation)

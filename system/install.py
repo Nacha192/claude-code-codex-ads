@@ -1,8 +1,7 @@
 """Install selected all-in-one skills locally. Preview by default; no network."""
 import argparse,hashlib,json,os,shutil
 from pathlib import Path
-# install.py lives in system/; the skill folders sit at the repository root.
-# install.py lives in system/; the unpacked folders are in skills/ at the root.
+# install.py lives in system/; the unpacked packs sit in you-can-install-skill/ at the root.
 ROOT=Path(__file__).resolve().parents[1]
 CHOICES={'codex':['meta-ads-codex','meta-ads-team-codex-and-claude-code'],
          'claude':['meta-ads-claude-code','meta-ads-team-claude-code-and-codex']}

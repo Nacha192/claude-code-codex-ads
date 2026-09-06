@@ -38,7 +38,9 @@ The Codex lists mean usable in Codex after the documented adaptation; they do NO
 Read a relevant card below, then execute its local workflow module. Do not load all cards for a small task. [Conversion contract](conversion.md) explains the two-way adaptation.
 '''
  for group,raw in LISTS.items():
-  ids=raw.split(',');assert len(ids)==10 and len(set(ids))==10 and all(x in byid for x in ids)
+  ids=raw.split(',')
+  # Explicit raise, not assert: python -O would silently drop the check.
+  if len(ids)!=10 or len(set(ids))!=10 or not all(x in byid for x in ids):raise ValueError('Selection '+group+' must list ten distinct known sources')
   intro+='\n## '+group+' — ten selected methods\n\n| Priority | Internal method | Why selected | Role |\n|---|---|---|---|\n'
   for n,ident in enumerate(ids,1):
    s=byid[ident];support=s['route'] in ['research','voice','campaign'] or any(x in ident for x in ['captions','audit','copy-edit','copychief','canvas','copy-that'])
@@ -83,14 +85,24 @@ Input: confirmed offer, buyer situation, market/language, current requested arti
 def main():
  build_catalog()
  for name in NAMES:
-  dest=ROOT/'you-can-install-skill'/name;dest.mkdir(parents=True,exist_ok=True)
-  shutil.copytree(BUILD/'src/common',dest,dirs_exist_ok=True)
+  # Rebuild the folder from scratch. Copying over a surviving folder would keep a
+  # renamed or deleted reference in the shipped pack and in its ZIP forever.
+  dest=ROOT/'you-can-install-skill'/name
+  if dest.exists():shutil.rmtree(dest)
+  dest.mkdir(parents=True)
+  shutil.copytree(BUILD/'src/common',dest,dirs_exist_ok=True,ignore=shutil.ignore_patterns('__pycache__'))
   shutil.copyfile(BUILD/'src/entrypoints'/f'{name}.md',dest/'SKILL.md')
   shutil.copyfile(ROOT/'LICENSE',dest/'LICENSE')
   write(dest/'THIRD_PARTY_NOTICES.md',(BUILD/'THIRD_PARTY_NOTICES.md').read_text(encoding='utf-8').replace('(research/sources.json)','(https://github.com/Nacha192/claude-code-codex-ads/blob/main/system/research/sources.json)'))
   write(dest/'install-this-skill.md',f'# Install {name}\n\nKeep this entire folder together. Place it in the appropriate host skill directory, then restart/discover skills. See the repository install guide. The second brain and all advertising modules are already inside this folder. External provider accounts and Agent Duet for team communication are capability dependencies, not included credentials.\n')
-  write(dest/'manifest.json',json.dumps({'name':name,'version':'1.1.0','core_v':'1.0.0','schema_v':'1.0.0','integrated_second_brain':True,'source_entrypoints':73},indent=2)+'\n')
+  write(dest/'manifest.json',json.dumps({'name':name,'version':'1.2.0','core_v':'1.0.0','schema_v':'1.0.0','integrated_second_brain':True,'source_entrypoints':73},indent=2)+'\n')
  dist=ROOT
+ # Drop artefacts of a previous, differently named build so the release cannot
+ # ship a pack or an archive that no longer has a source.
+ for stale in (ROOT/'you-can-install-skill').iterdir():
+  if stale.is_dir() and stale.name not in NAMES:shutil.rmtree(stale)
+ for stale in dist.glob('install-*.zip'):
+  if stale.name[len('install-'):-len('.zip')] not in NAMES:stale.unlink()
  checks={}
  for name in NAMES:
   path=dist/f'install-{name}.zip'
