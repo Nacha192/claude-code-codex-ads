@@ -2,7 +2,7 @@
 
 **Four all-in-one advertising skills. Two solo editions. Two real-team editions. An integrated advertising second brain inside every one.**
 
-Build campaigns around the actual business, buyer and evidence: research → hooks and copy → static or video creative → voice and export review → business experiments → reusable learning.
+Build campaigns around the actual business, buyer and evidence: research, hooks and copy, static creative, export review, business experiments, reusable learning.
 
 | Skill | Where you start | How it works |
 |---|---|---|
@@ -46,8 +46,8 @@ Optional capabilities are listed in [you-can-install-tools.md](system/you-can-in
 - Business discovery, niche and buyer/awareness analysis; questions only for missing essentials.
 - Meta library research with market, language, date-window, query and sampling records.
 - Hooks and complete copywriting grounded in actual offer truths and buyer tensions.
-- Static/carousel layouts, video/motion, UGC-style execution, directed narration, captions, music/effects and real export QA.
-- Routes for OpenAI images, Gemini/Nano Banana, Higgsfield, Seedance, Kling, Claude Design, ElevenLabs and suitable local rendering tools.
+- Static image and carousel layouts, product-context composition and real export QA. Motion, narration and music are not in this pack; they belong to the video edition.
+- Routes for OpenAI images, Gemini/Nano Banana, Higgsfield and Claude Design. Video and voice providers belong to the video pack.
 - An integrated second brain: connected reasoning, evidence, contradictions, creative genealogy, experiments and retrieval of relevant lessons. The method, schemas and initializer ship inside each pack. Private business records stay in that user's project.
 - Account-operation boundaries, single-executor team handoffs and ambiguous-write reconciliation.
 
@@ -55,11 +55,11 @@ Instructions are English. The assistant keeps the user's conversation language; 
 
 ## Research and adaptation
 
-A fresh GitHub search on **2026-09-06** produced a reviewed corpus of **73 SKILL.md entrypoints**. The [internal source catalog](you-can-install-skill/meta-ads-codex/references/source-catalog.md) contains eight top-ten selections: hooks, static, video and copywriting, each for Codex and Claude Code. The 80 positions deliberately overlap. Codex-compatible does not falsely mean Codex-native. Supporting skills are identified.
+A fresh GitHub search on **2026-09-06** produced a reviewed corpus of **73 SKILL.md entrypoints**. The [internal source catalog](you-can-install-skill/meta-ads-codex/references/source-catalog.md) contains six top-ten selections: hooks, static and copywriting, each for Codex and Claude Code. The 60 positions deliberately overlap. The two video selections moved to the video pack with the rest of the non-static material. Codex-compatible does not falsely mean Codex-native. Supporting skills are identified.
 
 Each source has a pinned revision, hash, date, provenance, caveat and original functional adaptations for both hosts. See [source inventory](system/research/sources.json), [discovery](system/research/discovery.json) and [attribution](system/THIRD_PARTY_NOTICES.md). These are reasoned task-fit selections, not an objective world ranking or proof of ad performance. Upstream tools and full unlicensed skill text are not bundled.
 
-Original craft lessons from earlier static and motion projects are generalized in the internal retrospective. They are not published case studies or performance endorsements.
+Original craft lessons from earlier static projects are generalized in the internal retrospective. They are not published case studies or performance endorsements.
 
 ## Approval and quality
 
@@ -73,7 +73,7 @@ Python 3.10+; standard library for included scripts:
 
 ```sh
 python system/scripts/build.py
-python -m unittest discover -s .build/tests -v
+python -m unittest discover -s system/tests -v
 python system/scripts/validate_release.py
 ```
 
