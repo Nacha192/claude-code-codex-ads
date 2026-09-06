@@ -2,7 +2,7 @@
 
 This rebuild replaces the initial four distributions while preserving their Git history. The earlier source and rendering helpers remain inspectable at [the previous revision](https://github.com/Nacha192/claude-code-codex-ads/tree/5880cca737db1b9e290d1d8d91d8ee220fb4bf7f). They are not silently executed or installed by this release.
 
-The four current installation archives are under `dist/`, prefixed `install-`. Optional external tools are described in `you-can-install-tools.md`. Internal research, copywriting and second-brain modules are included in every pack.
+The four current installation archives sit at the repository root, prefixed `install-`. Optional external tools are described in `you-can-install-tools.md`. Internal research, copywriting and second-brain modules are included in every pack.
 
 The Claude-started team edition now has its own identifier, `meta-ads-team-claude-code-and-codex`. The Codex-started edition retains `meta-ads-team-codex-and-claude-code`. Both are complete advertising systems; their different entrypoints identify the starting host, not a permanent hierarchy.
 

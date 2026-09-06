@@ -1,10 +1,11 @@
 import importlib.util,json,tempfile,unittest
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[1]
+BUILD=Path(__file__).resolve().parents[1]
+ROOT=BUILD.parent
 def load(name,path):
  s=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
-checker=load('checker',ROOT/'src/common/scripts/check_artifact.py')
-brain=load('brain',ROOT/'src/common/scripts/init_brain.py')
+checker=load('checker',BUILD/'src/common/scripts/check_artifact.py')
+brain=load('brain',BUILD/'src/common/scripts/init_brain.py')
 installer=load('installer',ROOT/'install.py')
 
 class ToolTests(unittest.TestCase):
