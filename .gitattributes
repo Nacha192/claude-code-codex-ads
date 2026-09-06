@@ -1,0 +1,27 @@
+# Normalise line endings in the repository, check out native on each machine.
+* text=auto eol=lf
+
+# Scripts must keep LF even on Windows: a shell script with CRLF fails to run.
+*.sh   text eol=lf
+*.mjs  text eol=lf
+*.py   text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+
+# Windows-only helpers keep CRLF.
+*.ps1  text eol=crlf
+*.bat  text eol=crlf
+
+# Binary. Without this, git mangles the archives and they stop unzipping.
+*.zip  binary
+*.png  binary
+*.jpg  binary
+*.mp4  binary
+*.wav  binary
+*.ttf  binary
+*.otf  binary
+*.woff binary
+*.woff2 binary
+
+# Keep the reference material out of language statistics.
+*.md linguist-documentation

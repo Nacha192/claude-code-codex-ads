@@ -1,0 +1,6 @@
+interface:
+  display_name: "Meta Ads, Codex and Claude Code"
+  short_description: "Build Meta ads as a pair, by declared capability"
+  default_prompt: "Use $meta-ads-team-codex-and-claude-code to prepare a creative batch for my product and target market."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Meta Ads for Codex"
+  short_description: "Research, write and verify Meta ad creatives"
+  default_prompt: "Use $meta-ads-codex to prepare a creative batch for my product and target market."
+policy:
+  allow_implicit_invocation: true
