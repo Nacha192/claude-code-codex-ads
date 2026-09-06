@@ -23,7 +23,7 @@ def write(p,s):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(s,encodin
 def build_catalog():
  inspected=json.loads((BUILD/'research/sources.json').read_text(encoding='utf-8'))
  # Still creative only. Sources routed to video or voice belong to the video pack;
- # they stay in the research record and are staged in src/video/transferred/.
+ # they stay in the research record and are staged in the dynamic repository.
  sources=[s for s in inspected if s['route'] in ROUTES];byid={s['id']:s for s in sources}
  refs=BUILD/'src/common/references'
  keep={s['id']+'.md' for s in sources}

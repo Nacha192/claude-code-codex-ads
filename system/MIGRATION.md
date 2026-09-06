@@ -27,9 +27,9 @@ The Claude-started team edition now has its own identifier, `meta-ads-static-tea
 
 ## Version 1.3.0: these four packs are still creative only
 
-Everything non-static left. The `video-voice.md` reference, the `codex-video` and `claude-video` top-ten selections, the 18 source adaptations routed to video or voice, the video and speech providers, and the `storyboard` artifact kind are no longer in these packs. They are staged in `src/video/transferred/` for the video pack, with a note saying where each piece came from. Nothing was deleted, and the research record still lists all 73 inspected entrypoints; the packs now carry the 55 adaptations that apply to images and carousels.
+Everything non-static left. The `video-voice.md` reference, the `codex-video` and `claude-video` top-ten selections, the 18 source adaptations routed to video or voice, the video and speech providers, and the `storyboard` artifact kind are no longer in these packs. They are staged in the [dynamic repository](https://github.com/Nacha192/claude-code-codex-ads-dynamic), with a note saying where each piece came from. Nothing was deleted, and the research record still lists all 73 inspected entrypoints; the packs now carry the 55 adaptations that apply to images and carousels.
 
-If you were using one of these packs for video work, that path is gone rather than degraded, which is the point: a half-covered video workflow was worse than an explicit boundary. Ask for the video edition instead. If you kept `storyboard` artifacts, the checker now rejects the kind; the removed branch and its three tests are reproduced in `src/video/transferred/TRANSFERRED.md`.
+If you were using one of these packs for video work, that path is gone rather than degraded, which is the point: a half-covered video workflow was worse than an explicit boundary. Ask for the video edition instead. If you kept `storyboard` artifacts, the checker now rejects the kind; the removed branch and its three tests are reproduced in that repository's `staging/transferred/TRANSFERRED.md`.
 
 ## Version 1.2.0: the checker refuses more than it used to
 
