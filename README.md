@@ -6,10 +6,10 @@ Build campaigns around the actual business, buyer and evidence: research, hooks 
 
 | Skill | Where you start | How it works |
 |---|---|---|
-| [meta-ads-codex](you-can-install-skill/meta-ads-codex/SKILL.md) | Codex | Complete solo workflow; Sol basic and Astra advanced profiles |
-| [meta-ads-claude-code](you-can-install-skill/meta-ads-claude-code/SKILL.md) | Claude Code | Complete solo workflow; available Claude model and Opus 5 advanced profile |
-| [meta-ads-team-codex-and-claude-code](you-can-install-skill/meta-ads-team-codex-and-claude-code/SKILL.md) | Codex | Both real assistants contribute and cross-review |
-| [meta-ads-team-claude-code-and-codex](you-can-install-skill/meta-ads-team-claude-code-and-codex/SKILL.md) | Claude Code | Same complete team mission, opposite starting host |
+| [meta-ads-static-codex](you-can-install-skill/meta-ads-static-codex/SKILL.md) | Codex | Complete solo static workflow; basic and advanced modes on whichever model the host exposes |
+| [meta-ads-static-claude-code](you-can-install-skill/meta-ads-static-claude-code/SKILL.md) | Claude Code | The same solo static workflow, on the current Claude model or Opus 5 |
+| [meta-ads-static-team-codex-and-claude-code](you-can-install-skill/meta-ads-static-team-codex-and-claude-code/SKILL.md) | Codex | Both real assistants contribute and cross-review |
+| [meta-ads-static-team-claude-code-and-codex](you-can-install-skill/meta-ads-static-team-claude-code-and-codex/SKILL.md) | Claude Code | Same complete team mission, opposite starting host |
 
 There is **no separate copywriting, research or second-brain skill to install**. All are internal modules. Each pack includes the complete shared methods and its host-specific entrypoint. The team uses the real [Agent Duet bridge](https://github.com/Nacha192/Codex-Claude-Code-team) and available tools; it never impersonates the other assistant.
 
@@ -18,10 +18,10 @@ There is **no separate copywriting, research or second-brain skill to install**.
 | At the root | What it is for |
 |---|---|
 | [`you-can-install-skill/`](you-can-install-skill/) | the four packs unpacked and readable, with an index. Read a `SKILL.md` here before installing anything |
-| `install-meta-ads-codex.zip` | install this one to work in Codex, alone |
-| `install-meta-ads-claude-code.zip` | install this one to work in Claude Code, alone |
-| `install-meta-ads-team-codex-and-claude-code.zip` | both assistants on one mission, opened from Codex |
-| `install-meta-ads-team-claude-code-and-codex.zip` | the same team mission, opened from Claude Code |
+| `install-meta-ads-static-codex.zip` | install this one to work in Codex, alone |
+| `install-meta-ads-static-claude-code.zip` | install this one to work in Claude Code, alone |
+| `install-meta-ads-static-team-codex-and-claude-code.zip` | both assistants on one mission, opened from Codex |
+| `install-meta-ads-static-team-claude-code-and-codex.zip` | the same team mission, opened from Claude Code |
 | `SHA256SUMS` | checksums for the four archives, so you can verify what you downloaded |
 | [`system/`](system/) | everything that builds the packs: the sources, the research records behind every attribution, the installer, the build and validation scripts, and the tests |
 | `README.md` | this file |
@@ -34,10 +34,10 @@ There is **no separate copywriting, research or second-brain skill to install**.
 
 Follow [install-guide.md](system/install-guide.md), or choose one of the four ZIPs. Existing users should read [migration notes](system/MIGRATION.md):
 
-- [Install Codex solo](install-meta-ads-codex.zip)
-- [Install Claude Code solo](install-meta-ads-claude-code.zip)
-- [Install team starting in Codex](install-meta-ads-team-codex-and-claude-code.zip)
-- [Install team starting in Claude Code](install-meta-ads-team-claude-code-and-codex.zip)
+- [Install Codex solo](install-meta-ads-static-codex.zip)
+- [Install Claude Code solo](install-meta-ads-static-claude-code.zip)
+- [Install team starting in Codex](install-meta-ads-static-team-codex-and-claude-code.zip)
+- [Install team starting in Claude Code](install-meta-ads-static-team-claude-code-and-codex.zip)
 
 Optional capabilities are listed in [you-can-install-tools.md](system/you-can-install-tools.md). Provider subscriptions, credits and authenticated access are not included.
 
@@ -55,7 +55,7 @@ Instructions are English. The assistant keeps the user's conversation language; 
 
 ## Research and adaptation
 
-A fresh GitHub search on **2026-09-06** produced a reviewed corpus of **73 SKILL.md entrypoints**. The [internal source catalog](you-can-install-skill/meta-ads-codex/references/source-catalog.md) contains six top-ten selections: hooks, static and copywriting, each for Codex and Claude Code. The 60 positions deliberately overlap. The two video selections moved to the video pack with the rest of the non-static material. Codex-compatible does not falsely mean Codex-native. Supporting skills are identified.
+A fresh GitHub search on **2026-09-06** produced a reviewed corpus of **73 SKILL.md entrypoints**. The [internal source catalog](you-can-install-skill/meta-ads-static-codex/references/source-catalog.md) contains six top-ten selections: hooks, static and copywriting, each for Codex and Claude Code. The 60 positions deliberately overlap. The two video selections moved to the video pack with the rest of the non-static material. Codex-compatible does not falsely mean Codex-native. Supporting skills are identified.
 
 Each source has a pinned revision, hash, date, provenance, caveat and original functional adaptations for both hosts. See [source inventory](system/research/sources.json), [discovery](system/research/discovery.json) and [attribution](system/THIRD_PARTY_NOTICES.md). These are reasoned task-fit selections, not an objective world ranking or proof of ad performance. Upstream tools and full unlicensed skill text are not bundled.
 
@@ -65,7 +65,7 @@ Original craft lessons from earlier static projects are generalized in the inter
 
 The approval is recorded as a `generation_request` artifact and checked by a script: generating without a recorded approval, past the approved ceiling, on a different provider or account, or on a zero-credit account all fail that check. The assistant prepares a concrete proposal and asks before NEW media generation unless an existing scoped approval already covers it. It also respects actual account/spend authorization. A request to research does not launch campaigns. Real provider access and current specifications are checked before use.
 
-Advanced modes add competing hypotheses, stronger prototypes and deeper review. They do not claim human consciousness, guaranteed 10× performance, guaranteed platform approval or elimination of every possible bug.
+Advanced is a mode, not a model tier: any exposed model can run it, and a stronger one sharpens the passes rather than unlocking them. Advanced adds competing hypotheses, stronger prototypes and deeper review. They do not claim human consciousness, guaranteed 10× performance, guaranteed platform approval or elimination of every possible bug.
 
 ## Build and validation
 
