@@ -13,16 +13,27 @@ Build campaigns around the actual business, buyer and evidence: research → hoo
 
 There is **no separate copywriting, research or second-brain skill to install**. All are internal modules. Each pack includes the complete shared methods and its host-specific entrypoint. The team uses the real [Agent Duet bridge](https://github.com/Nacha192/Codex-Claude-Code-team) and available tools; it never impersonates the other assistant.
 
+## Where things are
+
+The four skill folders are the repository. Everything else lives in
+[`system/`](system/): the installer, the ZIPs, the source of every pack, the
+research records behind each attribution, the build and validation scripts, and
+the tests. Present and inspectable, out of the way.
+
+Four files stay at the root because they only work there: `LICENSE` and this
+README are what GitHub reads, `.gitattributes` keeps git from corrupting the
+ZIP archives, and `.gitignore` only governs the folder it sits in.
+
 ## Install
 
-Follow [install-guide.md](install-guide.md), or choose one of the four ZIPs. Existing users should read [migration notes](.build/MIGRATION.md):
+Follow [install-guide.md](system/install-guide.md), or choose one of the four ZIPs. Existing users should read [migration notes](system/MIGRATION.md):
 
-- [Install Codex solo](install-meta-ads-codex.zip)
-- [Install Claude Code solo](install-meta-ads-claude-code.zip)
-- [Install team starting in Codex](install-meta-ads-team-codex-and-claude-code.zip)
-- [Install team starting in Claude Code](install-meta-ads-team-claude-code-and-codex.zip)
+- [Install Codex solo](system/install-meta-ads-codex.zip)
+- [Install Claude Code solo](system/install-meta-ads-claude-code.zip)
+- [Install team starting in Codex](system/install-meta-ads-team-codex-and-claude-code.zip)
+- [Install team starting in Claude Code](system/install-meta-ads-team-claude-code-and-codex.zip)
 
-Optional capabilities are listed in [you-can-install-tools.md](you-can-install-tools.md). Provider subscriptions, credits and authenticated access are not included.
+Optional capabilities are listed in [you-can-install-tools.md](system/you-can-install-tools.md). Provider subscriptions, credits and authenticated access are not included.
 
 ## What is inside
 
@@ -40,7 +51,7 @@ Instructions are English. The assistant keeps the user's conversation language; 
 
 A fresh GitHub search on **2026-09-06** produced a reviewed corpus of **73 SKILL.md entrypoints**. The [internal source catalog](meta-ads-codex/references/source-catalog.md) contains eight top-ten selections: hooks, static, video and copywriting, each for Codex and Claude Code. The 80 positions deliberately overlap. Codex-compatible does not falsely mean Codex-native. Supporting skills are identified.
 
-Each source has a pinned revision, hash, date, provenance, caveat and original functional adaptations for both hosts. See [source inventory](.build/research/sources.json), [discovery](.build/research/discovery.json) and [attribution](THIRD_PARTY_NOTICES.md). These are reasoned task-fit selections, not an objective world ranking or proof of ad performance. Upstream tools and full unlicensed skill text are not bundled.
+Each source has a pinned revision, hash, date, provenance, caveat and original functional adaptations for both hosts. See [source inventory](system/research/sources.json), [discovery](system/research/discovery.json) and [attribution](system/THIRD_PARTY_NOTICES.md). These are reasoned task-fit selections, not an objective world ranking or proof of ad performance. Upstream tools and full unlicensed skill text are not bundled.
 
 Original craft lessons from earlier static and motion projects are generalized in the internal retrospective. They are not published case studies or performance endorsements.
 
@@ -55,11 +66,11 @@ Advanced modes add competing hypotheses, stronger prototypes and deeper review. 
 Python 3.10+; standard library for included scripts:
 
 ```sh
-python .build/scripts/build.py
+python system/scripts/build.py
 python -m unittest discover -s .build/tests -v
-python .build/scripts/validate_release.py
+python system/scripts/validate_release.py
 ```
 
-See [VALIDATION.md](.build/VALIDATION.md) for actual checks, peer-review scope and known limits. Read-only/offline checks cannot prove source truth, aesthetic quality or provider access. No live ad campaign or paid media generation is performed by the tests.
+See [VALIDATION.md](system/VALIDATION.md) for actual checks, peer-review scope and known limits. Read-only/offline checks cannot prove source truth, aesthetic quality or provider access. No live ad campaign or paid media generation is performed by the tests.
 
-MIT for original work; upstream rights remain separate. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+MIT for original work; upstream rights remain separate. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](system/THIRD_PARTY_NOTICES.md).

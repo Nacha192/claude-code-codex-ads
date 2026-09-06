@@ -15,6 +15,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m unittest discover -s .build/tests -v
-      - run: python .build/scripts/build.py
-      - run: python .build/scripts/validate_release.py
+      - run: python -m unittest discover -s system/tests -v
+      - run: python system/scripts/build.py
+      - run: python system/scripts/validate_release.py

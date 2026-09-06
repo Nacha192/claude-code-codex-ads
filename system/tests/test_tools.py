@@ -6,7 +6,7 @@ def load(name,path):
  s=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 checker=load('checker',BUILD/'src/common/scripts/check_artifact.py')
 brain=load('brain',BUILD/'src/common/scripts/init_brain.py')
-installer=load('installer',ROOT/'install.py')
+installer=load('installer',BUILD/'install.py')
 
 class ToolTests(unittest.TestCase):
  def brief(self):return {'schema_v':'1.0.0','kind':'brief','offer':'A fictional repair service','country':'FR','ad_language':'fr-FR','objective':'qualified inquiries','window':{'start':'2026-08-01','end':'2026-08-31'}}
