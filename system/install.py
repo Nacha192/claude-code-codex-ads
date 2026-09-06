@@ -2,7 +2,8 @@
 import argparse,hashlib,json,os,shutil
 from pathlib import Path
 # install.py lives in system/; the skill folders sit at the repository root.
-ROOT=Path(__file__).resolve().parents[1]
+# install.py and the unpacked skill folders both live in system/.
+ROOT=Path(__file__).resolve().parent
 CHOICES={'codex':['meta-ads-codex','meta-ads-team-codex-and-claude-code'],
          'claude':['meta-ads-claude-code','meta-ads-team-claude-code-and-codex']}
 
@@ -30,7 +31,7 @@ def install(runtime,mode='both',project=None,target_root=None,apply=False):
     names=CHOICES[runtime] if mode=='both' else [CHOICES[runtime][0 if mode=='solo' else 1]]
     plans=[]
     for name in names:
-        source=ROOT/name
+        source=ROOT/'skills'/name
         if not (source/'SKILL.md').is_file():raise ValueError('Missing built skill '+name)
         expected=inventory(source);dest=target/name
         if dest.is_symlink():raise ValueError('Refusing symlinked skill destination')
@@ -45,7 +46,7 @@ def install(runtime,mode='both',project=None,target_root=None,apply=False):
             dest=Path(plan['target']);dest.mkdir(exist_ok=False)
             # Exclusive top-level reservation, then copy only known package files.
             # On I/O failure preserve partial files for inspection; never delete user data.
-            source=ROOT/plan['skill']
+            source=ROOT/'skills'/plan['skill']
             for relative in inventory(source):
                 out=dest/relative;out.parent.mkdir(parents=True,exist_ok=True)
                 with out.open('xb') as f:f.write((source/relative).read_bytes())
