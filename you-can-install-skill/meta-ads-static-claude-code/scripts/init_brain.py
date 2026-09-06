@@ -12,6 +12,9 @@ def initialize(project, apply=False):
     files={'.gitignore':'*\n','index.md':'# Advertising second brain\n\nPrivate project data. Start with brand.json and buyers.json, then retrieve relevant evidence, hypotheses and lessons.\n',
            'brand.json':json.dumps({'schema_v':'1.0.0','status':'intake_required','offer':None,'country':None,'ad_language':None,'facts':[],'unknowns':[]},indent=2)+'\n',
            'buyers.json':json.dumps({'schema_v':'1.0.0','segments':[]},indent=2)+'\n',
+           # Reaching this script already proves an interpreter, but record the command
+           # and version explicitly; a ZIP install can land on a machine without one.
+           'runtime.json':json.dumps({'schema_v':'1.0.0','python':{'status':'unchecked','command':None,'version':None,'checked_at':None}},indent=2)+'\n',
            'lessons.md':'# Campaign lessons\n\nNo measured campaign lessons yet.\n'}
     for name in ['evidence','research','hypotheses','creatives','experiments','decisions','contradictions','operations']:
         files[name+'.jsonl']=''

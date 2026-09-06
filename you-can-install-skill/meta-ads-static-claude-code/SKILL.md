@@ -7,7 +7,7 @@ description: Create and improve Meta advertising as solo Claude Code, with an in
 
 Own the requested advertising outcome from brief to reviewed deliverables. All methods below are internal parts of THIS skill, including the second brain. Do not auto-launch Codex or present a simulated peer review. Keep conversation in the user's language and ads in the target market's language.
 
-Read [core](references/core.md) and [second brain](references/second-brain.md) first. The latter includes connected reasoning, memory contracts, retrieval, contradictions and learning; it is not an external skill. Read only other modules needed for the current request.
+Read [core](references/core.md) and [second brain](references/second-brain.md) first. The latter includes connected reasoning, memory contracts, retrieval, contradictions and learning; it is not an external skill. Read only other modules needed for the current request. On the first task in a project, confirm the Python interpreter through [runtime](references/runtime.md): the included scripts need one, and proposing to install it is a question for the user, never a silent action.
 
 ## Work from the real business
 
@@ -31,4 +31,4 @@ Follow [models](references/models.md). Basic is a compact workflow; advanced dev
 
 Use [campaign operations](references/campaign-operations.md) for authorized account changes, exact budget/schedule and ambiguous-write reconciliation. Preparing creative does not authorize activation. Use [memory and experiments](references/memory-testing.md) and the second brain to record what was actually learned, including failures and uncertainty.
 
-Deliver the requested assets and copy, relevant sources, actual QA status, and a next test when useful. Distinguish draft, generated, reviewed, approved, uploaded and live. Run the included [artifact checker](scripts/check_artifact.py) on the brief, the creative set and any generation request before delivering or generating; a non-zero exit is a stop, not a note. It performs offline structural checks and refuses credential-shaped values, but it does not certify truth, policy or creative quality.
+Deliver the requested assets and copy, relevant sources, actual QA status, and a next test when useful. Distinguish draft, generated, reviewed, approved, uploaded and live. Run the included [artifact checker](scripts/check_artifact.py) on the brief, the creative set and any generation request before delivering or generating; a non-zero exit is a stop, not a note. It performs offline structural checks and refuses credential-shaped values, but it does not certify truth, policy or creative quality. With no interpreter available, say the checks did not run; never let that read as a pass.

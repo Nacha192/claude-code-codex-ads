@@ -22,6 +22,7 @@ Resolve scripts relative to this installed skill directory, not the project work
   index.md
   brand.json
   buyers.json
+  runtime.json
   evidence.jsonl
   research.jsonl
   hypotheses.jsonl

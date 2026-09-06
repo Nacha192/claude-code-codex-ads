@@ -30,6 +30,8 @@ Keep private campaign memory in the user's project, outside public skill files. 
 
 ## Machine-checked artifacts
 
+These are Python scripts. Confirm an interpreter once per project through [runtime](runtime.md) before the first script call or the first generation; without one, none of the refusals below happen.
+
 `scripts/check_artifact.py` reads one JSON file and exits non-zero on error. It knows three kinds and nothing else: `brief`, `creative` and `generation_request`. Run it before delivering copy and before requesting new media. It refuses any artifact carrying a credential-shaped value, whatever the field is called.
 
 `creative` accepts `hook`, `primary_text`, `headline`, `description`, `cta`, `claims`, `evidence`, optional `limits` and optional `prohibited_terms`. Character limits default to the captured Meta truncation thresholds [platform] and can be overridden per artifact; an override under an unknown field name is an error rather than a silently disabled limit. Every material claim must reference evidence that is not `hypothesis` or `unverified`, and a testimonial needs a recorded verbatim quote. `prohibited_terms` is the campaign red line, matched as whole words against the rendered copy fields: it catches the listed wording, never a paraphrase carrying the same forbidden meaning.
