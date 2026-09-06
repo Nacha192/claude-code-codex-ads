@@ -3,8 +3,8 @@ import argparse,hashlib,json,os,shutil
 from pathlib import Path
 # install.py lives in system/; the unpacked packs sit in you-can-install-skill/ at the root.
 ROOT=Path(__file__).resolve().parents[1]
-CHOICES={'codex':['meta-ads-codex','meta-ads-team-codex-and-claude-code'],
-         'claude':['meta-ads-claude-code','meta-ads-team-claude-code-and-codex']}
+CHOICES={'codex':['meta-ads-static-codex','meta-ads-static-team-codex-and-claude-code'],
+         'claude':['meta-ads-static-claude-code','meta-ads-static-team-claude-code-and-codex']}
 
 def inventory(root):
     result={}

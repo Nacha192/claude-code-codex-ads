@@ -1,5 +1,5 @@
 ---
-name: meta-ads-claude-code
+name: meta-ads-static-claude-code
 description: Create and improve Meta advertising as solo Claude Code, with an integrated second brain for business discovery, ad research, hooks, copy, static image and carousel assets, and campaign learning. Use for one-assistant advertising work; use the team edition when both Codex and Claude Code are requested.
 ---
 
@@ -25,7 +25,7 @@ Produce and inspect the requested final files. A prompt or an unrendered concept
 
 ## Basic and advanced
 
-Follow [models](references/models.md): Use the current Claude model for a compact basic workflow and available Opus 5 for advanced competing hypotheses, meaningful prototypes and deeper artifact critique. Sol/Astra require an actual Codex peer in a separately requested team workflow; do not simulate those models. Confirm the model actually available on this host. Neither profile promises human consciousness or a numerical performance multiplier. Both retain truthfulness and production QA.
+Follow [models](references/models.md). Basic is a compact workflow; advanced develops competing hypotheses, meaningful prototypes and deeper artifact critique. The mode is a choice, not a model tier: the current Claude model and Opus 5 can both run either mode, and a stronger model sharpens the passes instead of unlocking them. Sol and Astra require an actual Codex peer in a separately requested team workflow; do not simulate those models. Confirm the model actually available on this host. Neither profile promises human consciousness or a numerical performance multiplier. Both retain truthfulness and production QA.
 
 ## Campaign and learning
 

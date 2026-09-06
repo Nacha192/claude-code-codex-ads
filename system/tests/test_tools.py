@@ -82,7 +82,7 @@ class ToolTests(unittest.TestCase):
    target=Path(t)/'skills';installer.install('codex',target_root=target);self.assertFalse(target.exists())
    installer.install('codex',target_root=target,apply=True)
    plans=installer.install('codex',target_root=target,apply=True);self.assertTrue(all(x['action']=='already-identical' for x in plans))
-   file=target/'meta-ads-codex/SKILL.md';file.write_text('user edit',encoding='utf-8')
+   file=target/'meta-ads-static-codex/SKILL.md';file.write_text('user edit',encoding='utf-8')
    with self.assertRaises(ValueError):installer.install('codex',target_root=target,apply=True)
    self.assertEqual(file.read_text(),'user edit')
  def test_installer_project_and_modes(self):
@@ -100,7 +100,7 @@ class ToolTests(unittest.TestCase):
  def test_symlinked_skill_destination_refused(self):
   with tempfile.TemporaryDirectory() as t:
    root=Path(t);real=root/'real';real.mkdir();target=root/'skills';target.mkdir()
-   try:(target/'meta-ads-codex').symlink_to(real,target_is_directory=True)
+   try:(target/'meta-ads-static-codex').symlink_to(real,target_is_directory=True)
    except OSError as e:self.skipTest('Symlink privilege unavailable: '+str(e))
    with self.assertRaises(ValueError):installer.install('codex','solo',target_root=target,apply=True)
  def test_installer_rejects_bad_runtime(self):

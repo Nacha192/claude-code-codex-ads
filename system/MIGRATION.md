@@ -1,10 +1,25 @@
 # Migration from the initial distribution
 
-This rebuild replaces the initial four distributions while preserving their Git history. The earlier source and rendering helpers remain inspectable at [the previous revision](https://github.com/Nacha192/claude-code-codex-ads/tree/5880cca737db1b9e290d1d8d91d8ee220fb4bf7f). They are not silently executed or installed by this release.
+## Version 2.0.0: renamed, and static by name
+
+The four skills say what they build. Update any script or documentation that names the old identifiers.
+
+| Old identifier | New identifier |
+|---|---|
+| `meta-ads-codex` | `meta-ads-static-codex` |
+| `meta-ads-claude-code` | `meta-ads-static-claude-code` |
+| `meta-ads-team-codex-and-claude-code` | `meta-ads-static-team-codex-and-claude-code` |
+| `meta-ads-team-claude-code-and-codex` | `meta-ads-static-team-claude-code-and-codex` |
+
+The archives follow the same pattern, `install-meta-ads-static-*.zip`, and the repository is now `claude-code-codex-ads-static`. GitHub redirects the previous repository URL, but update your remotes anyway. An installed old skill is not migrated automatically: back it up, remove it once you have copied any local edits, then install the renamed pack. Leaving both installed gives the assistant two overlapping skills to choose between.
+
+Basic and advanced are also stated as modes rather than model tiers in this release. Any model the host exposes can run either mode; a stronger model sharpens each pass instead of unlocking it. Nothing about the required artifacts changed.
+
+This rebuild replaces the initial four distributions while preserving their Git history. The earlier source and rendering helpers remain inspectable at [the previous revision](https://github.com/Nacha192/claude-code-codex-ads-static/tree/5880cca737db1b9e290d1d8d91d8ee220fb4bf7f). They are not silently executed or installed by this release.
 
 The four current installation archives sit at the repository root, prefixed `install-`. Optional external tools are described in `you-can-install-tools.md`. Internal research, copywriting and second-brain modules are included in every pack.
 
-The Claude-started team edition now has its own identifier, `meta-ads-team-claude-code-and-codex`. The Codex-started edition retains `meta-ads-team-codex-and-claude-code`. Both are complete advertising systems; their different entrypoints identify the starting host, not a permanent hierarchy.
+The Claude-started team edition now has its own identifier, `meta-ads-static-team-claude-code-and-codex`. The Codex-started edition retains `meta-ads-static-team-codex-and-claude-code`. Both are complete advertising systems; their different entrypoints identify the starting host, not a permanent hierarchy.
 
 ## Version 1.3.0: these four packs are still creative only
 

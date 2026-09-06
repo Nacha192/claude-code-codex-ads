@@ -4,8 +4,8 @@ Choose the edition for the assistant where you start. Every edition already cont
 
 | Start in | Solo | Real two-assistant team |
 |---|---|---|
-| Codex | `meta-ads-codex` | `meta-ads-team-codex-and-claude-code` |
-| Claude Code | `meta-ads-claude-code` | `meta-ads-team-claude-code-and-codex` |
+| Codex | `meta-ads-static-codex` | `meta-ads-static-team-codex-and-claude-code` |
+| Claude Code | `meta-ads-static-claude-code` | `meta-ads-static-team-claude-code-and-codex` |
 
 ## Repository installer (Python 3.10+)
 
@@ -33,7 +33,7 @@ The advertising system is complete inside each pack; the bridge is a communicati
 
 ## First use
 
-Ask in your own language: "Use meta-ads-codex for this product. Research the market and propose hooks first; ask before generating media." For the team, name the matching team skill and request joint work. Provide a product URL or concise description, market and target ad language if they are not already known. The skill collects remaining essentials.
+Ask in your own language: "Use meta-ads-static-codex for this product. Research the market and propose hooks first; ask before generating media." For the team, name the matching team skill and request joint work. Provide a product URL or concise description, market and target ad language if they are not already known. The skill collects remaining essentials.
 
 The integrated second brain can initialize private project records with its included `scripts/init_brain.py`. Its method is already part of the skill; only your business records are stored privately in `.ads-brain/`.
 

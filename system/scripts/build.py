@@ -5,7 +5,7 @@ import json,shutil,zipfile,hashlib
 # repository root so a reader sees them first.
 BUILD=Path(__file__).resolve().parents[1]
 ROOT=BUILD.parent
-NAMES=['meta-ads-codex','meta-ads-claude-code','meta-ads-team-codex-and-claude-code','meta-ads-team-claude-code-and-codex']
+NAMES=['meta-ads-static-codex','meta-ads-static-claude-code','meta-ads-static-team-codex-and-claude-code','meta-ads-static-team-claude-code-and-codex']
 LISTS={
 'codex-hooks':'sergebulaev--tt-hook-scripter,yaxeen--storytelling-hooks,coreyhaines31--ad-creative,gooseworks-ai--trending-ad-hook-spotter,zubair-trabzada--ads-hooks,robpalmer99--ad-copy,realkimbarrett--headline-matrix,coreyhaines31--customer-research,realkimbarrett--schwartz-awareness-mapper,avectats7--copy-that-sells',
 'claude-hooks':'zubair-trabzada--ads-hooks,robpalmer99--ad-copy,yaxeen--storytelling-hooks,sergebulaev--tt-hook-scripter,realkimbarrett--headline-matrix,gooseworks-ai--trending-ad-hook-spotter,realkimbarrett--ad-angle-multiplier,realkimbarrett--mechanism-builder,realkimbarrett--objection-crusher,coreyhaines31--social',
@@ -95,9 +95,9 @@ def main():
   shutil.copytree(BUILD/'src/common',dest,dirs_exist_ok=True,ignore=shutil.ignore_patterns('__pycache__'))
   shutil.copyfile(BUILD/'src/entrypoints'/f'{name}.md',dest/'SKILL.md')
   shutil.copyfile(ROOT/'LICENSE',dest/'LICENSE')
-  write(dest/'THIRD_PARTY_NOTICES.md',(BUILD/'THIRD_PARTY_NOTICES.md').read_text(encoding='utf-8').replace('(research/sources.json)','(https://github.com/Nacha192/claude-code-codex-ads/blob/main/system/research/sources.json)'))
+  write(dest/'THIRD_PARTY_NOTICES.md',(BUILD/'THIRD_PARTY_NOTICES.md').read_text(encoding='utf-8').replace('(research/sources.json)','(https://github.com/Nacha192/claude-code-codex-ads-static/blob/main/system/research/sources.json)'))
   write(dest/'install-this-skill.md',f'# Install {name}\n\nKeep this entire folder together. Place it in the appropriate host skill directory, then restart/discover skills. See the repository install guide. The second brain and all advertising modules are already inside this folder. External provider accounts and Agent Duet for team communication are capability dependencies, not included credentials.\n')
-  write(dest/'manifest.json',json.dumps({'name':name,'version':'1.3.0','core_v':'1.0.0','schema_v':'1.0.0','scope':'static','integrated_second_brain':True,'inspected_entrypoints':73,'adaptations':len(list((BUILD/'src/common/modules').glob('*.md')))},indent=2)+'\n')
+  write(dest/'manifest.json',json.dumps({'name':name,'version':'2.0.0','core_v':'1.0.0','schema_v':'1.0.0','scope':'static','integrated_second_brain':True,'inspected_entrypoints':73,'adaptations':len(list((BUILD/'src/common/modules').glob('*.md')))},indent=2)+'\n')
  dist=ROOT
  # Drop artefacts of a previous, differently named build so the release cannot
  # ship a pack or an archive that no longer has a source.
