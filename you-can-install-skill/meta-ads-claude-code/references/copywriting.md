@@ -15,7 +15,7 @@ Choose families from the niche, awareness and proof. Do not force all ten into e
 | Recognizable moment | Buyers share a specific situation | Show a concrete scene grounded in research |
 | Failed workaround | A common substitute has a demonstrated limitation | Explain the limitation without inventing a universal failure |
 | Misdiagnosed cause | Evidence supports a different explanation | Do not assert medical or causal certainty from intuition |
-| Demonstration | A visible action establishes the benefit | The footage must actually demonstrate the stated property |
+| Demonstration | A visible action or state establishes the benefit | The image must actually show the stated property |
 | Honest exclusion | Some buyers are genuinely poor fits | Exclusion must be true and respectful |
 | Objection first | A recurring concern blocks action | Answer with proof, not reassurance alone |
 | Mechanism reveal | The mechanism is distinctive and comprehensible | Link the mechanism to a supported outcome |
@@ -27,7 +27,7 @@ For an initial batch, propose 3 materially different concepts with 2 hooks each 
 
 ## Draft and edit
 
-Compose directly in the target language using source vocabulary. Confirm accent/register when it matters; preserve currencies, units, idioms and product names. Read copy aloud. Back-translation can check meaning but cannot certify naturalness. Ask a fluent reviewer or use actual audio review where available.
+Compose directly in the target language using source vocabulary. Confirm accent/register when it matters; preserve currencies, units, idioms and product names. Read copy aloud. Back-translation can check meaning but cannot certify naturalness. Ask a fluent reviewer.
 
 Use PAS, AIDA or a demonstration sequence as optional scaffolding; remove visible formula language. Prefer verbs, objects and situations over vague superlatives. Remove filler, arbitrary urgency, unsupported certainty and AI-flavored transitions. Do not turn every headline into a product specification to make it "safe".
 

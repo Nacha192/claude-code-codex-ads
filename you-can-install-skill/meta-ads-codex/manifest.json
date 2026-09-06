@@ -1,8 +1,10 @@
 {
   "name": "meta-ads-codex",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "core_v": "1.0.0",
   "schema_v": "1.0.0",
+  "scope": "static",
   "integrated_second_brain": true,
-  "source_entrypoints": 73
+  "inspected_entrypoints": 73,
+  "adaptations": 55
 }

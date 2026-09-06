@@ -1,4 +1,4 @@
-"""Offline checks for brief, creative, storyboard and generation-request JSON. No API calls."""
+"""Offline checks for brief, creative and generation-request JSON. No API calls."""
 import argparse,json,math,re
 from datetime import date
 from pathlib import Path
@@ -81,23 +81,6 @@ def check(data):
                 need(row,'source');need(row,'supports')
             if claim.get('testimonial') and not any(isinstance(r,str) and ids.get(r,{}).get('type')=='customer_quote' and ids.get(r,{}).get('verbatim') for r in refs):errors.append('Testimonial lacks an actual quote record')
         warnings.append('Human/model review must assess whether each source actually supports the claim; this checker cannot do that.')
-    elif kind=='storyboard':
-        scenes=data.get('scenes')
-        if not isinstance(scenes,list) or not scenes:return errors+['Nonempty scenes array required'],warnings
-        previous=0.0
-        for i,s in enumerate(scenes):
-            if not isinstance(s,dict):errors.append('Scene must be an object');continue
-            start=s.get('start');end=s.get('end')
-            valid=lambda n:isinstance(n,(int,float)) and not isinstance(n,bool) and math.isfinite(n)
-            if not valid(start) or not valid(end) or start<0 or end<=start:errors.append(f'Scene {i}: invalid times');continue
-            if start<previous:errors.append(f'Scene {i}: overlap; use explicit transition metadata in the source project instead')
-            if start>previous:warnings.append(f'Scene {i}: timeline gap requires review')
-            previous=end
-            need(s,'visual')
-            duration=s.get('measured_voice_seconds')
-            if duration is not None and (not valid(duration) or duration<0):errors.append(f'Scene {i}: invalid measured voice duration')
-            elif duration is not None and duration>end-start:errors.append(f'Scene {i}: voice exceeds available scene duration')
-            elif s.get('voice') and duration is None:warnings.append(f'Scene {i}: narration fit not measured')
     elif kind=='generation_request':
         for k in ['provider','model','account_alias']:need(data,k)
         items=data.get('items')
@@ -120,7 +103,7 @@ def check(data):
             if isinstance(credits,bool) or not isinstance(credits,(int,float)) or not math.isfinite(credits) or credits<0:errors.append('credits_remaining must be a nonnegative number or null')
             elif credits==0:errors.append('Zero credits on the named account: stop, and ask the user to switch to another funded account they own. Never rotate identities to evade a limit')
         warnings.append('This checks that an approval was recorded and that the request stays inside it. It cannot prove the user actually granted that approval.')
-    else:errors.append('kind must be brief, creative, storyboard or generation_request')
+    else:errors.append('kind must be brief, creative or generation_request')
     return errors,warnings
 
 def main():

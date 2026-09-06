@@ -6,7 +6,7 @@ Reuse [Agent Duet](https://github.com/Nacha192/Codex-Claude-Code-team), the exis
 
 Choose one task-local bus path and one authorized goal. Each actual participant reports runtime/model as observed, tools/read/write/media/account access, limitations, relevant context, proposed contribution and exact workspace. Pick two active workers when both sessions can operate on the bus, otherwise a coordinator with fresh genuine consultations. If disconnected, say so and provide a scoped handoff that the user can relay.
 
-Agree on roles by current evidence: research owner, concept/copy owner, production owner, reviewer and one campaign executor. One agent may hold several roles; do not assign them by presumed intrinsic superiority. Claims protect disjoint output paths, while both may discuss schema decisions. The author cannot accept its own work. A consultant sees only the supplied artifact and cannot attest to unseen footage or tools.
+Agree on roles by current evidence: research owner, concept/copy owner, production owner, reviewer and one campaign executor. One agent may hold several roles; do not assign them by presumed intrinsic superiority. Claims protect disjoint output paths, while both may discuss schema decisions. The author cannot accept its own work. A consultant sees only the supplied artifact and cannot attest to unseen assets or tools.
 
 ## Shared contract
 
@@ -30,6 +30,6 @@ This is a template, not a real approval or hash. Fill it from observed state.
 4. Integrator applies accepted repairs and reruns affected checks. If reviewed files change materially, review the new version.
 5. Executor follows campaign-operations for authorized external writes, and reports verified remote state. Tool access may be handed off; permission may not be bypassed.
 
-If a peer cannot generate audio but the other can, hand off the approved voice card, exact script, account/provider scope and remaining ceiling. The receiving agent verifies tool/account state before calling. Do not re-generate an already completed job because an acknowledgement was lost.
+If a peer lacks a capability the other holds, hand off the approved brief, the exact inputs, the account/provider scope and the remaining ceiling. The receiving agent verifies tool/account state before calling. Do not re-generate an already completed job because an acknowledgement was lost.
 
 Wait only while a real peer/job is active. After repeated timeouts, inspect the observed blocker and continue independent work; never launch duplicate peers or poll indefinitely. Do not kill unrelated sessions. Close the bridge only under its protocol, with actual completed reviews and outstanding messages acknowledged. Report limits honestly; collaboration does not guarantee a fourfold improvement.

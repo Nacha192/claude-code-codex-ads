@@ -6,7 +6,7 @@ Start from the current request and known project files. If several products or c
 
 For research: product/service and offer category; destination or enough product facts; buyer/use situation; selling geography; ad language; purpose of the scan. Also establish an absolute date interval or a disclosed recommended window, active/all status and a bounded sample. Missing essential identity, market or language blocks a targeted scrape; ask one compact batch. Existing answers remain valid unless contradicted.
 
-For copy: add the action/landing destination, offer details, meaningful differentiator, substantiated proof, restrictions and desired format. For production: add approved product assets, visual identity, dimensions, duration, voice/accent, provider access and generation ceiling. For launch: add the account and Page, objective/event, budget/currency/timezone, run dates, destination, measurement and action authorization.
+For copy: add the action/landing destination, offer details, meaningful differentiator, substantiated proof, restrictions and desired format. For production: add approved product assets, visual identity, dimensions, provider access and generation ceiling. For launch: add the account and Page, objective/event, budget/currency/timezone, run dates, destination, measurement and action authorization.
 
 Example question, translated to the user's language: "What do you sell, who should buy it, and in which country/language? A product URL is enough to start; I will extract the rest and flag uncertainties."
 

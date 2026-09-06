@@ -33,11 +33,10 @@ Using `meta-ads-codex` as the example. The other three carry the same shape.
 | [`references/research.md`](meta-ads-codex/references/research.md) | ad library and competitor scans, with the window, the sample plan, and what a library cannot prove |
 | [`references/copywriting.md`](meta-ads-codex/references/copywriting.md) | buyer friction, hook, mechanism, proof, call to action |
 | [`references/static.md`](meta-ads-codex/references/static.md) | images and carousels |
-| [`references/video-voice.md`](meta-ads-codex/references/video-voice.md) | footage, motion, narration, music, captions |
 | [`references/providers.md`](meta-ads-codex/references/providers.md) | the actual generation tools, and the approval gate in front of them |
 | [`references/second-brain.md`](meta-ads-codex/references/second-brain.md) | memory: what was decided, what failed, what is still an open assumption |
-| [`references/source-catalog.md`](meta-ads-codex/references/source-catalog.md) | the eight top-ten selections, each source pinned to a revision and a hash |
-| [`references/v11-lessons.md`](meta-ads-codex/references/v11-lessons.md) | craft lessons generalised from real static and motion work |
+| [`references/source-catalog.md`](meta-ads-codex/references/source-catalog.md) | the six top-ten selections, each source pinned to a revision and a hash |
+| [`references/v11-lessons.md`](meta-ads-codex/references/v11-lessons.md) | craft lessons generalised from real static work |
 | [`modules/`](meta-ads-codex/modules) | one card per researched source, with its original adaptation for both hosts |
 | [`scripts/`](meta-ads-codex/scripts) | the artifact checker and the memory initialiser |
 

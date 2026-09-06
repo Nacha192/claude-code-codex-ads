@@ -4,10 +4,10 @@ These are workflow profiles, not measured advertising benchmarks. Model availabi
 
 | Runtime | Requested profile | Operating pattern |
 |---|---|---|
-| Codex | Basic — GPT-5.6 Sol (`gpt-5.6-sol`) | Compact brief, bounded relevant research, 3 distinct concepts, one critique/revision cycle, requested exports and evidence. |
-| Codex | Advanced — GPT-6 Astra (`gpt-6-astra`) | Explore competing buyer explanations, diagnose weak evidence, compare distinct visual arguments, prototype the highest-value uncertainty, review actual assets, and build an experiment/learning record. |
+| Codex | Basic, GPT-5.6 Sol (`gpt-5.6-sol`) | Compact brief, bounded relevant research, 3 distinct concepts, one critique/revision cycle, requested exports and evidence. |
+| Codex | Advanced, GPT-6 Astra (`gpt-6-astra`) | Explore competing buyer explanations, diagnose weak evidence, compare distinct visual arguments, prototype the highest-value uncertainty, review actual assets, and build an experiment/learning record. |
 | Claude Code | Basic | Use the user's current available model with the compact workflow. Sol is available only through an actual connected Codex peer, if requested and accessible. |
-| Claude Code | Advanced — Opus 5 (`claude-opus-5`) | Use the advanced workflow with actual available research, media and review tools. Cross-check with a real Codex peer when the team workflow is requested. |
+| Claude Code | Advanced, Opus 5 (`claude-opus-5`) | Use the advanced workflow with actual available research, media and review tools. Cross-check with a real Codex peer when the team workflow is requested. |
 
 The Codex host used for this build explicitly lists Sol and Astra. [OpenAI's model comparison](https://developers.openai.com/api/docs/models/compare) and [Anthropic's Opus 5 documentation](https://platform.claude.com/docs/en/models/opus-5/whats-new-opus-5) provide current model references; verify access and supported settings on the target host. Do not transfer API effort values blindly into a CLI.
 

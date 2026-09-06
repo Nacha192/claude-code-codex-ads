@@ -1,6 +1,6 @@
 # Creative retrospective: transferable lessons
 
-This retrospective extracts reusable methods from prior static-ad iteration and a separate voiced service-ad project. This is a sanitized methodological retrospective. Original client assets, private conversations, customer avatars, offer codes, URLs and account data are not bundled. No campaign performance was supplied, so these are creative judgments, not winning-ad evidence.
+This retrospective extracts reusable methods from prior static-ad iteration. This is a sanitized methodological retrospective. Original client assets, private conversations, customer avatars, offer codes, URLs and account data are not bundled. No campaign performance was supplied, so these are creative judgments, not winning-ad evidence.
 
 ## What transfers
 
@@ -16,7 +16,7 @@ This retrospective extracts reusable methods from prior static-ad iteration and 
 
 An old project's language exclusions, exact font choices, customer demographics, CTA choices and offers are client constraints, not all-ad requirements. Old character counts are working recommendations until checked against actual placement/tool limits. Claims about anatomical alignment, nighttime behavior or guaranteed outcomes require substantiation; past peer approval does not supply it.
 
-For the separate service-video case, the lesson is completion discipline: a motion draft without the requested narration is not the finished ad. Voice quality depends on audition, pronunciation, intent, actual timing, mix and export inspection. Access to a provider and credits must be checked rather than promised from a connector name.
+The completion-discipline lesson generalises: a draft missing a requested element is not the finished ad, and access to a provider with credits must be checked rather than promised from a connector name.
 
 ## Apply the lesson to another niche
 
