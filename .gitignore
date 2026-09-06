@@ -1,31 +1,15 @@
-# Nothing that authenticates anything. Ever.
-.env
-.env.*
-*.pem
-*.key
-credentials.json
-auth.json
-
-# Working folders a skill creates in a real ad project
-ads/
-out/
-img/
-node_modules/
-*.log
-
-# Python
 __pycache__/
 *.py[cod]
-.pytest_cache/
-.venv/
-venv/
-
-# Editors and operating systems
+.ads-brain/
+.ads-memory/
+.env
+.env.*
+!.env.example
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.log
+node_modules/
+work/
 .DS_Store
 Thumbs.db
-.vscode/
-.idea/
-*.swp
-
-# The duo channel is a local working thread, never committed
-.duo/

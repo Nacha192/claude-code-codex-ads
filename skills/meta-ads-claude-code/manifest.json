@@ -1,0 +1,8 @@
+{
+  "name": "meta-ads-claude-code",
+  "version": "1.0.0",
+  "core_v": "1.0.0",
+  "schema_v": "1.0.0",
+  "integrated_second_brain": true,
+  "source_entrypoints": 73
+}
