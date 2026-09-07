@@ -71,9 +71,13 @@ That takes a minute and settles it permanently. Record the answer in the brief.
 
 ## Where each pull comes from
 
-**Service, lead, and feed video: the public ad libraries.** Build the URL with
-`scripts/ad_library_url.mjs`, set `--media video`, and use the market's own
-language for the search terms. These are the only sources that tell you an ad
+**Service, lead, and feed video: the public ad libraries.** Search on the
+library's own interface, set its media filter to video, and use the market's own
+language for the search terms. Do not reconstruct the query string from memory
+or from an old skill: the parameters change, and a URL that looks right while
+silently filtering nothing gives you a corpus you cannot trust. Copy the exact
+URL the library gives you into `urls.txt`, which is what makes the pull
+repeatable. These are the only sources that tell you an ad
 was *paid for*, which is the whole point.
 
 **Short-form, current: the platform's own discovery surfaces.** Creative centres,

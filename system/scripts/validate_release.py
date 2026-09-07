@@ -92,7 +92,14 @@ def validate(root=None,build=None,report=True):
    for relative in files_under(p):
     if relative not in shared and relative not in GENERATED:errors.append('Orphan file in pack '+name+': '+relative)
    if json.loads((p/'manifest.json').read_text(encoding='utf-8')).get('scope')!=scope:errors.append('Manifest scope mismatch in '+name)
-   for file in p.rglob('*.md'):local_links(file,errors,root)
+   # A pack that tells the assistant to run a script it does not carry is worse
+   # than one that stays silent: the instruction reads as a promise, and the
+   # obvious recovery is to write the missing script and run that instead.
+   carried={s.name for s in (p/'scripts').glob('*')} if (p/'scripts').is_dir() else set()
+   for file in p.rglob('*.md'):
+    local_links(file,errors,root)
+    for cited in sorted(set(re.findall(r'scripts/([A-Za-z0-9_.-]+\.(?:py|mjs|js|sh))',file.read_text(encoding='utf-8')))):
+     if cited not in carried:errors.append('Script cited but not shipped in '+name+': '+cited)
    zpath=root/f'install-{name}.zip'
    with zipfile.ZipFile(zpath) as z:
     actual={i.filename:z.read(i.filename) for i in z.infolist()}

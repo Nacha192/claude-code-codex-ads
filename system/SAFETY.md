@@ -45,6 +45,7 @@ Release integrity is enforced the same way, in `scripts/validate_release.py` and
 - `SHA256SUMS` must describe exactly the archives that are present, all eight of them, with matching digests.
 - Archive contents must equal the unpacked pack, file by file.
 - Every local Markdown link in the published tree must resolve.
+- A pack may not tell the assistant to run a script it does not carry. The instruction reads as a promise, and the obvious recovery is to write the missing script and run that instead. `test_script_cited_but_not_shipped_refused`
 - The committed packs must be byte-identical to what the committed sources rebuild, checked by `git diff --exit-code` in CI.
 - Windows user paths and common credential shapes must not appear in any published text.
 

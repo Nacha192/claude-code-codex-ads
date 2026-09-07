@@ -1,5 +1,6 @@
 """Install selected all-in-one skills locally. Preview by default; no network."""
-import argparse,hashlib,json,os,shutil
+# Nothing here removes or moves anything, so nothing that can is imported.
+import argparse,hashlib,json
 from pathlib import Path
 # install.py lives in system/; the unpacked packs sit in you-can-install-skill/ at the root.
 ROOT=Path(__file__).resolve().parents[1]

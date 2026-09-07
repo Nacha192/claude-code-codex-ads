@@ -167,6 +167,10 @@ class ReleaseRuleTests(unittest.TestCase):
   ident=next(s['id'] for s in sources if s['route']=='video')
   (tree/'you-can-install-skill/meta-ads-static-codex/modules'/(ident+'.md')).write_text('planted\n',encoding='utf-8')
   self.refused(tree,'Module from the other half shipped in meta-ads-static-codex')
+ def test_script_cited_but_not_shipped_refused(self):
+  tree=self.copy();page=tree/'you-can-install-skill/video-ads-codex/references/scope.md'
+  page.write_text(page.read_text(encoding='utf-8')+'\nRun `scripts/absent_helper.py` first.\n',encoding='utf-8')
+  self.refused(tree,'Script cited but not shipped in video-ads-codex: absent_helper.py')
  def test_manifest_declaring_the_wrong_scope_refused(self):
   tree=self.copy();manifest=tree/'you-can-install-skill/video-ads-codex/manifest.json'
   data=json.loads(manifest.read_text(encoding='utf-8'));data['scope']='static'

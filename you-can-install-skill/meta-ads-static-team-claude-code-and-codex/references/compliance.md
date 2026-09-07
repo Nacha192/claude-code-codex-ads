@@ -84,10 +84,18 @@ documentation and then gets disabled for crying wolf.
 **Render the creative, extract the text a human would actually see, and check
 that.** For an HTML ad engine, execute the templates and read the produced
 string. For an image, read the text you supplied to the generator, plus the
-text visible in the output. `scripts/redline_check.py` does the first.
+text visible in the output.
 
-The check exits non-zero on a hit. Wire it into the render step so a violating
-creative cannot reach the export folder.
+`scripts/check_artifact.py` runs the check, on a `creative` artifact: put the
+rendered strings in the copy fields, list the terms in `prohibited_terms`, and
+it exits non-zero on a hit. It matches whole words, case-insensitively, on the
+copy you hand it, so handing it the template source instead of the rendered
+output is the mistake described above, not a shortcut.
+
+It also warns, every time, that the list only catches the terms you declared: a
+paraphrase carrying the same forbidden meaning passes. That warning is not
+noise to be silenced. Wire the check into the render step so a violating
+creative cannot reach the export folder, and read the warning.
 
 ---
 
