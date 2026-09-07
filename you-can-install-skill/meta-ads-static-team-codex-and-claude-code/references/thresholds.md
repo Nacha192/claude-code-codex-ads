@@ -5,10 +5,15 @@ spend gates, retention windows. Skills and reference files cite a key
 (`limits.meta_primary_text_visible`) instead of restating a value, so there is
 exactly one place to correct when a platform moves.
 
-Craft settings stay with their craft file. Encoding targets are in
-`video-assembly.md`, tempo and mix distances are in `video-music.md`, because
-they are read while doing that job and nowhere else. The rule is about the
-numbers that must not drift between files, not about every digit in the pack.
+Craft settings stay with their craft file. In the motion packs, encoding targets
+are in `video-assembly.md` and tempo and mix distances are in `video-music.md`,
+because they are read while doing that job and nowhere else. The rule is about
+the numbers that must not drift between files, not about every digit in a pack.
+
+**Some sections below apply to one craft only** and say so. This file is shared
+by all eight packs so that a platform limit is corrected once rather than twice;
+a section naming a file your pack does not contain is a section for the other
+half, and you can skip it.
 
 If you need a gating number that is not here, add it here first, then cite it.
 
@@ -96,7 +101,7 @@ against. These are fixed here rather than left to the reader.
 | `scrape.observation_floor` | **30 days of observed continuous running** | [heuristic] | Before a competitor ad's structure is worth decomposing. Roughly two learning periods, so an ad still live has survived at least one deliberate keep-or-kill decision by whoever pays for it. That is the whole of the reasoning and it is thin. Below it you are studying somebody's test, not their decision. |
 | `scrape.lookback_window` | **90 days** | [ours] | Default search window. Long enough for `scrape.observation_floor` to mean something, short enough that the creative conventions still match the ones you are about to ship into. |
 | `scrape.min_sample` | **15 ads across at least 5 advertisers** | [ours] | Below this you are describing one advertiser's taste and calling it a market pattern. If you cannot reach it, say so and label every pattern `hypothesis`. |
-| `scrape.max_pull` | **60 ads per run** | [ours] | A cost and attention gate, not a data gate. Past sixty nobody reads the output, and the download volume starts to matter. Ask before exceeding it. Each of the three video pulls in `video-scraping.md` is its own run of thirty, so ninety videos across three runs never crosses this gate. Ninety in one run does. |
+| `scrape.max_pull` | **60 ads per run** | [ours] | A cost and attention gate, not a data gate. Past sixty nobody reads the output, and the download volume starts to matter. Ask before exceeding it. In the motion packs, each of the three video pulls in `video-scraping.md` is its own run of thirty, so ninety videos across three runs never crosses this gate. Ninety in one run does. |
 | `scrape.video_length_cap` | **60 seconds** | [ours] | Do not download or analyse longer than this unless the user explicitly asks. Long-form ads are a different craft and a much larger job. |
 | `scrape.self_exclusion` | **the user's own brand is excluded before any pattern is counted** | [ours] | Requires knowing the brand name. This is one of the three blocking questions in `intake.md`. |
 | `scrape.no_spend_rule` | **a public ad library shows that an ad ran and roughly how long** | [platform] | It does not show spend, results, or whether it worked. An ad running for months is evidence of a decision somebody kept making. Nothing more. Every performance statement derived from a library is `hypothesis`, and the output says so in its first line. |
@@ -123,7 +128,10 @@ ads nobody can learn from.
 
 ## Early signals on video
 
-Read `video-voice.md` for what to do with these. They exist to separate two
+**Motion packs only.** In the still packs there is no view-through to read, and
+the rows below are inert.
+
+The motion packs' `video-voice.md` says what to do with these. They exist to separate two
 different failures that look identical in a summary: nobody starts the video,
 and everybody leaves after they start.
 
@@ -168,7 +176,7 @@ somewhere was approved or it was not.
 
 | Key | Value | Tag | Notes |
 |---|---|---|---|
-| `voice.worth_it_rule` | **a voice-over earns its cost only when the script carries information the picture cannot** | [ours] | A voice reading the on-screen text aloud is a wasted channel. See `video-voice.md`. |
+| `voice.worth_it_rule` | **a voice-over earns its cost only when the script carries information the picture cannot** | [ours] | A voice reading the on-screen text aloud is a wasted channel. Motion packs only; see their `video-voice.md`. |
 | `voice.sound_off_default` | **assume sound off** | [heuristic] | Feed autoplay is muted. Every video must survive the mute test before a voice is commissioned, not after. |
 | `voice.native_speaker_rule` | **a voice-over in a language you do not read is unverifiable** | [ours] | Generated speech in an unfamiliar language can be fluent and wrong. Either get a native check, or ship burned-in captions written by the same pass that wrote the script, so the reader can see what was meant. |
 

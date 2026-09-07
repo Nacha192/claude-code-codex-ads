@@ -19,6 +19,20 @@ def local_links(file,errors):
 def files_under(root):
  return {f.relative_to(root).as_posix():f for f in root.rglob('*') if f.is_file() and '__pycache__' not in f.parts}
 
+def reachable(pack):
+ """Every .md a reader can actually get to by following links from SKILL.md."""
+ seen=set();queue=[pack/'SKILL.md']
+ while queue:
+  f=queue.pop()
+  if not f.is_file():continue
+  try:text=f.read_text(encoding='utf-8')
+  except (OSError,UnicodeDecodeError):continue
+  for link in LINK.findall(text):
+   if re.match(r'^[a-z]+:',link) or link.startswith('#'):continue
+   target=(f.parent/link.split('#')[0].strip('<>')).resolve()
+   if target.suffix=='.md' and target.is_file() and target not in seen:seen.add(target);queue.append(target)
+ return {p.relative_to(pack).as_posix() for p in seen}
+
 def validate():
  errors=[]
  skills=list((ROOT/'you-can-install-skill').glob('*/SKILL.md'))
@@ -42,6 +56,12 @@ def validate():
   if len(rows)!=6:errors.append('Expected six lists in scope '+scope)
   for key,entries in rows.items():
    if len(entries)!=10 or len(set(entries))!=10 or not set(entries)<=own:errors.append('Invalid top-ten '+scope+'/'+key)
+  # A reference nobody can reach is dead weight that still ships, and it is how a
+  # merged trunk quietly grows files one half never reads.
+  read=set()
+  for name in spec['names']:read|=reachable(ROOT/'you-can-install-skill'/name)
+  for relative in sorted(shared):
+   if relative.startswith(('references/','modules/')) and relative not in read:errors.append('Unreachable from any '+scope+' entrypoint: '+relative)
   for ident in sorted(foreign):
    if (layer/'modules'/(ident+'.md')).exists():errors.append('Module from the other half built into '+scope+': '+ident)
   for route,target in sorted(spec['routes'].items()):
