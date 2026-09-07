@@ -15,8 +15,8 @@ downstream of that proof landing.
 | **Audio** | — | the first spoken words |
 
 A strong spoken line over a shot that shows nothing is a weak hook. A brilliant
-burned-in line on an image the eye slides off is a weak hook. Write all three at
-once and rank them as a unit.
+burned-in line on an image the eye slides off is a weak hook. Write the channels
+your deliverable actually has, all at once, and rank them as a unit.
 
 **A still has two channels, not three.** In the still packs the audio row is
 inert: there is nothing to speak. Everything below about the text and visual

@@ -1,4 +1,4 @@
-import importlib.util,json,tempfile,unittest
+import importlib.util,json,shutil,sys,tempfile,unittest
 from pathlib import Path
 BUILD=Path(__file__).resolve().parents[1]
 ROOT=BUILD.parent
@@ -7,6 +7,9 @@ def load(name,path):
 checker=load('checker',BUILD/'src/common/scripts/check_artifact.py')
 brain=load('brain',BUILD/'src/common/scripts/init_brain.py')
 installer=load('installer',BUILD/'install.py')
+# The release validator imports build.py by name, so its directory has to be importable.
+sys.path.insert(0,str(BUILD/'scripts'))
+releaser=load('releaser',BUILD/'scripts/validate_release.py')
 
 class ToolTests(unittest.TestCase):
  def brief(self):return {'schema_v':'1.0.0','kind':'brief','offer':'A fictional repair service','country':'FR','ad_language':'fr-FR','objective':'qualified inquiries','window':{'start':'2026-08-01','end':'2026-08-31'}}
@@ -129,4 +132,45 @@ class ToolTests(unittest.TestCase):
    with self.assertRaises(ValueError):installer.install('codex','solo',target_root=target,apply=True)
  def test_installer_rejects_bad_runtime(self):
   with self.assertRaises(ValueError):installer.install('unknown')
+class ReleaseRuleTests(unittest.TestCase):
+ """The structural invariants, proved by planting a violation in a throwaway copy.
+
+ Manual proof does not survive a refactor. These fail the day somebody weakens a
+ rule, which is the only moment the proof is worth anything."""
+ def copy(self):
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup);tree=Path(box.name)/'release'
+  shutil.copytree(ROOT,tree,ignore=shutil.ignore_patterns('.git','__pycache__'))
+  return tree
+ def check(self,tree):return releaser.validate(tree,tree/'system',report=False)
+ def refused(self,tree,fragment):
+  found=self.check(tree)
+  self.assertTrue(any(fragment in e for e in found),fragment+' not refused; got '+repr(found[:4]))
+ def test_a_clean_copy_of_the_release_passes(self):self.assertEqual(self.check(self.copy()),[])
+ def test_source_card_in_the_shared_trunk_refused(self):
+  tree=self.copy();(tree/'system/src/common/modules').mkdir(parents=True,exist_ok=True)
+  (tree/'system/src/common/modules/planted.md').write_text('planted\n',encoding='utf-8')
+  self.refused(tree,'Source card sitting in the shared trunk')
+ def test_undeclared_trunk_reference_refused(self):
+  tree=self.copy();(tree/'system/src/common/references/planted.md').write_text('planted\n',encoding='utf-8')
+  self.refused(tree,'Reference in the trunk that build.py does not declare')
+ def test_declared_trunk_reference_removed_refused(self):
+  tree=self.copy();(tree/'system/src/common/references/hooks.md').unlink()
+  self.refused(tree,'Reference declared for the trunk but absent')
+ def test_name_defined_in_trunk_and_layer_refused(self):
+  tree=self.copy();shutil.copyfile(tree/'system/src/static/references/scope.md',tree/'system/src/common/references/scope.md')
+  self.refused(tree,'Name defined in both the trunk and the static layer')
+ def test_reference_no_entrypoint_can_reach_refused(self):
+  tree=self.copy();(tree/'system/src/static/references/planted.md').write_text('Nothing links here.\n',encoding='utf-8')
+  self.refused(tree,'Unreachable from any static entrypoint')
+ def test_source_card_from_the_other_half_refused(self):
+  tree=self.copy();sources=json.loads((tree/'system/research/sources.json').read_text(encoding='utf-8'))
+  ident=next(s['id'] for s in sources if s['route']=='video')
+  (tree/'you-can-install-skill/meta-ads-static-codex/modules'/(ident+'.md')).write_text('planted\n',encoding='utf-8')
+  self.refused(tree,'Module from the other half shipped in meta-ads-static-codex')
+ def test_manifest_declaring_the_wrong_scope_refused(self):
+  tree=self.copy();manifest=tree/'you-can-install-skill/video-ads-codex/manifest.json'
+  data=json.loads(manifest.read_text(encoding='utf-8'));data['scope']='static'
+  manifest.write_text(json.dumps(data,indent=2),encoding='utf-8')
+  self.refused(tree,'Manifest scope mismatch in video-ads-codex')
+
 if __name__=='__main__':unittest.main()

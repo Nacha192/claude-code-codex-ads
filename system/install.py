@@ -24,6 +24,10 @@ def install(runtime,mode='both',project=None,target_root=None,apply=False,scope=
     if mode not in ['solo','team','both']:raise ValueError('Unknown mode')
     if scope not in SCOPES+['both']:raise ValueError('Unknown scope')
     if project and target_root:raise ValueError('Choose project or target-root, not both')
+    # An explicit empty string is a mistake, not a request for the default location:
+    # falling back would install somewhere the caller never named.
+    for label,value in [('project',project),('target-root',target_root)]:
+        if value is not None and not str(value).strip():raise ValueError('Empty '+label+' is not a location')
     if project:
         parent=Path(project).expanduser().resolve(strict=True)
         if not parent.is_dir():raise ValueError('Project must be a directory')

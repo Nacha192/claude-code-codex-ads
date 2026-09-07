@@ -37,6 +37,12 @@ SCOPES={
   'codex-copywriting':'coreyhaines31--copywriting,avectats7--copy-that-sells,coreyhaines31--copy-editing,robpalmer99--copychief,robpalmer99--ad-copy,zubair-trabzada--ads-copy,sergebulaev--tt-humanizer,coreyhaines31--product-marketing,coreyhaines31--customer-research,robpalmer99--landing-page-copy',
   'claude-copywriting':'robpalmer99--ad-copy,avectats7--copy-that-sells,robpalmer99--copychief,coreyhaines31--copywriting,alirezarezvani--copywriting,zubair-trabzada--ads-copy,sergebulaev--tt-humanizer,robpalmer99--direct-response-copy,alirezarezvani--copy-editing,realkimbarrett--generic-language-killer'}}}
 NAMES=[n for s in SCOPES.values() for n in s['names']]
+# The trunk is declared, not inferred. Moving a craft file into common/ would
+# otherwise reach all eight packs the moment one shared file linked to it, and
+# nothing structural would object. Adding a line here is the deliberate act.
+COMMON_REFERENCES={'campaign-operations.md','compliance.md','conversion.md','copywriting.md','core.md','hooks.md',
+'intake.md','memory-testing.md','models.md','output-standard.md','research.md','runtime.md','second-brain.md',
+'team.md','thresholds.md','v11-lessons.md'}
 
 def write(p,s):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(s,encoding='utf-8',newline='\n')
 def build_catalog(scope,spec):

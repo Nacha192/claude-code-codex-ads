@@ -1,4 +1,4 @@
-"""Offline checks for brief, creative and generation-request JSON. No API calls."""
+"""Offline checks for brief, creative, storyboard and generation-request JSON. No API calls."""
 import argparse,json,math,re
 from datetime import date
 from pathlib import Path
@@ -15,7 +15,11 @@ EVIDENCE_TYPES=['user_stated','product_observed','customer_quote','measurement',
 
 def walk(node,path='$'):
     if isinstance(node,dict):
-        for key,value in node.items():yield from walk(value,path+'.'+str(key))
+        # Keys are scanned too: a credential pasted as a field name travels exactly
+        # as far as one pasted as a value, and reads the same to whoever finds it.
+        for key,value in node.items():
+            if isinstance(key,str):yield path+'.<key>',key
+            yield from walk(value,path+'.'+str(key))
     elif isinstance(node,list):
         for i,value in enumerate(node):yield from walk(value,path+'['+str(i)+']')
     elif isinstance(node,str):yield path,node
@@ -101,12 +105,19 @@ def check(data):
             duration=s.get('measured_voice_seconds')
             if duration is not None and (not valid(duration) or duration<0):errors.append(f'Scene {i}: invalid measured voice duration')
             elif duration is not None and not isinstance(voice,str):errors.append(f'Scene {i}: measured narration on a scene that has no voice line')
+            elif duration==0 and isinstance(voice,str):errors.append(f'Scene {i}: a spoken line cannot measure zero seconds')
             elif duration is not None and duration>end-start:errors.append(f'Scene {i}: voice exceeds available scene duration')
             elif isinstance(voice,str) and duration is None:warnings.append(f'Scene {i}: narration fit not measured')
     elif kind=='generation_request':
         for k in ['provider','model','account_alias']:need(data,k)
         items=data.get('items')
         if not isinstance(items,list) or not items:errors.append('Nonempty items array required')
+        else:
+            # An item has to name something to produce. A list of nulls or empty
+            # objects would otherwise pass the ceiling check and authorize nothing.
+            for i,item in enumerate(items):
+                empty=item is None or (isinstance(item,str) and not item.strip()) or (isinstance(item,(dict,list)) and not item)
+                if empty:errors.append(f'Item {i} describes nothing to generate')
         approval=data.get('approval')
         if not isinstance(approval,dict):errors.append('New media requires a recorded approval object')
         else:
