@@ -18,6 +18,12 @@ A strong spoken line over a shot that shows nothing is a weak hook. A brilliant
 burned-in line on an image the eye slides off is a weak hook. Write all three at
 once and rank them as a unit.
 
+**A still has two channels, not three.** In the still packs the audio row is
+inert: there is nothing to speak. Everything below about the text and visual
+channels applies unchanged, the audio paragraphs are for the motion packs, and a
+two-channel hook is not a weaker hook. It is the same hook with one fewer place
+to hide.
+
 **Assume sound off** (`voice.sound_off_default`). The text and visual channels
 must carry the hook alone. The audio channel is a bonus for the minority with
 sound on — never the load-bearing one.
@@ -275,7 +281,7 @@ two hats, and an ad set built from them tests nothing.
 ## Angle 1 — <the argument, one sentence>
 Awareness level: <...>    Moment of recognition: <one sentence>
 
-| Hook | Spoken (video) | On-screen | Opening shot / image | Score | Source |
+| Hook | Spoken (motion packs only) | On-screen | Opening shot / image | Score | Source |
 |---|---|---|---|---|---|
 | 1.A | <≤8 words> | <≤32 chars> | <what it shows, and whether it exists> | 8 | notes |
 | 1.B | ... | ... | ... | 7 | hypothesis |

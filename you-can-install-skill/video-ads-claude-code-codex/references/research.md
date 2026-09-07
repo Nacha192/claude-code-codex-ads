@@ -29,6 +29,6 @@ Label columns `observed`, `inferred` and `unavailable`. Longevity, repeated vari
 
 Make a pattern matrix: buyer situation × hook mechanism × proof × format. Count patterns with a denominator and note source concentration. Select divergent examples: a dominant convention, a meaningful exception, a poorly served objection and an original route suited to this offer. Explain why a copied competitor claim would not transfer.
 
-For each proposed angle supply: source observation, buyer friction, original premise, available proof, uncertainty, static execution and a falsifiable test. Distinguish the observed hook from the new hook. A library report should link each example, disclose sampling gaps and end with actionable hypotheses, not a wall of downloaded ads.
+For each proposed angle supply: source observation, buyer friction, original premise, available proof, uncertainty, the execution in the format this pack actually builds, a still frame or a shot list, and a falsifiable test. Distinguish the observed hook from the new hook. A library report should link each example, disclose sampling gaps and end with actionable hypotheses, not a wall of downloaded ads.
 
 For monitoring, save query settings and compare new/changed/removed IDs on subsequent authorized runs. A skill does not run on a schedule by itself; use an actual scheduler only when requested. Stay quiet when nothing meaningful changes unless the user requested periodic reports.

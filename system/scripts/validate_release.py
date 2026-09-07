@@ -43,10 +43,16 @@ def validate():
  selections=json.loads((BUILD/'research/selections.json').read_text(encoding='utf-8'))
  if set(selections)!=set(SCOPES):errors.append('Selections must cover exactly the built scopes')
  common=files_under(BUILD/'src/common')
- # The split is the point of this repository, so it is checked rather than trusted:
- # a scope's craft file must not leak into the trunk every pack receives.
- for leaked in ['static.md','video-prompting.md','video-voice.md','providers.md','scope.md','source-catalog.md']:
-  if 'references/'+leaked in common:errors.append('Scope-specific reference sitting in the shared trunk: '+leaked)
+ # The split is the point of this repository, so it is checked structurally rather
+ # than against a list of names somebody has to remember to extend.
+ # A generated source card in the trunk would reach both halves at once.
+ for relative in sorted(common):
+  if relative.startswith('modules/'):errors.append('Source card sitting in the shared trunk: '+relative)
+ # A file that exists in the trunk and in a craft layer is ambiguous: the pack gets
+ # one of them and nobody can tell which by reading the tree.
+ for scope in SCOPES:
+  for relative in sorted(set(common)&set(files_under(BUILD/'src'/scope))):
+   errors.append('Name defined in both the trunk and the '+scope+' layer: '+relative)
  for scope,spec in SCOPES.items():
   layer=BUILD/'src'/scope
   shared={**common,**files_under(layer)}
@@ -62,8 +68,11 @@ def validate():
   for name in spec['names']:read|=reachable(ROOT/'you-can-install-skill'/name)
   for relative in sorted(shared):
    if relative.startswith(('references/','modules/')) and relative not in read:errors.append('Unreachable from any '+scope+' entrypoint: '+relative)
-  for ident in sorted(foreign):
-   if (layer/'modules'/(ident+'.md')).exists():errors.append('Module from the other half built into '+scope+': '+ident)
+  # Checked against what the packs actually contain, not against the layer that was
+  # supposed to fill them, so a card arriving by any other route is still caught.
+  for name in spec['names']:
+   for ident in sorted(foreign):
+    if (ROOT/'you-can-install-skill'/name/'modules'/(ident+'.md')).exists():errors.append('Module from the other half shipped in '+name+': '+ident)
   for route,target in sorted(spec['routes'].items()):
    if 'references/'+target not in shared:errors.append('Route '+route+' in scope '+scope+' points at a missing reference: '+target)
   for name in spec['names']:

@@ -41,7 +41,7 @@ Release integrity is enforced the same way, in `scripts/validate_release.py` and
 - No still-creative source may be built into a motion pack, and none of the motion sources into a still pack. The split is checked in both directions, because it is the thing this repository exists to keep.
 - A scope's own craft file may not sit in the shared trunk, which is how the split would erode quietly.
 - Every pack's manifest must declare the scope it was actually built from.
-- `SHA256SUMS` must describe exactly the four archives that are present, with matching digests.
+- `SHA256SUMS` must describe exactly the archives that are present, all eight of them, with matching digests.
 - Archive contents must equal the unpacked pack, file by file.
 - Every local Markdown link in the published tree must resolve.
 - The committed packs must be byte-identical to what the committed sources rebuild, checked by `git diff --exit-code` in CI.

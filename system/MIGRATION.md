@@ -40,7 +40,7 @@ Basic and advanced are also stated as modes rather than model tiers in this rele
 
 This rebuild replaces the initial four distributions while preserving their Git history. The earlier source and rendering helpers remain inspectable at [the previous revision](https://github.com/Nacha192/skill-claude-code-codex-ads/tree/7982c9c99540302ee2a6ea3fec912f084c22b016). They are not silently executed or installed by this release.
 
-The four current installation archives sit at the repository root, prefixed `install-`. Optional external tools are described in `you-can-install-tools.md`. Internal research, copywriting and second-brain modules are included in every pack.
+That release published four installation archives at the repository root, prefixed `install-`; since 3.0.0 there are eight. Optional external tools are described in `you-can-install-tools.md`. Internal research, copywriting and second-brain modules are included in every pack.
 
 The Claude-started team edition now has its own identifier, `meta-ads-static-team-claude-code-and-codex`. The Codex-started edition retains `meta-ads-static-team-codex-and-claude-code`. Both are complete advertising systems; their different entrypoints identify the starting host, not a permanent hierarchy.
 

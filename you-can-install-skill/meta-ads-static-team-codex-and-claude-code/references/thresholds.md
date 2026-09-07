@@ -88,7 +88,7 @@ against. These are fixed here rather than left to the reader.
 | Key | Value | Tag | Notes |
 |---|---|---|---|
 | `coverage.angles_per_ad_set` | **3 angles** | [heuristic] | Below three live angles, a losing week cannot tell you whether the angle failed or the execution did. Drop to 2 only when the ad set is under `test.volume_floor`, because more variants on thin volume only splits it further. |
-| `coverage.formats_per_angle` | **2 formats** | [heuristic] | One static, one video, per angle. Below this, a format effect reads as an angle effect. |
+| `coverage.formats_per_angle` | **2 formats** | [heuristic] | One still, one video, per angle. Below this, a format effect reads as an angle effect. **This is an account-level target, not a pack-level one.** A pack builds its own half and says which format is still missing; it does not cover the other half to satisfy this row. |
 | `coverage.angle_distinctness` | **two angles are the same angle when they share their main claim AND their reason** | [heuristic] | "Saves you time" and "stop wasting hours" share both: one angle. "Saves you time" and "cheaper than the alternative" share neither: two. Applied **before** any angle is counted. An inflated angle count is the most flattering error an account makes about itself. |
 | `coverage.awareness_spread` | **at most one awareness level per ad set** | [ours] | See `intake.md`. Revealing to someone who already knows is condescending; confirming to someone who does not know is meaningless. Creatives aimed at different levels belong in different ad sets, or in one ad set and one level. |
 
