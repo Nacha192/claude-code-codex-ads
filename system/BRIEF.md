@@ -14,7 +14,7 @@ Les fichiers du pack final s'écrivent en anglais, comme le statique. Ce brief r
 
 ## 0. Le statut, et le message à passer à Codex
 
-Le projet statique est terminé : quatre packs, publics, sur [claude-code-codex-ads-static](https://github.com/Nacha192/claude-code-codex-ads-static). Message à relayer à Codex, dans le sens demandé :
+Le projet statique est terminé : quatre packs, publics, sur [claude-code-codex-ads-static](https://github.com/Nacha192/skill-claude-code-codex-ads). Message à relayer à Codex, dans le sens demandé :
 
 > Ce projet est fini. L'auteur nous a donné les skills vidéo à faire en plus. On prépare, on ne construit pas, et on attend son go avant de lancer quoi que ce soit.
 

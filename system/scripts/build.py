@@ -9,7 +9,7 @@ ROOT=BUILD.parent
 # Published links are built from this name, so it has to be the name GitHub serves
 # today. Renaming the repository means changing this line and rebuilding. GitHub
 # redirects the old name afterwards, so links keep working through the change.
-REPO='claude-code-codex-ads-static'
+REPO='skill-claude-code-codex-ads'
 # Repositories the published text may point at: this one, and the duo method it is
 # built on. Any other name under that account is a name that drifted from reality.
 KNOWN_REPOS={REPO,'Codex-Claude-Code-team'}
