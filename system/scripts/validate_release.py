@@ -1,7 +1,7 @@
 """Validate package shape, local links, privacy patterns, checksums and archive contents."""
 import hashlib,json,re,zipfile
 from pathlib import Path
-from build import NAMES,ROOT,BUILD
+from build import SCOPES,NAMES,ROOT,BUILD
 
 GENERATED=['SKILL.md','LICENSE','THIRD_PARTY_NOTICES.md','install-this-skill.md','manifest.json']
 LINK=re.compile(r'\[[^\]]*\]\(([^)]+)\)')
@@ -16,41 +16,52 @@ def local_links(file,errors):
   if target and not (file.parent/target).exists():errors.append('Broken link '+str(file.relative_to(ROOT))+' -> '+target)
  if '<VERIFY>' in text:errors.append('Unresolved bridge placeholder '+str(file))
 
+def files_under(root):
+ return {f.relative_to(root).as_posix():f for f in root.rglob('*') if f.is_file() and '__pycache__' not in f.parts}
+
 def validate():
  errors=[]
  skills=list((ROOT/'you-can-install-skill').glob('*/SKILL.md'))
- if len(skills)!=4:errors.append('Expected exactly four installed entrypoints')
+ if len(skills)!=len(NAMES):errors.append(f'Expected exactly {len(NAMES)} installed entrypoints')
  source=json.loads((BUILD/'research/sources.json').read_text(encoding='utf-8'))
  ids={s['id'] for s in source}
  if len(source)!=73 or len(ids)!=73:errors.append('Expected 73 unique inspected sources')
- # This pack is still creative only: nothing routed to video or voice may ship in it.
- moved={s['id'] for s in source if s['route'] in ('video','voice')}
- static_ids=ids-moved
  selections=json.loads((BUILD/'research/selections.json').read_text(encoding='utf-8'))
- for key,rows in selections.items():
-  if len(rows)!=10 or len(set(rows))!=10 or not set(rows)<=static_ids:errors.append('Invalid top-ten '+key)
- if len(selections)!=6:errors.append('Expected six lists')
- if set((BUILD/'src/common/references').glob('video*.md')):errors.append('A video reference is still in the shared sources')
- for ident in sorted(moved):
-  if (BUILD/'src/common/modules'/(ident+'.md')).exists():errors.append('Non-static module still built: '+ident)
- shared={f.relative_to(BUILD/'src/common').as_posix() for f in (BUILD/'src/common').rglob('*') if f.is_file() and '__pycache__' not in f.parts}
- for name in NAMES:
-  p=ROOT/'you-can-install-skill'/name;entry=(p/'SKILL.md').read_text(encoding='utf-8')
-  if not entry.startswith('---\nname: '+name+'\n') or '\ndescription: ' not in entry:errors.append('Frontmatter '+name)
-  for relative in sorted(shared):
-   target=p/relative
-   if not target.exists() or target.read_bytes()!=(BUILD/'src/common'/relative).read_bytes():errors.append('Shared module drift '+str(target))
-  # Reverse direction: a file with no source must not survive in a shipped pack.
-  for file in p.rglob('*'):
-   if not file.is_file() or '__pycache__' in file.parts:continue
-   relative=file.relative_to(p).as_posix()
-   if relative not in shared and relative not in GENERATED:errors.append('Orphan file in pack '+name+': '+relative)
-  for file in p.rglob('*.md'):local_links(file,errors)
-  zpath=ROOT/f'install-{name}.zip'
-  with zipfile.ZipFile(zpath) as z:
-   actual={i.filename:z.read(i.filename) for i in z.infolist()}
-   expected={f.relative_to(ROOT/'you-can-install-skill').as_posix():f.read_bytes() for f in p.rglob('*') if f.is_file() and '__pycache__' not in f.parts}
-   if actual!=expected:errors.append('ZIP differs '+name)
+ if set(selections)!=set(SCOPES):errors.append('Selections must cover exactly the built scopes')
+ common=files_under(BUILD/'src/common')
+ # The split is the point of this repository, so it is checked rather than trusted:
+ # a scope's craft file must not leak into the trunk every pack receives.
+ for leaked in ['static.md','video-prompting.md','video-voice.md','providers.md','scope.md','source-catalog.md']:
+  if 'references/'+leaked in common:errors.append('Scope-specific reference sitting in the shared trunk: '+leaked)
+ for scope,spec in SCOPES.items():
+  layer=BUILD/'src'/scope
+  shared={**common,**files_under(layer)}
+  own={s['id'] for s in source if s['route'] in spec['routes']}
+  foreign=ids-own
+  rows=selections.get(scope,{})
+  if len(rows)!=6:errors.append('Expected six lists in scope '+scope)
+  for key,entries in rows.items():
+   if len(entries)!=10 or len(set(entries))!=10 or not set(entries)<=own:errors.append('Invalid top-ten '+scope+'/'+key)
+  for ident in sorted(foreign):
+   if (layer/'modules'/(ident+'.md')).exists():errors.append('Module from the other half built into '+scope+': '+ident)
+  for route,target in sorted(spec['routes'].items()):
+   if 'references/'+target not in shared:errors.append('Route '+route+' in scope '+scope+' points at a missing reference: '+target)
+  for name in spec['names']:
+   p=ROOT/'you-can-install-skill'/name;entry=(p/'SKILL.md').read_text(encoding='utf-8')
+   if not entry.startswith('---\nname: '+name+'\n') or '\ndescription: ' not in entry:errors.append('Frontmatter '+name)
+   for relative,origin in sorted(shared.items()):
+    target=p/relative
+    if not target.exists() or target.read_bytes()!=origin.read_bytes():errors.append('Shared module drift '+str(target))
+   # Reverse direction: a file with no source must not survive in a shipped pack.
+   for relative in files_under(p):
+    if relative not in shared and relative not in GENERATED:errors.append('Orphan file in pack '+name+': '+relative)
+   if json.loads((p/'manifest.json').read_text(encoding='utf-8')).get('scope')!=scope:errors.append('Manifest scope mismatch in '+name)
+   for file in p.rglob('*.md'):local_links(file,errors)
+   zpath=ROOT/f'install-{name}.zip'
+   with zipfile.ZipFile(zpath) as z:
+    actual={i.filename:z.read(i.filename) for i in z.infolist()}
+    expected={f.relative_to(ROOT/'you-can-install-skill').as_posix():f.read_bytes() for f in p.rglob('*') if f.is_file() and '__pycache__' not in f.parts}
+    if actual!=expected:errors.append('ZIP differs '+name)
  # SAFETY.md promises a test behind each enforced rule; a renamed test would turn
  # that table into a false claim without anything failing.
  suite=(BUILD/'tests/test_tools.py').read_text(encoding='utf-8')
@@ -58,7 +69,7 @@ def validate():
  cited=set(re.findall(r'`(test_\w+)`',(BUILD/'SAFETY.md').read_text(encoding='utf-8')))
  for name in sorted(cited-defined):errors.append('SAFETY.md cites a test that does not exist: '+name)
  archives=sorted(ROOT.glob('install-*.zip'))
- if len(archives)!=4:errors.append('Expected four ZIPs')
+ if len(archives)!=len(NAMES):errors.append(f'Expected {len(NAMES)} ZIPs')
  # The published checksums must describe the archives that are actually here.
  published={}
  sums=ROOT/'SHA256SUMS'
@@ -67,7 +78,7 @@ def validate():
   for line in sums.read_text(encoding='utf-8').splitlines():
    if not line.strip():continue
    digest,_,filename=line.partition('  ');published[filename]=digest
-  if set(published)!={a.name for a in archives}:errors.append('SHA256SUMS does not list exactly the four archives')
+  if set(published)!={a.name for a in archives}:errors.append('SHA256SUMS does not list exactly the built archives')
   for archive in archives:
    if published.get(archive.name)!=hashlib.sha256(archive.read_bytes()).hexdigest():errors.append('Checksum mismatch for '+archive.name)
  # Documentation outside the build sources: its links must resolve as published.

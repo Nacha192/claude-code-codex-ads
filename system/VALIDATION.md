@@ -1,28 +1,39 @@
 # Validation scope and observed results
 
-Release date: 2026-09-06. This is a validation of the distributed methods and local helper scripts, not an advertising-performance certification.
+Release date: 2026-09-07, version 3.0.0. This validates the distributed methods and the local helper scripts. It is not an advertising-performance certification, and it does not claim any provider will produce a good ad.
 
 ## Local observed checks
 
-- Python 3.11 on Windows: 32 unit tests collected; 30 passed and 2 skipped because this Windows account cannot create symbolic links. The skipped cases cover legitimate symlink ancestors and rejection of a symlinked skill destination. [Linux/macOS CI](https://github.com/Nacha192/claude-code-codex-ads-static/actions/workflows/validate.yml) runs the whole suite on each system, including both symlink tests.
-- Stale-artifact handling was exercised on a real tree: an orphan reference file, a pack with no source and an archive with no pack were all reported by the release validator, then removed by a rebuild. Before this release the orphan file shipped inside the archive and no check noticed.
-- The skill-creator frontmatter validator accepted all four installed `SKILL.md` entrypoints.
-- The release validator found no errors: exactly four installed skills, four ZIPs, 73 inspected source records of which the 55 still-creative adaptations ship, six selections of ten distinct valid IDs, valid internal Markdown links, matching archive checksums, no orphan file in a pack, every test named in SAFETY.md present in the suite, and byte-identical shared modules across all four packages.
-- ZIP contents match the distributed skill folders; archive SHA-256 values are included in `SHA256SUMS`. Public text uses LF line endings for consistent checkouts.
-- Preview installation makes no writes. Identical reinstallation succeeds; differing installed files remain untouched. Project installation and solo/team selections were exercised.
-- A real temporary Git repository confirmed that the initialized private brand and evidence records are ignored by the brain's internal `.gitignore`. Ignore rules cannot prevent force-add or remove already tracked data.
-- Common private-data patterns and task-specific private markers were checked in public text and ZIP contents. No hits remained. Private conversations, client creatives, credentials and collaboration-bus files are excluded.
+- Python 3.11 on Windows: 39 unit tests collected; 37 passed and 2 skipped because this Windows account cannot create symbolic links. The skipped cases cover legitimate symlink ancestors and rejection of a symlinked skill destination. [Linux and macOS CI](https://github.com/Nacha192/skill-claude-code-codex-ads/actions/workflows/validate.yml) runs the whole suite on both systems, including the two symlink tests.
+- The release validator found no errors: eight installed skills, eight ZIPs, 73 inspected source records compiled into 55 still-creative and 59 motion adaptations, six selections of ten distinct valid IDs per scope, every build route pointing at a reference that exists in that scope, valid internal Markdown links, matching archive checksums, no orphan file in any pack, every test named in `SAFETY.md` present in the suite, and byte-identical shared modules across all eight packages.
+- **The split is checked in both directions.** No still-creative source may be compiled into a motion pack and none of the motion sources into a still pack; a scope's own craft file may not sit in the shared trunk; and every pack's manifest must declare the scope it was actually built from. Those three rules are what keep one repository from quietly becoming a pack that half-covers both crafts.
+- Stale-artifact handling was exercised on a real tree before an earlier release: an orphan reference file, a pack with no source and an archive with no pack were all reported by the validator, then removed by a rebuild. Before that fix the orphan file shipped inside the archive and no check noticed.
+- The storyboard checks were exercised on real artifacts: narration longer than its scene fails, overlapping scenes fail, `NaN` and boolean scene times fail, a voice field that is not a real line fails, a measured duration on a scene with no voice line fails, and both an unmeasured narration and a timeline gap warn rather than passing silently.
+- ZIP contents match the distributed skill folders; archive SHA-256 values are in `SHA256SUMS`. Public text uses LF line endings for consistent checkouts.
+- Preview installation makes no writes. Identical reinstallation succeeds; differing installed files remain untouched. Project installation, solo and team selection, and the new scope selection were all exercised.
+- A real temporary Git repository confirmed that the initialized private brand and evidence records are ignored by the brain's internal `.gitignore`. Ignore rules cannot prevent force-add or removal of already tracked data.
+- Common private-data patterns were checked in public text and in ZIP contents. No hits remained.
 
-## Genuine Claude Code collaboration
+## What was verified rather than assumed
 
-Codex coordinated the build and ran the checks. The real Claude Code CLI supplied authored workflow material and reviewed explicitly transmitted file contents as a fresh consultant. It did not have repository or media tools in these consultations; it did not execute the tests or independently verify the supplied hashes.
+Both assistants were asked what they could actually do, and both answered by running commands rather than from memory. The result is dated in `research/capabilities-2026-09-06.md` and it contradicted the specification the video half was built from: the assistant described as the video generator had no video provider connected at all, and the one described as unable to generate had a catalogue of them.
 
-The first review exposed a Windows argument-transport problem that stripped quotes/truncated a long prompt. The coordinator switched the local consultation transport to stdin; Claude then confirmed receipt of all five files and intact JSON. The corrected behavioral submission was accepted. Solo self-review, approval provenance and privacy ordering were clarified following that exchange.
+That is why no edition claims a generation capability. The packs detect it. Any other wording would be describing two machines on one day and calling it a property of the software.
 
-The technical review requested support for legitimate system symlink ancestors and an internal Git ignore file for private memory. Both were implemented with regression tests. Claude accepted the final four-script technical submission with no blockers. The final review left execution of the two Windows-skipped symlink cases to Linux/macOS CI; both were subsequently executed successfully there.
+## Cross-review
+
+Codex reviewed the specification, then the written references, as an adversary, with the instruction to find contradictions rather than to approve.
+
+Its first pass found two: a bit rate incompatible with the file size demanded two lines below it, and a per-run scraping ceiling of sixty that contradicted the ninety videos the protocol asks for. Its second pass, on the built packs, found ten more, of which nine held: an item ceiling enforced in code while the documentation implied a spend ceiling was, a storyboard accepting a malformed voice field, a warning listed among the rules that fail with a non-zero exit, a claims guarantee that only ever applied to declared claims, two solo entrypoints promising a file they cannot always produce, a hook window stated as two seconds in one file and three in another, model durations contradicted by what was actually observed, a thresholds file claiming to hold every number while three other files held their own, and a captions rule contradicting a deliberate exception elsewhere.
+
+The tenth was rejected and then conceded on the second exchange, which is the useful part: chasing the exact citation turned up a paragraph describing a rendering script from the still half that the video packs never shipped. It was rewritten rather than defended.
+
+Codex also authored `references/measurable-checks.md` in the motion packs, running every ffmpeg and ffprobe command in it against fixtures it generated, including a deliberately clipped one, so the numbers in that file are measurements rather than recollections.
 
 ## Limits
 
-The source inventory documents inspected entrypoints and original adaptations, not a security audit of every upstream executable. The top-ten lists are editorial task-fit selections with overlap, not global rankings or measured conversion results. Repositories without a clear redistribution license are not copied wholesale.
-
-No paid media generation, live provider integration or live Meta campaign was tested. Current account access, provider models, credits, platform rules and export quality must be checked during real use. A structural validator cannot establish claim truth, authentic quotations, policy approval, causal performance or visual quality. Partial installation failures preserve files for inspection rather than deleting them automatically.
+- No claim is made that a corpus assembled from public discovery surfaces is a representative sample of anything. The method says so, dates itself, and records what could not be obtained.
+- Provider model names, durations and resolutions are dated observations of one connected catalogue and will drift.
+- Whose voice is in a supplied recording cannot be verified by any script here. The consent record is a discipline, not an enforcement.
+- Nothing here certifies platform policy compliance, and disclosure rules for synthetic voice differ by market and change.
+- Offline checks cannot prove that a source supports the claim citing it, that copy will be approved, or that a creative is any good.

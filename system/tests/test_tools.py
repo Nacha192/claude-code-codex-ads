@@ -34,8 +34,22 @@ class ToolTests(unittest.TestCase):
  def test_quote_requires_text(self):
   for value in [True,1,' ','',{}]:
    d=self.creative();d['claims'][0]['testimonial']=True;d['evidence'][0].update(type='customer_quote',verbatim=value);self.assertTrue(checker.check(d)[0])
- def test_storyboard_kind_is_no_longer_accepted(self):
-  d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':2,'visual':'product'}]};self.assertTrue(checker.check(d)[0])
+ def test_storyboard_measured_overrun(self):
+  d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':2,'visual':'product','voice':'demo','measured_voice_seconds':3}]};self.assertTrue(checker.check(d)[0])
+ def test_nan_and_bool_times(self):
+  for value in [float('nan'),True]:
+   d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':value,'end':2,'visual':'product'}]};self.assertTrue(checker.check(d)[0])
+ def test_unmeasured_voice_warns(self):
+  d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':3,'visual':'product','voice':'demo'}]};e,w=checker.check(d);self.assertFalse(e);self.assertTrue(w)
+ def test_timeline_gap_warns(self):
+  d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':2,'visual':'a'},{'start':3,'end':5,'visual':'b'}]};e,w=checker.check(d);self.assertFalse(e);self.assertTrue(w)
+ def test_empty_voice_value_refused(self):
+  for value in [[],'','   ',7]:
+   d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':2,'visual':'product','voice':value}]};self.assertTrue(checker.check(d)[0])
+ def test_measured_narration_without_a_line_refused(self):
+  d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':2,'visual':'product','measured_voice_seconds':1}]};self.assertTrue(checker.check(d)[0])
+ def test_storyboard_overlap_is_an_error(self):
+  d={'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':3,'visual':'a'},{'start':2,'end':5,'visual':'b'}]};self.assertTrue(checker.check(d)[0])
  def generation(self):return {'schema_v':'1.0.0','kind':'generation_request','provider':'a-provider','model':'a-model','account_alias':'studio-main','credits_remaining':400,'items':[{'prompt':'synthetic fixture'}],'approval':{'granted_at':'2026-09-01','provider':'a-provider','model':'a-model','account_alias':'studio-main','max_items':4,'ceiling':'200 credits'}}
  def test_generation_within_approval(self):self.assertEqual(checker.check(self.generation())[0],[])
  def test_generation_needs_recorded_approval(self):
@@ -84,13 +98,13 @@ class ToolTests(unittest.TestCase):
    target=Path(t)/'skills';installer.install('codex',target_root=target);self.assertFalse(target.exists())
    installer.install('codex',target_root=target,apply=True)
    plans=installer.install('codex',target_root=target,apply=True);self.assertTrue(all(x['action']=='already-identical' for x in plans))
-   file=target/'meta-ads-static-codex/SKILL.md';file.write_text('user edit',encoding='utf-8')
+   file=target/'video-ads-codex/SKILL.md';file.write_text('user edit',encoding='utf-8')
    with self.assertRaises(ValueError):installer.install('codex',target_root=target,apply=True)
    self.assertEqual(file.read_text(),'user edit')
  def test_installer_project_and_modes(self):
   with tempfile.TemporaryDirectory() as t:
-   for runtime,mode in [('codex','solo'),('claude','team')]:
-    plans=installer.install(runtime,mode,project=t,apply=True);self.assertEqual(len(plans),1)
+   for runtime,mode,scope in [('codex','solo','static'),('claude','team','motion')]:
+    plans=installer.install(runtime,mode,project=t,apply=True,scope=scope);self.assertEqual(len(plans),1)
     self.assertTrue((Path(plans[0]['target'])/'SKILL.md').is_file())
  def test_symlinked_ancestor_allowed_but_target_refused(self):
   with tempfile.TemporaryDirectory() as t:
@@ -99,10 +113,18 @@ class ToolTests(unittest.TestCase):
    except OSError as e:self.skipTest('Symlink privilege unavailable: '+str(e))
    installer.install('codex','solo',target_root=alias/'skills',apply=True)
    with self.assertRaises(ValueError):installer.install('codex','solo',target_root=alias,apply=True)
+ def test_scope_selection(self):
+  with tempfile.TemporaryDirectory() as t:
+   both=installer.install('codex',target_root=Path(t)/'a');self.assertEqual(len(both),4)
+   still=installer.install('codex',target_root=Path(t)/'b',scope='static')
+   self.assertTrue(all(x['skill'].startswith('meta-ads-static-') for x in still))
+   motion=installer.install('codex',target_root=Path(t)/'c',scope='motion')
+   self.assertTrue(all(x['skill'].startswith('video-ads-') for x in motion))
+   with self.assertRaises(ValueError):installer.install('codex',scope='nope')
  def test_symlinked_skill_destination_refused(self):
   with tempfile.TemporaryDirectory() as t:
    root=Path(t);real=root/'real';real.mkdir();target=root/'skills';target.mkdir()
-   try:(target/'meta-ads-static-codex').symlink_to(real,target_is_directory=True)
+   try:(target/'video-ads-codex').symlink_to(real,target_is_directory=True)
    except OSError as e:self.skipTest('Symlink privilege unavailable: '+str(e))
    with self.assertRaises(ValueError):installer.install('codex','solo',target_root=target,apply=True)
  def test_installer_rejects_bad_runtime(self):

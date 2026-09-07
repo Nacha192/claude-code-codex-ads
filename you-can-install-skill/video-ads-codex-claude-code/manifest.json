@@ -1,0 +1,10 @@
+{
+  "name": "video-ads-codex-claude-code",
+  "version": "3.0.0",
+  "core_v": "1.0.0",
+  "schema_v": "1.0.0",
+  "scope": "motion",
+  "integrated_second_brain": true,
+  "inspected_entrypoints": 73,
+  "adaptations": 59
+}

@@ -7,7 +7,7 @@ description: Create and improve Meta advertising as solo Claude Code, with an in
 
 Own the requested advertising outcome from brief to reviewed deliverables. All methods below are internal parts of THIS skill, including the second brain. Do not auto-launch Codex or present a simulated peer review. Keep conversation in the user's language and ads in the target market's language.
 
-Read [core](references/core.md) and [second brain](references/second-brain.md) first. The latter includes connected reasoning, memory contracts, retrieval, contradictions and learning; it is not an external skill. Read only other modules needed for the current request. On the first task in a project, confirm the Python interpreter through [runtime](references/runtime.md): the included scripts need one, and proposing to install it is a question for the user, never a silent action.
+Read [scope](references/scope.md), [core](references/core.md) and [second brain](references/second-brain.md) first. The latter includes connected reasoning, memory contracts, retrieval, contradictions and learning; it is not an external skill. Read only other modules needed for the current request. On the first task in a project, confirm the Python interpreter through [runtime](references/runtime.md): the included scripts need one, and proposing to install it is a question for the user, never a silent action.
 
 ## Work from the real business
 
@@ -19,7 +19,7 @@ Use [research](references/research.md) for Meta library and competitor scans: ex
 
 Use [copywriting](references/copywriting.md) to connect buyer friction, hook, mechanism, proof and CTA. Propose distinct arguments, not cosmetic variations. Apply [creative retrospective](references/v11-lessons.md) for reusable lessons about real hooks, visual meaning, audience awareness, truthful qualification and format-specific layouts.
 
-Use [static](references/static.md) for images and carousels. This pack does not cover motion, narration or music: if the request is a video ad, say so and use the video edition instead of improvising. Consult [providers](references/providers.md) to discover actual creation tools and access. Obtain the required scoped approval BEFORE new media generation unless already covered; do not ask again for an unchanged authorized batch.
+Use [static](references/static.md) for images and carousels. This pack does not cover motion, narration or music: if the request is a video ad, say so and use a `video-ads-*` edition, installed the same way from the same repository, instead of improvising. Consult [providers](references/providers.md) to discover actual creation tools and access. Obtain the required scoped approval BEFORE new media generation unless already covered; do not ask again for an unchanged authorized batch.
 
 Produce and inspect the requested final files. A prompt or an unrendered concept is not a finished ad. If a required tool is unavailable, finish independent work and explicitly identify the missing deliverable and workable route. Do not claim generation from a provider name alone.
 

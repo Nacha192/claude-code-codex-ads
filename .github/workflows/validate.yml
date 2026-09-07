@@ -1,6 +1,6 @@
-# Continuous integration: rebuild the four packs, run the tests, and validate
+# Continuous integration: rebuild the eight packs, run the tests, and validate
 # the release on every push, so a broken layout cannot reach the main branch.
-name: Validate four skill packages
+name: Validate eight skill packages
 on:
   push:
   pull_request:

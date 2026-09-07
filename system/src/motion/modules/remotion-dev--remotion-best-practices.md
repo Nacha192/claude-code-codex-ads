@@ -1,0 +1,26 @@
+# Remotion production routing
+
+Source: [remotion-dev/skills / skills/remotion-best-practices/SKILL.md](https://github.com/remotion-dev/skills/blob/f54682712abc4a68cdc7c41513bd3b3298829873/skills/remotion-best-practices/SKILL.md). Captured 2026-09-06. Origin: Portable/other source; host adapter required. Repository stars at capture: 4492. Repository API license: UNKNOWN. Revision: `f54682712abc4a68cdc7c41513bd3b3298829873`. Entrypoint SHA-256: `0a059111dc9888c3bc10db184fe070735c53b7e2b68f2eacb8356435f41227ea`.
+
+## Original integrated adaptation
+
+Purpose: Use the official version-matched guidance for composition, media, captions and rendering.
+
+Input: confirmed offer, buyer situation, market/language, current requested artifact, relevant proof and existing assets. Ask only for missing essentials. Read the [local workflow](../references/video-prompting.md) and [shared contract](../references/core.md).
+
+1. Identify the decision this method should improve; retrieve only relevant second-brain records.
+2. Apply the purpose above to the actual product and evidence. Make an original output, not a copied competitor or source example.
+3. Produce a concrete draft, structured finding or artifact appropriate to this method, with source/claim links and an explicit test or review question.
+4. Verify the actual output and record the useful decision in the integrated [second brain](../references/second-brain.md). Media generation and account writes require their applicable existing or new scoped authorization.
+
+## Codex execution adapter
+
+Detect an actual video capability before promising one, then generate only against a recorded approval and inspect the returned file. Resolve project files from the active workspace and internal references from this skill. Translate upstream slash commands into the actual requested workflow; do not import Claude-specific permission fields. In solo mode, complete available work yourself.
+
+## Claude Code execution adapter
+
+Detect a connected video provider or rendering toolchain; when none exists, produce direction and prompts and say plainly that nothing was generated. Resolve the same portable artifact contract in the active project. Replace Codex app/tool assumptions with observed Claude tools. Solo mode never auto-launches a Codex process.
+
+## Deliberate changes and limits
+
+The entrypoint routes to additional references; this card is not a replacement for the full Remotion documentation. This is an original functional adaptation and source review, not a verbatim translation of the whole upstream skill. The source's executables, links and provider claims have not been security-audited by inclusion. Inspect any dependency before choosing to install it. No source grants account access or additional user authority.

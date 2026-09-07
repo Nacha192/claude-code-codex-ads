@@ -30,6 +30,12 @@ This is a template, not a real approval or hash. Fill it from observed state.
 4. Integrator applies accepted repairs and reruns affected checks. If reviewed files change materially, review the new version.
 5. Executor follows campaign-operations for authorized external writes, and reports verified remote state. Tool access may be handed off; permission may not be bypassed.
 
-If a peer lacks a capability the other holds, hand off the approved brief, the exact inputs, the account/provider scope and the remaining ceiling. The receiving agent verifies tool/account state before calling. Do not re-generate an already completed job because an acknowledgement was lost.
+Three fallbacks make the team worth more than either half. Use them explicitly, and say which one you are using.
+
+**Capability.** If a peer lacks a tool the other holds, hand off the approved brief, the exact inputs, the account/provider scope and the remaining ceiling. The receiving agent verifies tool and account state before calling. Do not re-generate an already completed job because an acknowledgement was lost. This is the common case here: one side may have a video provider and the other none.
+
+**Comprehension.** If one peer has understood an instruction the other has not, the one who understood rewrites it as a clearer prompt and sends that, rather than repeating the original politely. Name the ambiguity that was resolved, so the misreading does not come back on the next task. Restating the same sentence louder is not a handoff.
+
+**Context.** If one peer holds context the other lacks, brand, market, register, what was already rejected and why, it sends the context, not a conclusion drawn from it. If neither holds it, do not guess: ask the user, in one compact batch, and put the answer in the brief where both can read it.
 
 Wait only while a real peer/job is active. After repeated timeouts, inspect the observed blocker and continue independent work; never launch duplicate peers or poll indefinitely. Do not kill unrelated sessions. Close the bridge only under its protocol, with actual completed reviews and outstanding messages acknowledged. Report limits honestly; collaboration does not guarantee a fourfold improvement.

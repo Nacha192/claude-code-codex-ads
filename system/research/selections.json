@@ -1,74 +1,150 @@
 {
-  "codex-hooks": [
-    "sergebulaev--tt-hook-scripter",
-    "yaxeen--storytelling-hooks",
-    "coreyhaines31--ad-creative",
-    "gooseworks-ai--trending-ad-hook-spotter",
-    "zubair-trabzada--ads-hooks",
-    "robpalmer99--ad-copy",
-    "realkimbarrett--headline-matrix",
-    "coreyhaines31--customer-research",
-    "realkimbarrett--schwartz-awareness-mapper",
-    "avectats7--copy-that-sells"
-  ],
-  "claude-hooks": [
-    "zubair-trabzada--ads-hooks",
-    "robpalmer99--ad-copy",
-    "yaxeen--storytelling-hooks",
-    "sergebulaev--tt-hook-scripter",
-    "realkimbarrett--headline-matrix",
-    "gooseworks-ai--trending-ad-hook-spotter",
-    "realkimbarrett--ad-angle-multiplier",
-    "realkimbarrett--mechanism-builder",
-    "realkimbarrett--objection-crusher",
-    "coreyhaines31--social"
-  ],
-  "codex-static": [
-    "openai--imagegen",
-    "norahe0304-art--30x-image",
-    "buluslan--gpt-image2-ecommerce",
-    "coreyhaines31--ad-creative",
-    "agricidaniel--ads-generate",
-    "agricidaniel--ads-photoshoot",
-    "hyperfx-ai--ad-creative-generation",
-    "anthropics--canvas-design",
-    "inference-sh--nano-banana-2",
-    "avectats7--copy-that-sells"
-  ],
-  "claude-static": [
-    "buluslan--gpt-image2-ecommerce",
-    "anthropics--canvas-design",
-    "agricidaniel--ads-photoshoot",
-    "agricidaniel--ads-generate",
-    "hyperfx-ai--ad-creative-generation",
-    "alirezarezvani--ad-creative",
-    "openai--imagegen",
-    "norahe0304-art--30x-image",
-    "inference-sh--social-media-carousel",
-    "agricidaniel--ads-creative"
-  ],
-  "codex-copywriting": [
-    "coreyhaines31--copywriting",
-    "avectats7--copy-that-sells",
-    "coreyhaines31--copy-editing",
-    "robpalmer99--copychief",
-    "robpalmer99--ad-copy",
-    "zubair-trabzada--ads-copy",
-    "sergebulaev--tt-humanizer",
-    "coreyhaines31--product-marketing",
-    "coreyhaines31--customer-research",
-    "robpalmer99--landing-page-copy"
-  ],
-  "claude-copywriting": [
-    "robpalmer99--ad-copy",
-    "avectats7--copy-that-sells",
-    "robpalmer99--copychief",
-    "coreyhaines31--copywriting",
-    "alirezarezvani--copywriting",
-    "zubair-trabzada--ads-copy",
-    "sergebulaev--tt-humanizer",
-    "robpalmer99--direct-response-copy",
-    "alirezarezvani--copy-editing",
-    "realkimbarrett--generic-language-killer"
-  ]
+  "static": {
+    "codex-hooks": [
+      "sergebulaev--tt-hook-scripter",
+      "yaxeen--storytelling-hooks",
+      "coreyhaines31--ad-creative",
+      "gooseworks-ai--trending-ad-hook-spotter",
+      "zubair-trabzada--ads-hooks",
+      "robpalmer99--ad-copy",
+      "realkimbarrett--headline-matrix",
+      "coreyhaines31--customer-research",
+      "realkimbarrett--schwartz-awareness-mapper",
+      "avectats7--copy-that-sells"
+    ],
+    "claude-hooks": [
+      "zubair-trabzada--ads-hooks",
+      "robpalmer99--ad-copy",
+      "yaxeen--storytelling-hooks",
+      "sergebulaev--tt-hook-scripter",
+      "realkimbarrett--headline-matrix",
+      "gooseworks-ai--trending-ad-hook-spotter",
+      "realkimbarrett--ad-angle-multiplier",
+      "realkimbarrett--mechanism-builder",
+      "realkimbarrett--objection-crusher",
+      "coreyhaines31--social"
+    ],
+    "codex-static": [
+      "openai--imagegen",
+      "norahe0304-art--30x-image",
+      "buluslan--gpt-image2-ecommerce",
+      "coreyhaines31--ad-creative",
+      "agricidaniel--ads-generate",
+      "agricidaniel--ads-photoshoot",
+      "hyperfx-ai--ad-creative-generation",
+      "anthropics--canvas-design",
+      "inference-sh--nano-banana-2",
+      "avectats7--copy-that-sells"
+    ],
+    "claude-static": [
+      "buluslan--gpt-image2-ecommerce",
+      "anthropics--canvas-design",
+      "agricidaniel--ads-photoshoot",
+      "agricidaniel--ads-generate",
+      "hyperfx-ai--ad-creative-generation",
+      "alirezarezvani--ad-creative",
+      "openai--imagegen",
+      "norahe0304-art--30x-image",
+      "inference-sh--social-media-carousel",
+      "agricidaniel--ads-creative"
+    ],
+    "codex-copywriting": [
+      "coreyhaines31--copywriting",
+      "avectats7--copy-that-sells",
+      "coreyhaines31--copy-editing",
+      "robpalmer99--copychief",
+      "robpalmer99--ad-copy",
+      "zubair-trabzada--ads-copy",
+      "sergebulaev--tt-humanizer",
+      "coreyhaines31--product-marketing",
+      "coreyhaines31--customer-research",
+      "robpalmer99--landing-page-copy"
+    ],
+    "claude-copywriting": [
+      "robpalmer99--ad-copy",
+      "avectats7--copy-that-sells",
+      "robpalmer99--copychief",
+      "coreyhaines31--copywriting",
+      "alirezarezvani--copywriting",
+      "zubair-trabzada--ads-copy",
+      "sergebulaev--tt-humanizer",
+      "robpalmer99--direct-response-copy",
+      "alirezarezvani--copy-editing",
+      "realkimbarrett--generic-language-killer"
+    ]
+  },
+  "motion": {
+    "codex-video": [
+      "remotion-dev--remotion-best-practices",
+      "iart-ai--ad-creative-video",
+      "nyosegawa--remotion-promo-video-factory",
+      "openai--speech",
+      "gooseworks-ai--review-ugc-render",
+      "coreyhaines31--video",
+      "remotion-dev--remotion-captions",
+      "inference-sh--seedance",
+      "zubair-trabzada--ads-video",
+      "yaxeen--retention-audit"
+    ],
+    "claude-video": [
+      "iart-ai--ad-creative-video",
+      "zubair-trabzada--ads-video",
+      "nyosegawa--remotion-promo-video-factory",
+      "remotion-dev--remotion-best-practices",
+      "hyperfx-ai--video-generation",
+      "inference-sh--ai-marketing-videos",
+      "inference-sh--talking-head-production",
+      "openai--speech",
+      "iart-ai--launch-video",
+      "gooseworks-ai--review-ugc-render"
+    ],
+    "codex-hooks": [
+      "sergebulaev--tt-hook-scripter",
+      "yaxeen--storytelling-hooks",
+      "coreyhaines31--ad-creative",
+      "gooseworks-ai--trending-ad-hook-spotter",
+      "zubair-trabzada--ads-hooks",
+      "robpalmer99--ad-copy",
+      "realkimbarrett--headline-matrix",
+      "coreyhaines31--customer-research",
+      "realkimbarrett--schwartz-awareness-mapper",
+      "avectats7--copy-that-sells"
+    ],
+    "claude-hooks": [
+      "zubair-trabzada--ads-hooks",
+      "robpalmer99--ad-copy",
+      "yaxeen--storytelling-hooks",
+      "sergebulaev--tt-hook-scripter",
+      "realkimbarrett--headline-matrix",
+      "gooseworks-ai--trending-ad-hook-spotter",
+      "realkimbarrett--ad-angle-multiplier",
+      "realkimbarrett--mechanism-builder",
+      "realkimbarrett--objection-crusher",
+      "coreyhaines31--social"
+    ],
+    "codex-copywriting": [
+      "coreyhaines31--copywriting",
+      "avectats7--copy-that-sells",
+      "coreyhaines31--copy-editing",
+      "robpalmer99--copychief",
+      "robpalmer99--ad-copy",
+      "zubair-trabzada--ads-copy",
+      "sergebulaev--tt-humanizer",
+      "coreyhaines31--product-marketing",
+      "coreyhaines31--customer-research",
+      "robpalmer99--landing-page-copy"
+    ],
+    "claude-copywriting": [
+      "robpalmer99--ad-copy",
+      "avectats7--copy-that-sells",
+      "robpalmer99--copychief",
+      "coreyhaines31--copywriting",
+      "alirezarezvani--copywriting",
+      "zubair-trabzada--ads-copy",
+      "sergebulaev--tt-humanizer",
+      "robpalmer99--direct-response-copy",
+      "alirezarezvani--copy-editing",
+      "realkimbarrett--generic-language-killer"
+    ]
+  }
 }

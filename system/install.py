@@ -3,8 +3,13 @@ import argparse,hashlib,json,os,shutil
 from pathlib import Path
 # install.py lives in system/; the unpacked packs sit in you-can-install-skill/ at the root.
 ROOT=Path(__file__).resolve().parents[1]
-CHOICES={'codex':['meta-ads-static-codex','meta-ads-static-team-codex-and-claude-code'],
-         'claude':['meta-ads-static-claude-code','meta-ads-static-team-claude-code-and-codex']}
+# Two scopes, two runtimes, two modes. A pack is chosen by all three, and the
+# default installs the four editions that fit the runtime you name.
+CHOICES={'codex':{'static':['meta-ads-static-codex','meta-ads-static-team-codex-and-claude-code'],
+                  'motion':['video-ads-codex','video-ads-codex-claude-code']},
+         'claude':{'static':['meta-ads-static-claude-code','meta-ads-static-team-claude-code-and-codex'],
+                   'motion':['video-ads-claude-code','video-ads-claude-code-codex']}}
+SCOPES=['static','motion']
 
 def inventory(root):
     result={}
@@ -14,9 +19,10 @@ def inventory(root):
             result[p.relative_to(root).as_posix()]=hashlib.sha256(p.read_bytes()).hexdigest()
     return result
 
-def install(runtime,mode='both',project=None,target_root=None,apply=False):
+def install(runtime,mode='both',project=None,target_root=None,apply=False,scope='both'):
     if runtime not in CHOICES:raise ValueError('Unknown runtime')
     if mode not in ['solo','team','both']:raise ValueError('Unknown mode')
+    if scope not in SCOPES+['both']:raise ValueError('Unknown scope')
     if project and target_root:raise ValueError('Choose project or target-root, not both')
     if project:
         parent=Path(project).expanduser().resolve(strict=True)
@@ -27,7 +33,10 @@ def install(runtime,mode='both',project=None,target_root=None,apply=False):
     # Resolve legitimate system aliases (for example macOS /var), but refuse a redirected target leaf.
     if target.is_symlink():raise ValueError('Refusing symlinked installation target')
     target=target.resolve()
-    names=CHOICES[runtime] if mode=='both' else [CHOICES[runtime][0 if mode=='solo' else 1]]
+    names=[]
+    for one in (SCOPES if scope=='both' else [scope]):
+        picks=CHOICES[runtime][one]
+        names+=picks if mode=='both' else [picks[0 if mode=='solo' else 1]]
     plans=[]
     for name in names:
         source=ROOT/'you-can-install-skill'/name
@@ -53,7 +62,7 @@ def install(runtime,mode='both',project=None,target_root=None,apply=False):
     return plans
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--runtime',choices=CHOICES,required=True);p.add_argument('--mode',choices=['solo','team','both'],default='both');g=p.add_mutually_exclusive_group();g.add_argument('--project');g.add_argument('--target-root');p.add_argument('--apply',action='store_true');a=p.parse_args()
-    try:print(json.dumps(install(a.runtime,a.mode,a.project,a.target_root,a.apply),indent=2))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--runtime',choices=CHOICES,required=True);p.add_argument('--mode',choices=['solo','team','both'],default='both');p.add_argument('--scope',choices=SCOPES+['both'],default='both');g=p.add_mutually_exclusive_group();g.add_argument('--project');g.add_argument('--target-root');p.add_argument('--apply',action='store_true');a=p.parse_args()
+    try:print(json.dumps(install(a.runtime,a.mode,a.project,a.target_root,a.apply,a.scope),indent=2))
     except (OSError,ValueError) as e:p.exit(1,str(e)+'\n')
 if __name__=='__main__':main()
