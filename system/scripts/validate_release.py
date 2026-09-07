@@ -4,6 +4,10 @@ from pathlib import Path
 from build import SCOPES,NAMES,ROOT,BUILD,COMMON_REFERENCES
 
 GENERATED=['SKILL.md','LICENSE','THIRD_PARTY_NOTICES.md','install-this-skill.md','manifest.json']
+# Extensions we require to decode as UTF-8. Anything else that decodes is scanned
+# too; a credential does not become safe by sitting in a file called notes.txt.
+TEXT=['.md','.py','.json','.jsonl','.yaml','.yml']
+SECRETS=[r'[A-Za-z]:[/\\]Users[/\\]',r'gh[pousr]_[A-Za-z0-9]{30,}',r'sk-[A-Za-z0-9]{24,}',r'(?i)Bearer\s+[A-Za-z0-9_\-]{24,}']
 LINK=re.compile(r'\[[^\]]*\]\(([^)]+)\)')
 
 def local_links(file,errors,root):
@@ -95,11 +99,12 @@ def validate(root=None,build=None,report=True):
    # A pack that tells the assistant to run a script it does not carry is worse
    # than one that stays silent: the instruction reads as a promise, and the
    # obvious recovery is to write the missing script and run that instead.
-   carried={s.name for s in (p/'scripts').glob('*')} if (p/'scripts').is_dir() else set()
    for file in p.rglob('*.md'):
     local_links(file,errors,root)
-    for cited in sorted(set(re.findall(r'scripts/([A-Za-z0-9_.-]+\.(?:py|mjs|js|sh))',file.read_text(encoding='utf-8')))):
-     if cited not in carried:errors.append('Script cited but not shipped in '+name+': '+cited)
+    # Subdirectories count, and a directory that happens to end in .py is not a
+    # script: the question is whether the assistant can run what it was told to run.
+    for cited in sorted(set(re.findall(r'scripts/([A-Za-z0-9_./-]*[A-Za-z0-9_-]\.(?:py|mjs|js|sh))',file.read_text(encoding='utf-8')))):
+     if '..' in cited.split('/') or not (p/'scripts'/cited).is_file():errors.append('Script cited but not shipped in '+name+': '+cited)
    zpath=root/f'install-{name}.zip'
    with zipfile.ZipFile(zpath) as z:
     actual={i.filename:z.read(i.filename) for i in z.infolist()}
@@ -129,13 +134,20 @@ def validate(root=None,build=None,report=True):
   if '.git' in file.parts or (build/'src') in file.parents:continue
   if (root/'you-can-install-skill') in file.parents and file.parent!=root/'you-can-install-skill':continue
   local_links(file,errors,root)
+ # The two files that must contain these patterns are exempt by path, not by name,
+ # so a file merely called check_artifact.py is scanned like everything else.
+ scanners={build/'src/common/scripts/check_artifact.py',build/'scripts/validate_release.py'}
+ scanners|={root/'you-can-install-skill'/n/'scripts/check_artifact.py' for n in NAMES}
  for file in root.rglob('*'):
   if not file.is_file() or '.git' in file.parts or '__pycache__' in file.parts or file.suffix=='.zip':continue
-  if file.suffix in ['.md','.py','.json','.jsonl','.yaml','.yml']:
-   try:text=file.read_text(encoding='utf-8')
-   except (OSError,UnicodeDecodeError):errors.append('Unreadable release file '+str(file.relative_to(root)));continue
-   patterns=[r'[A-Za-z]:[/\\]Users[/\\]',r'gh[pousr]_[A-Za-z0-9]{30,}',r'sk-[A-Za-z0-9]{24,}',r'(?i)Bearer\s+[A-Za-z0-9_\-]{24,}']
-   if file.name not in ['validate_release.py','check_artifact.py'] and any(re.search(x,text) for x in patterns):errors.append('Potential private data '+str(file.relative_to(root)))
+  try:text=file.read_text(encoding='utf-8')
+  except OSError:errors.append('Unreadable release file '+str(file.relative_to(root)));continue
+  except UnicodeDecodeError:
+   # Not text, so it cannot carry a credential as text. Only the formats we promise
+   # to publish as UTF-8 are an error when they fail to decode.
+   if file.suffix in TEXT:errors.append('Unreadable release file '+str(file.relative_to(root)))
+   continue
+  if file not in scanners and any(re.search(x,text) for x in SECRETS):errors.append('Potential private data '+str(file.relative_to(root)))
  if report:print(json.dumps({'errors':errors,'skill_count':len(skills),'source_count':len(source),'zip_count':len(archives)},indent=2))
  return errors
 if __name__=='__main__':raise SystemExit(bool(validate()))

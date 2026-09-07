@@ -20,7 +20,9 @@ Represent competing hypotheses: a buyer who already uses a workaround needs diff
 
 ## The register question, which is blocking
 
-One question is specific to video and must be asked rather than assumed: **what register is this brand allowed to speak in?** Serious and restrained, native and informal, cinematic, documentary, or deliberately unpolished. A law firm and a snack brand sell on the same platform and cannot use the same grammar. Getting this wrong produces a technically excellent video the client cannot publish, which is a total loss rather than a partial one.
+One question must be asked rather than assumed, in every pack: **what register is this brand allowed to speak in?** Serious and restrained, native and informal, cinematic, documentary, or deliberately unpolished. A law firm and a snack brand sell on the same platform and cannot use the same grammar. Getting this wrong produces a technically excellent creative the client cannot publish, which is a total loss rather than a partial one.
+
+The stakes are higher in the motion packs, because a register mistake in a video is carried by the voice, the pacing and the cut as well as by the words, and none of that can be edited out afterwards. It is the same question in the still packs and it costs the same minute to ask.
 
 If the user does not know, show three examples from the research pull and let them point. That takes a minute and settles it for good. Record the answer in the brief.
 

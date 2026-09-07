@@ -14,6 +14,7 @@ These are checked by a script, and every one of them fails with a non-zero exit 
 | New media requires a recorded approval | `check_artifact.py` | `test_generation_needs_recorded_approval` |
 | Provider, model or account changed after approval is refused | `check_artifact.py` | `test_generation_material_change_refused` |
 | A batch larger than the approved **item** ceiling is refused | `check_artifact.py` | `test_generation_over_approved_ceiling` |
+| An item that names nothing to produce is refused, so an empty batch cannot consume the ceiling | `check_artifact.py` | `test_generation_item_must_describe_something` |
 | A zero-credit account stops generation instead of falling back | `check_artifact.py` | `test_zero_credits_stops_generation` |
 | An approval dated in the future is refused | `check_artifact.py` | `test_future_dated_approval_refused` |
 | Narration longer than the scene it sits in is refused | `check_artifact.py` | `test_storyboard_measured_overrun` |
@@ -27,6 +28,7 @@ These are checked by a script, and every one of them fails with a non-zero exit 
 | A testimonial without a recorded verbatim quote is refused | `check_artifact.py` | `test_fake_testimonial` |
 | Declared prohibited terms are matched on the rendered copy | `check_artifact.py` | `test_red_line_on_rendered_copy` |
 | Copy over the declared character limits is refused | `check_artifact.py` | `test_placement_length_limits` |
+| Declared limits that are not an object are refused rather than silently replaced by the defaults, which would enforce a looser rule than the campaign asked for | `check_artifact.py` | `test_malformed_limits_refused` |
 | An unknown artifact kind is refused rather than half-checked | `check_artifact.py` | `test_unknown_kind_refused` |
 | Installation never overwrites an existing skill or user edit | `install.py` | `test_install_preview_idempotence_and_no_overwrite` |
 | Installation refuses a symlinked target or destination | `install.py` | `test_symlinked_ancestor_allowed_but_target_refused`, `test_symlinked_skill_destination_refused` |
@@ -45,9 +47,9 @@ Release integrity is enforced the same way, in `scripts/validate_release.py` and
 - `SHA256SUMS` must describe exactly the archives that are present, all eight of them, with matching digests.
 - Archive contents must equal the unpacked pack, file by file.
 - Every local Markdown link in the published tree must resolve.
-- A pack may not tell the assistant to run a script it does not carry. The instruction reads as a promise, and the obvious recovery is to write the missing script and run that instead. `test_script_cited_but_not_shipped_refused`
+- A pack may not tell the assistant to run a script it does not carry, in a subdirectory or otherwise, and a directory whose name ends in `.py` is not a script. The instruction reads as a promise, and the obvious recovery is to write the missing script and run that instead. `test_script_cited_but_not_shipped_refused`, `test_directory_named_like_a_script_is_not_a_script`
 - The committed packs must be byte-identical to what the committed sources rebuild, checked by `git diff --exit-code` in CI.
-- Windows user paths and common credential shapes must not appear in any published text.
+- Windows user paths and common credential shapes must not appear in any published text. Every file that decodes as UTF-8 is scanned, whatever its extension, and the two files that must contain those patterns are exempt by path rather than by name. `test_credential_in_an_unlisted_file_type_refused`, `test_file_named_like_the_scanner_is_still_scanned`
 
 These guarantees assume a Python interpreter is present. A ZIP install can land on a machine without one, so the packs check for it on the first task in a project and ask before installing anything, following `references/runtime.md`. With no interpreter, none of the refusals above happen and the assistant must say the checks did not run rather than let silence read as a pass.
 

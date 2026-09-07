@@ -14,6 +14,7 @@ releaser=load('releaser',BUILD/'scripts/validate_release.py')
 class ToolTests(unittest.TestCase):
  def brief(self):return {'schema_v':'1.0.0','kind':'brief','offer':'A fictional repair service','country':'FR','ad_language':'fr-FR','objective':'qualified inquiries','window':{'start':'2026-08-01','end':'2026-08-31'}}
  def creative(self):return {'schema_v':'1.0.0','kind':'creative','hook':'A clearer repair quote','ad_language':'en-GB','cta':'See the process','claims':[{'text':'Written scope included','proof_ids':['E1']}],'evidence':[{'id':'E1','type':'product_observed','source':'synthetic-fixture','supports':'Written scope is included'}]}
+ def storyboard(self):return {'schema_v':'1.0.0','kind':'storyboard','scenes':[{'start':0,'end':3,'visual':'product','voice':'demo','measured_voice_seconds':2}]}
  def test_complete_brief(self):self.assertEqual(checker.check(self.brief())[0],[])
  def test_missing_language(self):
   d=self.brief();d['ad_language']=' ';self.assertTrue(checker.check(d)[0])
@@ -72,10 +73,19 @@ class ToolTests(unittest.TestCase):
   for value in [True,-1,'many',float('inf')]:
    d=self.generation();d['credits_remaining']=value;self.assertTrue(checker.check(d)[0])
  def test_credentials_refused_in_every_kind(self):
-  for fixture in [self.brief,self.creative,self.generation]:
+  self.assertEqual(checker.check(self.storyboard())[0],[])
+  for fixture in [self.brief,self.creative,self.generation,self.storyboard]:
    d=fixture();d['notes']='authorization: Bearer '+'A'*32;self.assertTrue(checker.check(d)[0])
+   # A credential pasted as a field name travels exactly as far as one pasted as a value.
+   d=fixture();d['sk-'+'C'*30]='looks harmless';self.assertTrue(checker.check(d)[0])
  def test_credential_nested_in_evidence(self):
   d=self.creative();d['evidence'][0]['source']='api_key='+'B'*24;self.assertTrue(checker.check(d)[0])
+ def test_generation_item_must_describe_something(self):
+  for value in [None,'','   ',{},[],True,False,0,42]:
+   d=self.generation();d['items']=[value];self.assertTrue(checker.check(d)[0],repr(value)+' passed as an item')
+ def test_malformed_limits_refused(self):
+  for value in [[],'40',20]:
+   d=self.creative();d['limits']=value;self.assertTrue(checker.check(d)[0],repr(value)+' passed as limits')
  def test_placement_length_limits(self):
   d=self.creative();d['headline']='x'*41;self.assertTrue(checker.check(d)[0])
   d['headline']='x'*40;self.assertEqual(checker.check(d)[0],[])
@@ -168,9 +178,21 @@ class ReleaseRuleTests(unittest.TestCase):
   (tree/'you-can-install-skill/meta-ads-static-codex/modules'/(ident+'.md')).write_text('planted\n',encoding='utf-8')
   self.refused(tree,'Module from the other half shipped in meta-ads-static-codex')
  def test_script_cited_but_not_shipped_refused(self):
+  for cited in ['absent_helper.py','helpers/absent_helper.py']:
+   tree=self.copy();page=tree/'you-can-install-skill/video-ads-codex/references/scope.md'
+   page.write_text(page.read_text(encoding='utf-8')+'\nRun `scripts/'+cited+'` first.\n',encoding='utf-8')
+   self.refused(tree,'Script cited but not shipped in video-ads-codex: '+cited)
+ def test_directory_named_like_a_script_is_not_a_script(self):
   tree=self.copy();page=tree/'you-can-install-skill/video-ads-codex/references/scope.md'
-  page.write_text(page.read_text(encoding='utf-8')+'\nRun `scripts/absent_helper.py` first.\n',encoding='utf-8')
-  self.refused(tree,'Script cited but not shipped in video-ads-codex: absent_helper.py')
+  (tree/'you-can-install-skill/video-ads-codex/scripts/pretend.py').mkdir()
+  page.write_text(page.read_text(encoding='utf-8')+'\nRun `scripts/pretend.py` first.\n',encoding='utf-8')
+  self.refused(tree,'Script cited but not shipped in video-ads-codex: pretend.py')
+ def test_credential_in_an_unlisted_file_type_refused(self):
+  tree=self.copy();(tree/'notes.txt').write_text('sk-'+'D'*30+'\n',encoding='utf-8')
+  self.refused(tree,'Potential private data')
+ def test_file_named_like_the_scanner_is_still_scanned(self):
+  tree=self.copy();(tree/'check_artifact.py').write_text('KEY="sk-'+'E'*30+'"'+'\n',encoding='utf-8')
+  self.refused(tree,'Potential private data')
  def test_manifest_declaring_the_wrong_scope_refused(self):
   tree=self.copy();manifest=tree/'you-can-install-skill/video-ads-codex/manifest.json'
   data=json.loads(manifest.read_text(encoding='utf-8'));data['scope']='static'

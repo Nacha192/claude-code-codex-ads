@@ -43,7 +43,12 @@ def check(data):
         except (KeyError,TypeError,ValueError):errors.append('Window requires valid ISO start/end dates')
     elif kind=='creative':
         for k in ['hook','ad_language','cta']:need(data,k)
-        limits=data.get('limits') if isinstance(data.get('limits'),dict) else {}
+        declared=data.get('limits')
+        # A stricter campaign limit that arrives as a list or a number is a
+        # serialization mistake. Falling back to the defaults would enforce a
+        # looser rule than the one the campaign asked for, and say nothing.
+        if declared is not None and not isinstance(declared,dict):errors.append('limits must be an object');declared=None
+        limits=declared if isinstance(declared,dict) else {}
         # A misspelled override would otherwise disable a limit without saying so.
         for key in sorted(limits):
             if key not in LIMITS:errors.append('Unknown declared limit '+str(key))
@@ -116,8 +121,10 @@ def check(data):
             # An item has to name something to produce. A list of nulls or empty
             # objects would otherwise pass the ceiling check and authorize nothing.
             for i,item in enumerate(items):
-                empty=item is None or (isinstance(item,str) and not item.strip()) or (isinstance(item,(dict,list)) and not item)
-                if empty:errors.append(f'Item {i} describes nothing to generate')
+                if isinstance(item,str):usable=bool(item.strip())
+                elif isinstance(item,(dict,list)):usable=bool(item)
+                else:usable=False
+                if not usable:errors.append(f'Item {i} describes nothing to generate')
         approval=data.get('approval')
         if not isinstance(approval,dict):errors.append('New media requires a recorded approval object')
         else:
