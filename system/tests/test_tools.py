@@ -193,6 +193,10 @@ class ReleaseRuleTests(unittest.TestCase):
  def test_file_named_like_the_scanner_is_still_scanned(self):
   tree=self.copy();(tree/'check_artifact.py').write_text('KEY="sk-'+'E'*30+'"'+'\n',encoding='utf-8')
   self.refused(tree,'Potential private data')
+ def test_unknown_repository_name_refused(self):
+  tree=self.copy();page=tree/'README.md'
+  page.write_text(page.read_text(encoding='utf-8')+'\nSee https://github.com/Nacha192/a-repo-that-moved.\n',encoding='utf-8')
+  self.refused(tree,'Repository name that is not the published one')
  def test_manifest_declaring_the_wrong_scope_refused(self):
   tree=self.copy();manifest=tree/'you-can-install-skill/video-ads-codex/manifest.json'
   data=json.loads(manifest.read_text(encoding='utf-8'));data['scope']='static'

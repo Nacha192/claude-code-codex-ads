@@ -6,6 +6,13 @@ import json,shutil,zipfile,hashlib
 # layer + its entrypoint, so a rule written once reaches all eight.
 BUILD=Path(__file__).resolve().parents[1]
 ROOT=BUILD.parent
+# Published links are built from this name, so it has to be the name GitHub serves
+# today. Renaming the repository means changing this line and rebuilding. GitHub
+# redirects the old name afterwards, so links keep working through the change.
+REPO='claude-code-codex-ads-static'
+# Repositories the published text may point at: this one, and the duo method it is
+# built on. Any other name under that account is a name that drifted from reality.
+KNOWN_REPOS={REPO,'Codex-Claude-Code-team'}
 VERSION='3.0.0'
 HOST={'copy':('Draft in the target language using the brief and actual source records.','Use native file/MCP tools for the same brief; no Codex-only tool names.'),
 'research':('Use available web/library tools and record actual coverage.','Discover the connected research tools; use supplied exports if unavailable.'),
@@ -127,7 +134,7 @@ def main():
    shutil.copytree(layer,dest,dirs_exist_ok=True,ignore=shutil.ignore_patterns('__pycache__'))
    shutil.copyfile(BUILD/'src/entrypoints'/f'{name}.md',dest/'SKILL.md')
    shutil.copyfile(ROOT/'LICENSE',dest/'LICENSE')
-   write(dest/'THIRD_PARTY_NOTICES.md',(BUILD/'THIRD_PARTY_NOTICES.md').read_text(encoding='utf-8').replace('(research/sources.json)','(https://github.com/Nacha192/skill-claude-code-codex-ads/blob/main/system/research/sources.json)'))
+   write(dest/'THIRD_PARTY_NOTICES.md',(BUILD/'THIRD_PARTY_NOTICES.md').read_text(encoding='utf-8').replace('(research/sources.json)','(https://github.com/Nacha192/'+REPO+'/blob/main/system/research/sources.json)'))
    write(dest/'install-this-skill.md',f'# Install {name}\n\nKeep this entire folder together. Place it in the appropriate host skill directory, then restart/discover skills. See the repository install guide. The second brain and all advertising modules are already inside this folder. External provider accounts, a rendering toolchain and Agent Duet for team communication are capability dependencies, not included credentials, and this pack checks for them instead of assuming them.\n')
    write(dest/'manifest.json',json.dumps({'name':name,'version':VERSION,'core_v':'1.0.0','schema_v':'1.0.0','scope':scope,'integrated_second_brain':True,'inspected_entrypoints':inspected,'adaptations':len(list((layer/'modules').glob('*.md')))},indent=2)+'\n')
  # Drop artefacts of a previous, differently named build so the release cannot

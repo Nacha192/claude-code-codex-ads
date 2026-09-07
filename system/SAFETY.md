@@ -47,6 +47,7 @@ Release integrity is enforced the same way, in `scripts/validate_release.py` and
 - `SHA256SUMS` must describe exactly the archives that are present, all eight of them, with matching digests.
 - Archive contents must equal the unpacked pack, file by file.
 - Every local Markdown link in the published tree must resolve.
+- Published text may only name the repository GitHub actually serves, and the one external method it is built on. A name that drifts breaks the same link in all eight packs at once, and nothing offline would notice. `test_unknown_repository_name_refused`
 - A pack may not tell the assistant to run a script it does not carry, in a subdirectory or otherwise, and a directory whose name ends in `.py` is not a script. The instruction reads as a promise, and the obvious recovery is to write the missing script and run that instead. `test_script_cited_but_not_shipped_refused`, `test_directory_named_like_a_script_is_not_a_script`
 - The committed packs must be byte-identical to what the committed sources rebuild, checked by `git diff --exit-code` in CI.
 - Windows user paths and common credential shapes must not appear in any published text. Every file that decodes as UTF-8 is scanned, whatever its extension, and the two files that must contain those patterns are exempt by path rather than by name. `test_credential_in_an_unlisted_file_type_refused`, `test_file_named_like_the_scanner_is_still_scanned`

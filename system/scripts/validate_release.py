@@ -1,7 +1,7 @@
 """Validate package shape, local links, privacy patterns, checksums and archive contents."""
 import hashlib,json,re,zipfile
 from pathlib import Path
-from build import SCOPES,NAMES,ROOT,BUILD,COMMON_REFERENCES
+from build import SCOPES,NAMES,ROOT,BUILD,COMMON_REFERENCES,KNOWN_REPOS
 
 GENERATED=['SKILL.md','LICENSE','THIRD_PARTY_NOTICES.md','install-this-skill.md','manifest.json']
 # Extensions we require to decode as UTF-8. Anything else that decodes is scanned
@@ -129,6 +129,12 @@ def validate(root=None,build=None,report=True):
   if set(published)!={a.name for a in archives}:errors.append('SHA256SUMS does not list exactly the built archives')
   for archive in archives:
    if published.get(archive.name)!=hashlib.sha256(archive.read_bytes()).hexdigest():errors.append('Checksum mismatch for '+archive.name)
+ # A repository name that has drifted from the name GitHub serves is a link that
+ # 404s in every published pack at once, and no offline check would notice.
+ for file in root.rglob('*.md'):
+  if '.git' in file.parts:continue
+  for cited in sorted(set(re.findall(r'https://github\.com/Nacha192/([A-Za-z0-9._-]+)',file.read_text(encoding='utf-8')))):
+   if cited not in KNOWN_REPOS:errors.append('Repository name that is not the published one, in '+str(file.relative_to(root))+': '+cited)
  # Documentation outside the build sources: its links must resolve as published.
  for file in root.rglob('*.md'):
   if '.git' in file.parts or (build/'src') in file.parents:continue

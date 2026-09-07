@@ -2,7 +2,7 @@
 
 ## Version 3.0.0: one repository, eight packs, and the video half arrives
 
-The repository is now `skill-claude-code-codex-ads`. GitHub redirects the old URL, but update your remotes anyway.
+The repository answers to `claude-code-codex-ads-static`, which is the name GitHub serves; merging the two halves did not rename it. The earlier `claude-code-codex-ads` still redirects, but update your remotes anyway.
 
 Four video packs join the four still ones: `video-ads-codex`, `video-ads-claude-code`, `video-ads-codex-claude-code` and `video-ads-claude-code-codex`. The still packs keep their identifiers, and an installed one keeps working; nothing about its workflow was removed.
 
@@ -38,7 +38,7 @@ The archives follow the same pattern, `install-meta-ads-static-*.zip`, and the r
 
 Basic and advanced are also stated as modes rather than model tiers in this release. Any model the host exposes can run either mode; a stronger model sharpens each pass instead of unlocking it. Nothing about the required artifacts changed.
 
-This rebuild replaces the initial four distributions while preserving their Git history. The earlier source and rendering helpers remain inspectable at [the previous revision](https://github.com/Nacha192/skill-claude-code-codex-ads/tree/7982c9c99540302ee2a6ea3fec912f084c22b016). They are not silently executed or installed by this release.
+This rebuild replaces the initial four distributions while preserving their Git history. The earlier source and rendering helpers remain inspectable at [the previous revision](https://github.com/Nacha192/claude-code-codex-ads-static/tree/7982c9c99540302ee2a6ea3fec912f084c22b016). They are not silently executed or installed by this release.
 
 That release published four installation archives at the repository root, prefixed `install-`; since 3.0.0 there are eight. Optional external tools are described in `you-can-install-tools.md`. Internal research, copywriting and second-brain modules are included in every pack.
 
