@@ -40,7 +40,18 @@ jobs:
       # test that.
       - name: Install ffmpeg on Linux so the render tests really run
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        # The runner image adds third-party apt repositories this job never uses.
+        # One of them, Google Chrome, served an index whose hash did not match its
+        # own Release file, `apt-get update` exits 100 on that, and the run went red
+        # over something this repository does not ship. Keep the Ubuntu archive and
+        # drop the rest. Ignoring apt failures instead would also hide a real one.
+        run: |
+          if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then
+            sudo find /etc/apt/sources.list.d -type f ! -name 'ubuntu.sources' -delete
+          fi
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version | head -1
       - name: Install ffmpeg on macOS so the render tests really run there too
         if: runner.os == 'macOS'
         run: brew install ffmpeg
