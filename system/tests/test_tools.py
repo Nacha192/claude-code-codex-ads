@@ -1,4 +1,4 @@
-import copy,hashlib,importlib.util,json,shutil,subprocess,sys,tempfile,unittest
+import copy,hashlib,importlib.util,json,shutil,subprocess,sys,tempfile,unittest,zipfile
 from pathlib import Path
 BUILD=Path(__file__).resolve().parents[1]
 ROOT=BUILD.parent
@@ -489,16 +489,42 @@ class VideoInspectionTests(unittest.TestCase):
   self.assertEqual(e,[],'a complete forward run must validate')
 
 class BuildDeterminismTests(unittest.TestCase):
- def test_building_twice_produces_the_same_bytes(self):
-  """A build that differs run to run makes every checksum in the release meaningless."""
-  sums=ROOT/'SHA256SUMS'
-  before=sums.read_bytes()
-  zips={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(ROOT.glob('install-*.zip'))}
+ def build(self):
   run=subprocess.run([sys.executable,str(BUILD/'scripts/build.py')],cwd=ROOT,capture_output=True,text=True)
   self.assertEqual(run.returncode,0,run.stderr)
-  self.assertEqual(sums.read_bytes(),before,'SHA256SUMS changed on a rebuild of unchanged sources')
-  after={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(ROOT.glob('install-*.zip'))}
-  self.assertEqual(after,zips,'archive bytes changed on a rebuild of unchanged sources')
+  return ((ROOT/'SHA256SUMS').read_bytes(),
+          {p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(ROOT.glob('install-*.zip'))})
+ def test_building_twice_produces_the_same_bytes(self):
+  """A build that differs run to run makes every checksum in the release meaningless.
+
+  Compared between two builds in the same environment, which is the claim that
+  holds everywhere. It is deliberately not compared against the committed archives:
+  DEFLATE output is a property of the zlib the interpreter was linked against, so
+  byte equality across machines is not something this repository can promise, and
+  the workflow already says so. What must be true everywhere is that the archives
+  carry exactly the committed packs, and that is checked by content just below and
+  file by file in validate_release.
+  """
+  first=self.build();second=self.build()
+  self.assertEqual(second[0],first[0],'SHA256SUMS changed on a rebuild of unchanged sources')
+  self.assertEqual(second[1],first[1],'archive bytes changed on a rebuild of unchanged sources')
+ def test_each_archive_carries_exactly_the_committed_pack(self):
+  """Portable where byte equality is not: the same names and the same contents."""
+  for pack in sorted((ROOT/'you-can-install-skill').iterdir()):
+   if not pack.is_dir():continue
+   expected={f.relative_to(ROOT/'you-can-install-skill').as_posix():f.read_bytes()
+             for f in pack.rglob('*') if f.is_file() and '__pycache__' not in f.parts}
+   with zipfile.ZipFile(ROOT/('install-'+pack.name+'.zip')) as z:
+    self.assertEqual({i.filename:z.read(i.filename) for i in z.infolist()},expected,pack.name)
+ def test_archive_order_does_not_depend_on_the_operating_system(self):
+  """Path objects compare case-insensitively on Windows and case-sensitively
+  everywhere else, so sorting them wrote LICENSE and examples/ in one order here
+  and the opposite order on Linux. Same sources, two different archives, two
+  different checksums, and a CI failure that reads like a stale build."""
+  for pack in sorted(ROOT.glob('install-*.zip')):
+   with zipfile.ZipFile(pack) as z:
+    names=z.namelist()
+    self.assertEqual(names,sorted(names),pack.name+' is not ordered by its archive names')
  def test_no_cache_or_temporary_file_ships(self):
   bad=[]
   for pack in sorted((ROOT/'you-can-install-skill').iterdir()):

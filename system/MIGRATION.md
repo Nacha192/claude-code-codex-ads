@@ -1,5 +1,31 @@
 # Migration from the initial distribution
 
+## Version 4.0.2: the archive order depended on the operating system
+
+Continuous integration had been red on every commit for five releases and nobody,
+me included, had looked at it. The failing test was the build determinism one, and
+the cause was real.
+
+**The ZIP entry order was platform-dependent.** `build.py` sorted `Path` objects.
+Path comparison is case-insensitive on Windows and case-sensitive everywhere else,
+so `examples/` was written before `LICENSE` on Windows and after it on Linux. The
+same sources produced two different archives with two different checksums depending
+on who ran the build. `validate_release` compared archive contents as a dictionary,
+so the order never registered, and the ZIP check passed while the archives differed.
+The build now sorts by the archive name.
+
+**The determinism test claimed something no repository can promise.** It compared a
+fresh build against the committed archives, so it asserted byte equality across
+machines. DEFLATE output belongs to the zlib the interpreter was linked against,
+which the workflow file already said in a comment while the test contradicted it. It
+now compares two builds in the same environment, which is the property that makes a
+checksum meaningful, and two portable rules were added beside it: each archive must
+carry exactly the committed pack, and its entry order must be the same everywhere.
+
+**CI now installs ffmpeg on Linux.** Seven measurement tests were skipping there, so
+the half of quality control this repository is about was never exercised in
+integration.
+
 ## Version 4.0.1: the defects an adversarial pass found in 4.0.0
 
 Six fixes in the two motion scripts and one in the release validator. No file was

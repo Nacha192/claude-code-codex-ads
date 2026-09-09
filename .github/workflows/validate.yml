@@ -21,6 +21,11 @@ jobs:
       # already describe the packs a visitor downloads, before anything rebuilds.
       - name: Validate the committed release
         run: python system/scripts/validate_release.py
+      # Without ffmpeg the seven measurement tests skip, and the half of quality
+      # control this repository is actually about is never exercised in CI.
+      - name: Install ffmpeg so the measurement tests really run
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - run: python -m unittest discover -s system/tests -v
       - run: python system/scripts/build.py
       # The committed packs must be exactly what the committed sources produce.

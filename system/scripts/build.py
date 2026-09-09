@@ -13,7 +13,7 @@ REPO='skill-claude-code-codex-ads'
 # Repositories the published text may point at: this one, and the duo method it is
 # built on. Any other name under that account is a name that drifted from reality.
 KNOWN_REPOS={REPO,'Codex-Claude-Code-team'}
-VERSION='4.0.1'
+VERSION='4.0.2'
 HOST={'copy':('Draft in the target language using the brief and actual source records.','Use native file/MCP tools for the same brief; no Codex-only tool names.'),
 'research':('Use available web/library tools and record actual coverage.','Discover the connected research tools; use supplied exports if unavailable.'),
 'image':('Use the actual available image tool or editable composition workflow after approval.','Use a connected image/Design tool or an explicitly requested genuine Codex peer in team mode; never simulate image generation.'),
@@ -146,9 +146,15 @@ def main():
  checks={}
  for name in NAMES:
   path=ROOT/f'install-{name}.zip'
+  pack=ROOT/'you-can-install-skill'/name
+  # Sorted by the archive name, not by the Path object. Path comparison is
+  # case-insensitive on Windows and case-sensitive elsewhere, so sorting Paths put
+  # examples/ before LICENSE here and LICENSE before examples/ on Linux: the same
+  # sources produced two different archives depending on who ran the build.
+  members=sorted((f for f in pack.rglob('*') if f.is_file() and '__pycache__' not in f.parts),
+                 key=lambda f:f.relative_to(ROOT/'you-can-install-skill').as_posix())
   with zipfile.ZipFile(path,'w',compression=zipfile.ZIP_DEFLATED) as z:
-   for file in sorted((ROOT/'you-can-install-skill'/name).rglob('*')):
-    if not file.is_file() or '__pycache__' in file.parts:continue
+   for file in members:
     info=zipfile.ZipInfo(file.relative_to(ROOT/'you-can-install-skill').as_posix(),date_time=(2026,9,6,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o644<<16
     z.writestr(info,file.read_bytes())
   checks[path.name]=hashlib.sha256(path.read_bytes()).hexdigest()
