@@ -1,5 +1,23 @@
 # Migration from the initial distribution
 
+## Version 4.0.3: resolve both sides of a path, or neither
+
+Fixing the archive order moved the integration failure from Linux to macOS, where
+it exposed a second defect of the same family. A temporary directory on macOS lives
+under `/var`, which is a symlink to `/private/var`. `reachable()` in the release
+validator resolved the link targets it followed and left the pack path unresolved,
+so `relative_to` raised `ValueError` and every one of the thirteen release rules
+errored at once. No local run could produce it, because it needs a redirected
+ancestor. The pack is resolved now, and a test builds that exact shape with a
+symlink where one is allowed and a directory junction otherwise.
+
+Every other pairing of `resolve()` and `relative_to` in the repository was audited
+and each one already resolved both sides or neither. This was the only mismatch.
+
+The CI matrix no longer fails fast. The first failure was cancelling the other
+runner, which threw away half the information about a cross-platform defect exactly
+when it was needed.
+
 ## Version 4.0.2: the archive order depended on the operating system
 
 Continuous integration had been red on every commit for five releases and nobody,

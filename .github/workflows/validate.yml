@@ -9,6 +9,10 @@ permissions:
 jobs:
   validate:
     strategy:
+      # Both runners always report. With fail-fast the first failure cancelled the
+      # other, so half the information about a cross-platform defect was thrown away
+      # exactly when it was needed.
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}

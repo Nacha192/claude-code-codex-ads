@@ -82,7 +82,7 @@ Release integrity is enforced the same way, in `scripts/validate_release.py` and
 - Every route the build knows must point at a reference that exists, so a renamed file cannot leave modules pointing into space.
 - No still-creative source may be built into a motion pack, and none of the motion sources into a still pack. The split is checked in both directions, because it is the thing this repository exists to keep. `test_source_card_from_the_other_half_refused`
 - The shared trunk is a declared list in `build.py`, and the tree must match it in both directions. A craft file moved into the trunk, a trunk file deleted, a source card dropped in, or a name defined in both the trunk and a craft layer: each is refused, because that is how the split would erode quietly. `test_undeclared_trunk_reference_refused`, `test_declared_trunk_reference_removed_refused`, `test_source_card_in_the_shared_trunk_refused`, `test_name_defined_in_trunk_and_layer_refused`
-- A reference no entrypoint can reach by following links is refused rather than shipped as dead weight. `test_reference_no_entrypoint_can_reach_refused`
+- A reference no entrypoint can reach by following links is refused rather than shipped as dead weight, and the reachability walk survives a redirected ancestor: it resolves the pack as well as the link targets, or the two sides cannot be compared at all. `test_reference_no_entrypoint_can_reach_refused`, `test_reachability_survives_a_symlinked_ancestor`
 - Every pack's manifest must declare the scope it was actually built from. `test_manifest_declaring_the_wrong_scope_refused`
 - `SHA256SUMS` must describe exactly the archives that are present, all eight of them, with matching digests.
 - Archive contents must equal the unpacked pack, file by file.

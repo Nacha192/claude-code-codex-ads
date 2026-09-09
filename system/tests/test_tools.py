@@ -183,6 +183,24 @@ class ReleaseRuleTests(unittest.TestCase):
  def refused(self,tree,fragment):
   found=self.check(tree)
   self.assertTrue(any(fragment in e for e in found),fragment+' not refused; got '+repr(found[:4]))
+ def test_reachability_survives_a_symlinked_ancestor(self):
+  """A temporary directory on macOS lives under /var, which is a symlink to
+  /private/var. reachable() resolved the link targets and not the pack, so
+  relative_to raised and every release rule errored at once. The failure needs a
+  redirected ancestor, which is why no local run ever saw it."""
+  with tempfile.TemporaryDirectory() as box:
+   root=Path(box)/'real';root.mkdir()
+   pack=root/'video-ads-codex'
+   shutil.copytree(ROOT/'you-can-install-skill/video-ads-codex',pack)
+   alias=Path(box)/'alias'
+   try:alias.symlink_to(root,target_is_directory=True)
+   except (OSError,NotImplementedError):
+    r=subprocess.run(['cmd','/c','mklink','/J',str(alias),str(root)],capture_output=True)
+    if r.returncode!=0 or not alias.exists():self.skipTest('no way to make a directory link here')
+   direct=releaser.reachable(pack)
+   through=releaser.reachable(alias/'video-ads-codex')
+   self.assertTrue(direct,'the pack must reach something at all')
+   self.assertEqual(through,direct,'a redirected ancestor must not change what is reachable')
  def test_a_clean_copy_of_the_release_passes(self):self.assertEqual(self.check(self.copy()),[])
  def test_source_card_in_the_shared_trunk_refused(self):
   tree=self.copy();(tree/'system/src/common/modules').mkdir(parents=True,exist_ok=True)

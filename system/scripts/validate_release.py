@@ -24,7 +24,14 @@ def files_under(root):
  return {f.relative_to(root).as_posix():f for f in root.rglob('*') if f.is_file() and '__pycache__' not in f.parts}
 
 def reachable(pack):
- """Every .md a reader can actually get to by following links from SKILL.md."""
+ """Every .md a reader can actually get to by following links from SKILL.md.
+
+ The pack is resolved first because the link targets below are resolved. On macOS
+ a temporary directory sits under /var, which is a symlink to /private/var, so
+ comparing a resolved target against an unresolved pack raised ValueError and took
+ every release rule down with it. Resolve both sides or neither, never one.
+ """
+ pack=pack.resolve()
  seen=set();queue=[pack/'SKILL.md']
  while queue:
   f=queue.pop()
