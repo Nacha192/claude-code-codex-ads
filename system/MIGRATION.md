@@ -1,5 +1,56 @@
 # Migration from the initial distribution
 
+## Version 4.2.0: the manifest declared a reserve the engine never read
+
+Every format has always carried `safe_zones`, the slice of the frame the platform
+paints its own interface over. The engine read the project grid instead and applied
+one pair of numbers to all three ratios. So the vertical's reserve, correctly the
+largest, was also applied to the landscape, which threw away a tenth of a picture
+nothing was ever going to cover, and the square kept a bottom margin sized for a
+Reels caption bar it does not have.
+
+The engine now reads each format's own zones and falls back to the grid only when a
+format declares none. The shipped example was itself wrong on this and is corrected:
+it declared 8% clear at the top of a 9:16 while `thresholds.md`, in the same pack,
+asks for 14%. The validator now warns when a format undercuts that documented figure
+and names the number, and refuses a zone written in pixels.
+
+**Legibility is now checked rather than left to whoever opens the export.** Three
+things that decide whether an ad is read were decidable all along and nothing decided
+them:
+
+- **Contrast.** Copy is measured against the ground the manifest names, on the WCAG
+  ratio. Under 3:1 is an error, under 4.5:1 a warning. Over a picture nothing is
+  computed, because a number invented from a token that was never on screen is worse
+  than no number.
+- **Reading rate.** A cue under 0.6 seconds is an error, one running faster than 22
+  characters a second or longer than 42 characters is a warning. The rule that a cue
+  is two to four words was written in `video-assembly.md` and enforced nowhere.
+- **The first second.** Most impressions are muted and scrolled. A first scene whose
+  text all arrives after one second warns, because a hook that exists only in the
+  narration is not a hook.
+
+None of this says the ad is good. It says the file can be read, which is the part that
+is arithmetic. What is left is genuinely a human judgement and stays in
+`creative-qa.md`.
+
+**In the still packs**, `references/image-prompting.md` is new: the slot order a model
+actually weights, the three ways a generated image fails as an ad, the parameters worth
+setting deliberately, and the canvas trap. That last one is concrete. The guide's custom
+sizes must be multiples of 16, and **1080, 1350 and 1920 are not**, so none of Meta's
+canvases can be requested directly. The legal frames with the exact same ratios are
+1088x1360, 1152x2048, 1088x1088 and 2048x1152, generated above the delivery size and
+resampled down.
+
+Dated model facts are recorded rather than implied, because they expire: OpenAI's
+Videos API and the `sora-2` and `sora-2-pro` models were notified for removal on
+2026-03-24 and are listed for shutdown on **2026-09-24**, and `gpt-image-1` on
+2026-10-23. A pipeline written against any of them has a deadline on it. This is also
+the answer to "a model makes videos, so why compose anything": generation returns
+shots, and an ad is shots cut to a duration, composed per placement, captioned from
+the final take and mixed to a declared loudness. The generation route is the half that
+expires; the composition step is the half that does not.
+
 ## Version 4.1.0: the pack could judge a video and not make one
 
 Four releases of rules about rendering, and nothing in the repository rendered. The

@@ -738,6 +738,79 @@ class MotionEngineTests(unittest.TestCase):
    d=self.render_project();d['scenes'][0]['layers']=value
    self.assertTrue(motion.check(d)[0],repr(value))
 
+ def test_each_ratio_keeps_its_own_reserve_for_the_platform(self):
+  """A vertical loses a fifth of its height to the interface and a feed square loses
+  almost none. The manifest has always declared this per format; reading only the
+  project grid applied the strictest ratio's reserve to all three."""
+  d=self.design();m=self.manifest()
+  lays={f['ratio']:engine.layout_for(f,d) for f in m['formats']}
+  for ratio,lay in lays.items():
+   zones=next(f['safe_zones'] for f in m['formats'] if f['ratio']==ratio)
+   self.assertEqual(lay['safe_bottom'],int(lay['height']*zones['bottom']),ratio)
+   self.assertEqual(lay['safe_top'],int(lay['height']*zones['top']),ratio)
+   self.assertEqual(lay['margin'],int(lay['width']*zones['left']),ratio)
+   self.assertEqual(lay['margin_right'],int(lay['width']*zones['right']),ratio)
+  # Expressed as a fraction so the three are compared rather than their pixel counts.
+  reserved={r:round(l['safe_bottom']/l['height'],3) for r,l in lays.items()}
+  self.assertEqual(len(set(reserved.values())),3,reserved)
+  self.assertGreater(reserved['9:16'],reserved['16:9'])
+ def test_a_format_with_no_safe_zones_falls_back_to_the_project_grid(self):
+  d=self.design();fmt=dict(self.fmt('9:16'));fmt.pop('safe_zones',None)
+  lay=engine.layout_for(fmt,d)
+  self.assertEqual(lay['safe_bottom'],int(1920*float(d['grid']['safe_bottom'])))
+  self.assertEqual(lay['safe_top'],int(1920*float(d['grid']['safe_top'])))
+ def test_a_thinner_reserve_than_the_documented_one_warns(self):
+  d=self.render_project()
+  d['formats'][0]['safe_zones']['bottom']=0.05
+  e,w=motion.check(d)
+  self.assertEqual(e,[])
+  self.assertTrue(any('thresholds.md' in x for x in w))
+ def test_a_reserve_given_in_pixels_is_refused(self):
+  for value in [200,1.5,-0.1,'0.2',True]:
+   d=self.render_project();d['formats'][0]['safe_zones']['bottom']=value
+   self.assertTrue(motion.check(d)[0],repr(value))
+ def test_copy_the_viewer_cannot_read_is_refused(self):
+  """Contrast is the part of legibility that is arithmetic, so it is checked rather
+  than left to whoever looks at the export."""
+  d=self.render_project()
+  scene=next(s for s in d['scenes']
+             if not any(l['kind'] in ('image','video') for l in s['layers']))
+  for l in scene['layers']:
+   if l['kind']=='text':l['colour']='support'
+  e,_w=motion.check(d)
+  self.assertTrue(any('decoration' in x for x in e),e)
+ def test_contrast_is_not_guessed_over_a_picture(self):
+  """A number invented from a token that was never on screen is worse than none."""
+  d=self.render_project()
+  scene=next(s for s in d['scenes'] if any(l['kind'] in ('image','video') for l in s['layers']))
+  for l in scene['layers']:
+   if l['kind']=='text':l['colour']='support'
+  self.assertFalse([x for x in motion.check(d)[0] if 'decoration' in x])
+ def test_a_caption_gone_before_it_is_read_is_refused(self):
+  d=self.render_project();cue=d['captions']['cues'][0]
+  cue['end']=cue['start']+0.3
+  self.assertTrue(any('before it is read' in x for x in motion.check(d)[0]))
+ def test_a_caption_that_is_a_sentence_warns(self):
+  d=self.render_project()
+  d['captions']['cues'][0]['text']='Un entretien de chaudiere a prix fixe pour appartement reservable en ligne'
+  e,w=motion.check(d)
+  self.assertEqual(e,[])
+  self.assertTrue(any('two to four words' in x for x in w))
+ def test_a_first_second_with_nothing_readable_warns(self):
+  d=self.render_project()
+  for l in d['scenes'][0]['layers']:
+   if l['kind']=='text':l['at']=2.5
+  e,w=motion.check(d)
+  self.assertEqual(e,[])
+  self.assertTrue(any('first' in x and 'muted' in x for x in w))
+ def test_the_contrast_maths_is_the_documented_one(self):
+  """Anchored on the WCAG worked values, so a refactor cannot quietly change it."""
+  white,black=motion.rgb('0xFFFFFF'),motion.rgb('0x000000')
+  self.assertAlmostEqual(motion.contrast(white,black),21.0,places=2)
+  self.assertAlmostEqual(motion.contrast(white,white),1.0,places=2)
+  self.assertIsNone(motion.rgb('not a colour'))
+  self.assertEqual(motion.rgb('#F5A623'),(245,166,35))
+
 
 class MotionRenderTests(unittest.TestCase):
  """The one-shot, end to end, measured out of the files it wrote."""

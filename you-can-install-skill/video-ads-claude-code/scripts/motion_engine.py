@@ -218,9 +218,24 @@ def layout_for(fmt, design):
     """
     w, h = int(fmt['width']), int(fmt['height'])
     grid = design['grid']
-    margin = int(w * float(grid['margin']))
-    safe_top = int(h * float(grid['safe_top']))
-    safe_bottom = int(h * float(grid['safe_bottom']))
+    # The format's own safe zones win over the project grid. A vertical loses a fifth
+    # of its height to the platform's interface and a feed square loses almost none,
+    # so one pair of numbers for three ratios is a crop decision wearing a grid's
+    # clothes. The manifest has always declared these per format; reading only the
+    # grid meant the strictest ratio's reserve was applied to all three, and the
+    # landscape lost a tenth of its frame to an interface that is not there.
+    zones = fmt.get('safe_zones') or {}
+
+    def zone(name, fallback):
+        value = zones.get(name)
+        return float(value) if isinstance(value, (int, float)) and not isinstance(value, bool)             else float(grid[fallback])
+
+    left = zone('left', 'margin')
+    right = zone('right', 'margin')
+    margin = int(w * left)
+    margin_right = int(w * right)
+    safe_top = int(h * zone('top', 'safe_top'))
+    safe_bottom = int(h * zone('bottom', 'safe_bottom'))
     aspect = w / float(h)
     given = fmt.get('layout') or {}
     align = 'top'
@@ -231,12 +246,12 @@ def layout_for(fmt, design):
         # slice to burned captions, so a media panel sized by eye leaves the copy a
         # column too shallow to hold a headline, and the type has to shrink to fit.
         media = {'x': 0, 'y': 0, 'w': w, 'h': int(h * 0.42)}
-        text_x, text_top, text_w = margin, int(h * 0.46), w - 2 * margin
+        text_x, text_top, text_w = margin, int(h * 0.46), w - margin - margin_right
         scale = 1.0
     elif aspect < 1.2:
         shape = 'square'
         media = {'x': 0, 'y': 0, 'w': w, 'h': int(h * 0.44)}
-        text_x, text_top, text_w = margin, int(h * 0.48), w - 2 * margin
+        text_x, text_top, text_w = margin, int(h * 0.48), w - margin - margin_right
         scale = 0.92
     else:
         shape = 'landscape'
@@ -258,6 +273,7 @@ def layout_for(fmt, design):
     caption_band = int(sizes.get('caption', 34) * 2.4)
     copy_bottom = h - safe_bottom - caption_band
     out = {'shape': shape, 'width': w, 'height': h, 'margin': margin,
+           'margin_right': margin_right,
            'safe_top': safe_top, 'safe_bottom': safe_bottom, 'media': media,
            'text_x': text_x, 'text_top': text_top, 'text_width': text_w,
            'type_scale': scale, 'caption_band': caption_band, 'stack_align': align,
@@ -699,7 +715,8 @@ def write_ass(captions, layout, design, font_name, path):
     """
     size = layout['sizes'].get('caption', 34)
     margin_v = layout['safe_bottom']
-    margin_h = layout['margin']
+    margin_l = layout['margin']
+    margin_r = layout.get('margin_right', layout['margin'])
     head = ('[Script Info]\nScriptType: v4.00+\nWrapStyle: 2\n'
             'PlayResX: %d\nPlayResY: %d\nScaledBorderAndShadow: yes\n\n'
             '[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, '
@@ -707,7 +724,7 @@ def write_ass(captions, layout, design, font_name, path):
             'Style: Cap,%s,%d,&H00FFFFFF,&H00101820,&H80000000,-1,1,3,0,2,%d,%d,%d\n\n'
             '[Events]\nFormat: Layer, Start, End, Style, Text\n'
             % (layout['width'], layout['height'], font_name, size,
-               margin_h, margin_h, margin_v))
+               margin_l, margin_r, margin_v))
     rows = []
     for cue in captions or []:
         text = str(cue.get('text', '')).replace('\n', BS + 'N')

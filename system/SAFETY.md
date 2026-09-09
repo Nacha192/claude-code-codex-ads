@@ -62,6 +62,10 @@ never opens a video; `scripts/inspect_video.py` does that, and the split is the 
 | Fractional pixel dimensions. A frame 1080.5 pixels wide does not exist | `test_fractional_pixel_dimensions_refused` |
 | A manifest that is not valid UTF-8 exits 2 with one line, not a traceback | `test_a_manifest_that_is_not_utf8_exits_cleanly` |
 | An asset reference that is not a string. A dict or a list used to reach a set membership test and raise | `test_an_unhashable_asset_reference_does_not_crash` |
+| A reserve for the platform interface given in pixels instead of a fraction. A reserve thinner than `thresholds.md` documents warns and names the number it undercuts, because a placement can justify it and the manifest is where that gets recorded | `test_a_reserve_given_in_pixels_is_refused`, `test_a_thinner_reserve_than_the_documented_one_warns` |
+| Copy drawn on a ground it cannot be read against. Contrast is computed only where the manifest names both colours; over a picture nothing is guessed | `test_copy_the_viewer_cannot_read_is_refused`, `test_contrast_is_not_guessed_over_a_picture`, `test_the_contrast_maths_is_the_documented_one` |
+| A caption gone before it can be read, one running faster than a viewer reads, or one that is a sentence rather than a cue | `test_a_caption_gone_before_it_is_read_is_refused`, `test_a_caption_that_is_a_sentence_warns` |
+| A first second with nothing readable on screen. Most impressions are muted and scrolled, so a hook that exists only in the narration is not a hook | `test_a_first_second_with_nothing_readable_warns` |
 
 And on the exported files, `scripts/inspect_video.py` decodes each one in full:
 
@@ -87,6 +91,7 @@ measures something.
 | The supplied engine never requires JavaScript, a package manager or a browser, and it says so in the manifest it writes | `test_the_reference_engine_never_requires_javascript` |
 | The machine is asked what it can do, and an unusable machine is named rather than discovered halfway through an encode | `test_detection_names_what_is_missing_rather_than_failing_late`, `test_this_machine_has_every_filter_the_pipeline_issues` |
 | Each ratio is composed from its own frame. There is no master, which is the only structural way to make a blind crop impossible | `test_the_three_ratios_are_three_compositions_and_not_one_crop`, `test_type_is_sized_from_the_frame_not_copied_between_frames`, `test_the_exports_are_not_the_same_picture_three_times` |
+| Each ratio keeps the reserve **it** declares for the platform's interface, falling back to the project grid only when a format declares none | `test_each_ratio_keeps_its_own_reserve_for_the_platform`, `test_a_format_with_no_safe_zones_falls_back_to_the_project_grid` |
 | The stack is measured before it is placed, so two blocks can never be clamped onto the same line, and copy never enters the caption band | `test_the_stack_is_measured_before_it_is_placed`, `test_a_rule_declared_between_two_lines_lands_between_them` |
 | Copy that does not fit its column shrinks the type once for the whole film, and copy that cannot fit at all is refused instead of hidden. Captions never shrink with it | `test_the_type_shrinks_until_the_tallest_scene_fits`, `test_copy_that_cannot_fit_is_refused_rather_than_hidden`, `test_captions_never_shrink_with_the_copy` |
 | Every line stays inside its column, and no word is dropped to make it | `test_wrapping_keeps_every_word_and_every_line_inside_the_column`, `test_a_single_word_longer_than_the_column_still_comes_back` |

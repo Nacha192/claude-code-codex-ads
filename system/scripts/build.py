@@ -13,7 +13,7 @@ REPO='skill-claude-code-codex-ads'
 # Repositories the published text may point at: this one, and the duo method it is
 # built on. Any other name under that account is a name that drifted from reality.
 KNOWN_REPOS={REPO,'Codex-Claude-Code-team'}
-VERSION='4.1.0'
+VERSION='4.2.0'
 HOST={'copy':('Draft in the target language using the brief and actual source records.','Use native file/MCP tools for the same brief; no Codex-only tool names.'),
 'research':('Use available web/library tools and record actual coverage.','Discover the connected research tools; use supplied exports if unavailable.'),
 'image':('Use the actual available image tool or editable composition workflow after approval.','Use a connected image/Design tool or an explicitly requested genuine Codex peer in team mode; never simulate image generation.'),

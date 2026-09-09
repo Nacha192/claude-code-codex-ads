@@ -97,6 +97,14 @@ The type scale, the margins, the safe areas and the caption band are all fractio
 the frame, so they are computed per format instead of being copied between formats
 and drifting.
 
+**Each format keeps its own reserve for the platform's interface**, read from that
+format's `safe_zones` in the manifest and falling back to the project grid only when a
+format declares none. This matters more than it sounds: a vertical loses about a fifth
+of its height to the interface and a feed square loses almost nothing, so one pair of
+numbers applied to three ratios is a crop decision wearing a grid's clothes. It also
+costs real frame: applied to the landscape, a vertical's reserve throws away a tenth of
+a picture nothing was ever going to cover.
+
 ### The fit pass
 
 Before anything is drawn, every scene's stack of blocks is **measured**: wrapped line
@@ -215,7 +223,8 @@ The measured result comes back out of `inspect_video.py`, which decodes the fini
 file. The engine never reports the level it aimed for.
 
 Captions are burned from the cues in the manifest, styled from the design tokens,
-and placed in the caption band that the copy column is forbidden to enter. Both are
+and placed in the caption band that the copy column is forbidden to enter, inside that
+format's own left and right margins. Both are
 legible alone and unreadable on top of each other, which is a defect a contact sheet
 shows in one glance and a duration check never will.
 

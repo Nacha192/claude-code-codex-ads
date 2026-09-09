@@ -73,6 +73,7 @@ world, and it is the one claim in this pack a script can actually check.
 | `script` | the spoken text and the word count | |
 | `scenes` | the storyboard fields, per [the production contract](production-contract.md), plus the optional `layers`, `background`, `camera` and `transition` the renderer draws from | Overlaps, a scene ending before it starts, narration longer than its scene, a timeline outside the brief, a layer kind nothing can draw, a picture layer naming an asset that does not exist, a text layer with nothing to say, a position given in pixels instead of a fraction, or a layer starting after its own scene has ended |
 | `design` | the brand tokens the renderer reads: `palette`, `type.scale`, `motion`, `grid` | Optional. Absent, the engine's stated defaults apply |
+| `formats[].safe_zones` | the reserve this ratio keeps for the platform's interface, as fractions | A value that is not a fraction under 0.5 is an error; a reserve thinner than [thresholds](thresholds.md) documents is a warning naming the number it undercuts |
 | `voice` | archetype, source, provider, measured seconds, consent reference | Narration exists with no voice object, or a cloned voice with no consent |
 | `captions` | `derived_from`, style, cues with start, end, text | `derived_from` is not `final_take`, or a cue ending past the timeline |
 | `music`, `sfx` | what plays, and the rights for it | |

@@ -82,6 +82,171 @@ def ratio_of(w,h):
     g=math.gcd(int(w),int(h)) or 1
     return '%d:%d'%(int(w)//g,int(h)//g)
 
+# From thresholds.md, `ratios.safe_margin`: nothing that must be read goes nearer an
+# edge than 12% of the short edge, and on 9:16 the top 14% and bottom 20% belong to
+# the platform's own interface. Kept here as one mapping so the rule and the
+# documented number cannot drift apart, and applied per ratio because a feed square
+# reserves almost nothing while a vertical reserves a fifth of its height.
+# Legibility is the part of "is this a good ad" that is arithmetic rather than taste.
+# Contrast, reading rate and whether anything readable exists in the first second are
+# all decidable from the manifest, and all three are ways a technically perfect file
+# fails in front of a viewer. What is left after these is genuinely a human judgement,
+# and creative-qa.md is where it belongs.
+WCAG_FAIL = 3.0        # Below this, body copy is not readable. An error.
+WCAG_TARGET = 4.5      # WCAG AA for normal text. Below it, a warning.
+CAPTION_MAX_CHARS = 42     # Two to four words per cue, per video-assembly.md.
+CAPTION_MIN_SECONDS = 0.6  # Under this a cue is gone before it is read.
+CAPTION_MAX_CPS = 22       # Characters per second a viewer can actually take in.
+HOOK_SECONDS = 1.0
+
+
+def rgb(value):
+    """A palette colour as three 0-255 channels, or None if it is not one."""
+    if not isinstance(value, str):
+        return None
+    m = re.fullmatch(r'(?:0x|#)?([0-9a-fA-F]{6})', value.strip())
+    if not m:
+        return None
+    n = int(m.group(1), 16)
+    return ((n >> 16) & 255, (n >> 8) & 255, n & 255)
+
+
+def luminance(colour):
+    """Relative luminance, per the WCAG definition."""
+    channels = []
+    for c in colour:
+        c = c / 255.0
+        channels.append(c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+
+
+def contrast(a, b):
+    """Contrast ratio between two colours, 1.0 to 21.0."""
+    la, lb = luminance(a), luminance(b)
+    hi, lo = max(la, lb), min(la, lb)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def palette_of(data):
+    design = data.get('design')
+    palette = (design or {}).get('palette') if isinstance(design, dict) else None
+    return palette if isinstance(palette, dict) else {}
+
+
+def resolve_colour(name, palette, fallback=None):
+    if isinstance(name, str) and name in palette:
+        return rgb(palette[name])
+    return rgb(name) or (rgb(palette.get(fallback)) if fallback else None)
+
+
+def check_legibility(data, errors, warnings):
+    """Contrast, reading rate, and whether the first second says anything.
+
+    Contrast is only computed where the ground is a colour this manifest names. Text
+    over a picture is left alone rather than guessed at: a number invented from a
+    token that was never on screen is worse than no number.
+    """
+    palette = palette_of(data)
+    scenes = data.get('scenes')
+    if isinstance(scenes, list):
+        for i, scene in enumerate(scenes):
+            if not isinstance(scene, dict):
+                continue
+            layers = scene.get('layers')
+            if not isinstance(layers, list):
+                continue
+            over_media = any(isinstance(l, dict) and l.get('kind') in ('image', 'video')
+                             for l in layers)
+            ground = scene.get('background') if isinstance(scene.get('background'), dict) else {}
+            grounds = [resolve_colour(ground.get(k), palette)
+                       for k in ('from', 'to', 'colour')]
+            grounds = [g for g in grounds if g]
+            if over_media or not grounds:
+                continue
+            for n, layer in enumerate(layers):
+                if not isinstance(layer, dict) or layer.get('kind') != 'text':
+                    continue
+                ink = resolve_colour(layer.get('colour', 'paper'), palette, 'paper')
+                if not ink:
+                    continue
+                worst = min(contrast(ink, g) for g in grounds)
+                where = 'Scene %d layer %d' % (i, n)
+                if worst < WCAG_FAIL:
+                    errors.append('%s draws %s on its background at %.1f:1. Under %.1f:1 '
+                                  'the line is not read, it is decoration'
+                                  % (where, layer.get('colour', 'paper'), worst, WCAG_FAIL))
+                elif worst < WCAG_TARGET:
+                    warnings.append('%s draws %s at %.1f:1, under the %.1f:1 that normal '
+                                    'text needs on a phone in daylight'
+                                    % (where, layer.get('colour', 'paper'), worst, WCAG_TARGET))
+        first = scenes[0] if scenes and isinstance(scenes[0], dict) else None
+        if first is not None and isinstance(first.get('layers'), list):
+            spoken = [l for l in first['layers']
+                      if isinstance(l, dict) and l.get('kind') == 'text'
+                      and num(l.get('at', 0)) and float(l.get('at', 0)) < HOOK_SECONDS]
+            silent = [l for l in first['layers']
+                      if isinstance(l, dict) and l.get('kind') == 'text'
+                      and l.get('at') is None]
+            if not spoken and not silent:
+                warnings.append('Nothing readable is on screen in the first %.1fs. Most '
+                                'impressions are muted and scrolled; the hook has to be '
+                                'visible, not only spoken' % HOOK_SECONDS)
+
+    cues = (data.get('captions') or {}).get('cues') if isinstance(data.get('captions'), dict) else None
+    if isinstance(cues, list):
+        for i, cue in enumerate(cues):
+            if not isinstance(cue, dict):
+                continue
+            body = cue.get('text')
+            start, end = cue.get('start'), cue.get('end')
+            if not text(body) or not (num(start) and num(end)) or end <= start:
+                continue
+            span = float(end) - float(start)
+            length = len(body.strip())
+            if span < CAPTION_MIN_SECONDS:
+                errors.append('Caption %d holds for %.2fs. Under %.1fs it is gone before '
+                              'it is read' % (i, span, CAPTION_MIN_SECONDS))
+            elif length / span > CAPTION_MAX_CPS:
+                warnings.append('Caption %d runs %d characters in %.2fs, %.0f per second '
+                                'against a readable %d' % (i, length, span, length / span,
+                                                           CAPTION_MAX_CPS))
+            if length > CAPTION_MAX_CHARS:
+                warnings.append('Caption %d is %d characters. A cue is two to four words; '
+                                'a sentence on screen is read instead of watched'
+                                % (i, length))
+
+
+SAFE_FLOOR = {'9:16': {'top': 0.14, 'bottom': 0.20},
+              '16:9': {'top': 0.05, 'bottom': 0.05}}
+SAFE_DEFAULT_FLOOR = {'top': 0.06, 'bottom': 0.08}
+
+
+def check_safe_zones(ratio, zones, errors, warnings):
+    """The reserve this format keeps for the platform's interface.
+
+    A warning rather than an error when it is merely thinner than the documented
+    figure, because a placement can genuinely justify a smaller reserve and the
+    manifest is where that decision gets recorded. A value that is not a fraction is
+    an error, because it is not a decision, it is a unit mistake.
+    """
+    if not isinstance(zones, dict):
+        return
+    for side in ('top', 'bottom', 'left', 'right'):
+        value = zones.get(side)
+        if value is None:
+            continue
+        if not num(value) or not 0 <= value < 0.5:
+            errors.append('formats[%s].safe_zones.%s is %r: these are fractions of '
+                          'the frame under 0.5, not pixels' % (ratio, side, value))
+    floor = SAFE_FLOOR.get(ratio, SAFE_DEFAULT_FLOOR)
+    for side, least in floor.items():
+        value = zones.get(side)
+        if num(value) and value < least:
+            warnings.append('formats[%s] keeps %.0f%% clear at the %s and thresholds.md '
+                            'asks for %.0f%%: copy there can land under the platform '
+                            'interface' % (ratio, value * 100, side, least * 100))
+
+
 LAYER_KINDS = {'image', 'video', 'text', 'shape'}
 # Fractions of the frame, so a layout survives being composed at three sizes. A value
 # outside this range is a pixel count somebody wrote in the wrong field.
@@ -324,6 +489,8 @@ def check(data,root=None):
                 if not isinstance(aid,str) or aid not in asset_ids:
                     errors.append('Scene %d references unknown asset %r'%(i,aid))
 
+    check_legibility(data,errors,warnings)
+
     engine=data.get('engine')
     if not isinstance(engine,dict):errors.append('engine object required')
     else:
@@ -346,6 +513,7 @@ def check(data,root=None):
             if ratio_of(w,h)!=r:errors.append('formats[%s]: %dx%d is %s, not %s'%(r,int(w),int(h),ratio_of(w,h),r))
             if not (num(fps) and fps>0):errors.append('formats[%s].fps required'%r)
             if not isinstance(f.get('safe_zones'),dict):errors.append('formats[%s].safe_zones required'%r)
+            else:check_safe_zones(r,f['safe_zones'],errors,warnings)
             if not text(f.get('composition')):
                 errors.append('formats[%s] has no composition of its own: a blind crop of another ratio is not a composition'%r)
     if isinstance(brief,dict) and isinstance(brief.get('formats'),list):

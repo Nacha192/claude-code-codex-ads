@@ -567,8 +567,8 @@
       "fps": 30,
       "composition": "Vertical plein cadre : matière sur les deux tiers hauts, bloc typographique posé au tiers bas, au-dessus de la zone d'interface",
       "safe_zones": {
-        "top": 0.11,
-        "bottom": 0.17,
+        "top": 0.14,
+        "bottom": 0.2,
         "left": 0.075,
         "right": 0.075
       }
@@ -580,8 +580,8 @@
       "fps": 30,
       "composition": "Feed vertical court : la matière occupe la moitié haute, le bloc typographique remonte et la taille d'affichage baisse pour tenir sans casse",
       "safe_zones": {
-        "top": 0.1,
-        "bottom": 0.14,
+        "top": 0.08,
+        "bottom": 0.12,
         "left": 0.075,
         "right": 0.075
       }
@@ -593,8 +593,8 @@
       "fps": 30,
       "composition": "Deux colonnes : la typographie tient la colonne gauche sur toute la hauteur, la matière occupe la colonne droite. Ce n'est pas le vertical recadré, c'est une autre composition",
       "safe_zones": {
-        "top": 0.08,
-        "bottom": 0.1,
+        "top": 0.06,
+        "bottom": 0.08,
         "left": 0.05,
         "right": 0.05
       }

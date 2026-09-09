@@ -9,8 +9,14 @@
     "market": "FR",
     "ad_language": "fr-FR",
     "cta_destination": "https://example.invalid/reserver",
-    "duration_seconds": [15, 25],
-    "formats": ["9:16", "4:5"],
+    "duration_seconds": [
+      15,
+      25
+    ],
+    "formats": [
+      "9:16",
+      "4:5"
+    ],
     "brand_constraints": "One typeface, no stock smiling faces, the van is always the real van",
     "channel": "Meta feed and reels"
   },
@@ -37,8 +43,18 @@
     }
   ],
   "claims": [
-    { "text": "Done in one visit in almost every case", "proof_ids": ["E1"] },
-    { "text": "149 EUR, fixed, small parts included", "proof_ids": ["E2"] }
+    {
+      "text": "Done in one visit in almost every case",
+      "proof_ids": [
+        "E1"
+      ]
+    },
+    {
+      "text": "149 EUR, fixed, small parts included",
+      "proof_ids": [
+        "E2"
+      ]
+    }
   ],
   "creative_lock": {
     "insight": "The fear is not the price, it is the second visit that turns 149 into an open bill",
@@ -58,19 +74,43 @@
   "hooks_considered": [
     {
       "text": "149 euros. Ecrit avant qu'on sonne chez vous.",
-      "scores": { "specificity": 5, "speed_of_understanding": 5, "audience_fit": 4, "tension": 4, "continuity_with_payoff": 5, "credibility": 4, "first_frame_strength": 4 },
+      "scores": {
+        "specificity": 5,
+        "speed_of_understanding": 5,
+        "audience_fit": 4,
+        "tension": 4,
+        "continuity_with_payoff": 5,
+        "credibility": 4,
+        "first_frame_strength": 4
+      },
       "selected": true,
       "why": "The only one carrying the number in frame one, and the number is the whole argument. It also sets up the payoff literally rather than thematically."
     },
     {
       "text": "Votre chaudiere ne va pas se reparer toute seule.",
-      "scores": { "specificity": 1, "speed_of_understanding": 4, "audience_fit": 2, "tension": 2, "continuity_with_payoff": 1, "credibility": 3, "first_frame_strength": 2 },
+      "scores": {
+        "specificity": 1,
+        "speed_of_understanding": 4,
+        "audience_fit": 2,
+        "tension": 2,
+        "continuity_with_payoff": 1,
+        "credibility": 3,
+        "first_frame_strength": 2
+      },
       "selected": false,
       "why": "Category-generic. Would fit any competitor with the name swapped, which is the definition of a weak hook."
     },
     {
       "text": "Le devis, c'est le prix. Pas une fourchette.",
-      "scores": { "specificity": 4, "speed_of_understanding": 3, "audience_fit": 4, "tension": 3, "continuity_with_payoff": 4, "credibility": 4, "first_frame_strength": 2 },
+      "scores": {
+        "specificity": 4,
+        "speed_of_understanding": 3,
+        "audience_fit": 4,
+        "tension": 3,
+        "continuity_with_payoff": 4,
+        "credibility": 4,
+        "first_frame_strength": 2
+      },
       "selected": false,
       "why": "Strong argument, weak first frame: it needs a second of reading before anything is understood."
     }
@@ -94,7 +134,10 @@
       "primary_motion": "The number lands from a 4 percent scale overshoot and settles in 6 frames",
       "secondary_motion": "The van door drifts 3 percent left, parallax against the number",
       "transition": "Hard cut on the last consonant",
-      "assets": ["a_van", "a_type"],
+      "assets": [
+        "a_van",
+        "a_type"
+      ],
       "sound": "One low impact on the landing, no music yet",
       "reframing": "In 4:5 the number moves to the optical centre and the van becomes a horizontal band",
       "legibility_risk": "The number must clear the reels caption overlay in the lower fifth",
@@ -113,7 +156,9 @@
       "primary_motion": "Steps enter left to right, each on its own stressed syllable",
       "secondary_motion": "The completed steps desaturate so the current one holds the eye",
       "transition": "The band collapses into the proof card",
-      "assets": ["a_type"],
+      "assets": [
+        "a_type"
+      ],
       "sound": "Music enters under the voice at the first step",
       "reframing": "In 4:5 the three steps stack vertically rather than shrinking to fit",
       "legibility_risk": "Step text must not fall below 4 percent of frame height",
@@ -132,7 +177,9 @@
       "primary_motion": "The counter runs to 391 and stops hard, the denominator already in place",
       "secondary_motion": "A thin rule extends under the fraction as the counter runs",
       "transition": "Cut on the stop of the counter",
-      "assets": ["a_type"],
+      "assets": [
+        "a_type"
+      ],
       "sound": "The music drops out for the last half second of the count",
       "reframing": "Identical in both ratios, the fraction is centred and the rule shortens",
       "legibility_risk": "The counter must not animate so fast that the end value is the only readable one",
@@ -151,7 +198,10 @@
       "primary_motion": "None on the number, deliberately. Only the button rises into place",
       "secondary_motion": "The van settles back to its scene-one position",
       "transition": "End",
-      "assets": ["a_van", "a_type"],
+      "assets": [
+        "a_van",
+        "a_type"
+      ],
       "sound": "Music resolves and stops before the last frame",
       "reframing": "In 4:5 the button sits to the right of the number rather than under it",
       "legibility_risk": "The button must survive the platform CTA overlay",
@@ -171,14 +221,46 @@
     "derived_from": "final_take",
     "style": "Two to four words per cue, bottom third, above the safe zone",
     "cues": [
-      { "start": 0.2, "end": 1.4, "text": "149 euros." },
-      { "start": 1.5, "end": 2.8, "text": "Ecrit avant qu'on sonne." },
-      { "start": 3.2, "end": 5.1, "text": "Pas une fourchette." },
-      { "start": 5.2, "end": 7.6, "text": "On entre, on fait, on repart." },
-      { "start": 8.3, "end": 11.2, "text": "391 sur 412 en une visite." },
-      { "start": 11.4, "end": 13.6, "text": "Pieces sous 20 euros comprises." },
-      { "start": 14.3, "end": 16.8, "text": "Le prix affiche est le prix paye." },
-      { "start": 17.0, "end": 19.6, "text": "Reservez un creneau." }
+      {
+        "start": 0.2,
+        "end": 1.4,
+        "text": "149 euros."
+      },
+      {
+        "start": 1.5,
+        "end": 2.8,
+        "text": "Ecrit avant qu'on sonne."
+      },
+      {
+        "start": 3.2,
+        "end": 5.1,
+        "text": "Pas une fourchette."
+      },
+      {
+        "start": 5.2,
+        "end": 7.6,
+        "text": "On entre, on fait, on repart."
+      },
+      {
+        "start": 8.3,
+        "end": 11.2,
+        "text": "391 sur 412 en une visite."
+      },
+      {
+        "start": 11.4,
+        "end": 13.6,
+        "text": "Pieces sous 20 euros comprises."
+      },
+      {
+        "start": 14.3,
+        "end": 16.8,
+        "text": "Le prix affiche est le prix paye."
+      },
+      {
+        "start": 17.0,
+        "end": 19.6,
+        "text": "Reservez un creneau."
+      }
     ]
   },
   "music": {
@@ -187,8 +269,16 @@
     "ducking": "Music sits 12 dB under the voice while the voice is present, recovered over 300 ms"
   },
   "sfx": [
-    { "at": 0.0, "what": "Low impact under the number landing", "rights": "Library licence, receipt on file" },
-    { "at": 13.4, "what": "Counter stop", "rights": "Library licence, receipt on file" }
+    {
+      "at": 0.0,
+      "what": "Low impact under the number landing",
+      "rights": "Library licence, receipt on file"
+    },
+    {
+      "at": 13.4,
+      "what": "Counter stop",
+      "rights": "Library licence, receipt on file"
+    }
   ],
   "assets": [
     {
@@ -223,7 +313,12 @@
       "height": 1920,
       "fps": 30,
       "composition": "Master composition. Number in the upper third, subject below, captions above the bottom fifth.",
-      "safe_zones": { "top": 0.08, "bottom": 0.2, "left": 0.05, "right": 0.05 }
+      "safe_zones": {
+        "top": 0.14,
+        "bottom": 0.2,
+        "left": 0.05,
+        "right": 0.05
+      }
     },
     {
       "ratio": "4:5",
@@ -231,7 +326,12 @@
       "height": 1350,
       "fps": 30,
       "composition": "Recomposed, not cropped. The number moves to the optical centre, the three steps stack, the button sits beside the price.",
-      "safe_zones": { "top": 0.06, "bottom": 0.12, "left": 0.05, "right": 0.05 }
+      "safe_zones": {
+        "top": 0.06,
+        "bottom": 0.12,
+        "left": 0.05,
+        "right": 0.05
+      }
     }
   ],
   "render": {
@@ -247,14 +347,28 @@
       "path": "out/ad-9x16.mp4",
       "sha256": "9f2c4a1b8e6d03579a4c2b1e8f7d6c5b4a39281706f5e4d3c2b1a09f8e7d6c5b",
       "state": "delivered",
-      "measured": { "duration_seconds": 20.0, "width": 1080, "height": 1920, "fps": 30.0, "loudness_lufs": -13.8, "true_peak_dbfs": -1.4 }
+      "measured": {
+        "duration_seconds": 20.0,
+        "width": 1080,
+        "height": 1920,
+        "fps": 30.0,
+        "loudness_lufs": -13.8,
+        "true_peak_dbfs": -1.4
+      }
     },
     {
       "ratio": "4:5",
       "path": "out/ad-4x5.mp4",
       "sha256": "3d7e1f0a2b4c6d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60",
       "state": "delivered",
-      "measured": { "duration_seconds": 20.0, "width": 1080, "height": 1350, "fps": 30.0, "loudness_lufs": -13.9, "true_peak_dbfs": -1.5 }
+      "measured": {
+        "duration_seconds": 20.0,
+        "width": 1080,
+        "height": 1350,
+        "fps": 30.0,
+        "loudness_lufs": -13.9,
+        "true_peak_dbfs": -1.5
+      }
     }
   ],
   "qa": {

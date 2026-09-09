@@ -20,6 +20,27 @@ into real files with one command. It is the floor, so that "nothing was rendered
 never caused by the pack itself. Every other route below stays first-class, and a
 better one should be preferred whenever it is actually available.
 
+### "A model makes videos, so why compose anything"
+
+Because those are two different jobs, and conflating them is how a campaign ends up
+with one landscape clip and no vertical.
+
+A video model returns **shots**: a few seconds of footage, one aspect ratio, no
+burned captions, no mix, no timeline. An ad is shots cut to a duration, composed
+separately for each placement, with type that stays editable, captions from the final
+take and a mix normalised to a declared loudness. Generation covers the first half and
+none of the second. So the shots become `video` layers and something assembles them.
+FFmpeg is what does the assembling here; an editing application or another compositor
+does it equally well, and the manifest records which one ran.
+
+**Checked on 2026-09-09, and the reason this is not theoretical.** The OpenAI
+deprecations page records that developers were notified on 2026-03-24 of the removal
+of the Videos API and the `sora-2` and `sora-2-pro` models from the API on
+**2026-09-24**, and the Sora product itself stopped being available on 2026-04-26. A
+pipeline written today against that endpoint has a deadline on it. Other providers in
+the table below still generate video; the point is that the generation route is the
+part that expires, and the composition step is the part that does not.
+
 | Capability | What it must do | Adapters that can provide it | When nothing provides it |
 |---|---|---|---|
 | **AI video generation** | Produce footage from a prompt or a reference | A connected video model, per the table below | Route to deterministic composition, or to real filming per [real production](live-action.md) |
