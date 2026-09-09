@@ -31,7 +31,7 @@ These are checked by a script, and every one of them fails with a non-zero exit 
 | Declared limits that are not an object are refused rather than silently replaced by the defaults, which would enforce a looser rule than the campaign asked for | `check_artifact.py` | `test_malformed_limits_refused` |
 | An unknown artifact kind is refused rather than half-checked | `check_artifact.py` | `test_unknown_kind_refused` |
 | Installation never overwrites an existing skill or user edit | `install.py` | `test_install_preview_idempotence_and_no_overwrite` |
-| Installation refuses a symlinked target or destination | `install.py` | `test_symlinked_ancestor_allowed_but_target_refused`, `test_symlinked_skill_destination_refused` |
+| Installation refuses a redirected target or destination: a symlink anywhere, and a directory junction on Windows, which `is_symlink()` reports as False and which needs no privilege to plant | `install.py` | `test_symlinked_ancestor_allowed_but_target_refused`, `test_symlinked_skill_destination_refused`, `test_a_redirected_installation_target_is_refused_including_a_junction`, `test_a_junction_planted_as_a_skill_destination_is_refused` |
 | Installing writes nothing without `--apply` | `install.py` | `test_install_preview_idempotence_and_no_overwrite` |
 | An existing second brain is never reset | `init_brain.py` | `test_brain_preview_and_preserve` |
 
@@ -56,6 +56,12 @@ never opens a video; `scripts/inspect_video.py` does that, and the split is the 
 | Overlapping scenes, narration longer than its scene, a timeline outside the brief | `test_overlapping_scenes_refused`, `test_narration_longer_than_its_scene_refused`, `test_timeline_outside_the_brief_refused` |
 | An approved project with a failed verdict or an open blocking defect | `test_failed_creative_verdict_on_an_approved_project_refused`, `test_blocking_defect_left_open_refused` |
 | A credential-shaped value anywhere in the manifest, in a value or in a field name | `test_credential_in_a_value_or_a_key_refused` |
+| An export or asset path that leaves the project: absolute, or climbing with `..`. A manifest names files inside the job it describes, and a hash that matches a file somewhere else on the machine proves nothing about this delivery | `test_export_path_that_leaves_the_project_refused`, `test_a_file_outside_the_root_is_never_hashed_as_an_export` |
+| A path that is textually clean and still resolves out of the tree through a link or a junction | `test_a_link_pointing_out_of_the_project_refused` |
+| A section that is not a list where a list belongs. It is refused with a message rather than iterated, which used to crash the checker on a number and report on single letters for a string | `test_a_section_that_is_not_a_list_is_refused_not_iterated` |
+| Fractional pixel dimensions. A frame 1080.5 pixels wide does not exist | `test_fractional_pixel_dimensions_refused` |
+| A manifest that is not valid UTF-8 exits 2 with one line, not a traceback | `test_a_manifest_that_is_not_utf8_exits_cleanly` |
+| An asset reference that is not a string. A dict or a list used to reach a set membership test and raise | `test_an_unhashable_asset_reference_does_not_crash` |
 
 And on the exported files, `scripts/inspect_video.py` decodes each one in full:
 
@@ -65,6 +71,8 @@ And on the exported files, `scripts/inspect_video.py` decodes each one in full:
 | A video opening on black is blocking | `test_a_video_opening_on_black_is_blocking` |
 | A missing audio track is reported rather than assumed deliberate | `test_a_silent_video_is_reported` |
 | Every threshold arrives as an argument. With no expectation given, the script invents none | `test_no_expectation_means_no_invented_threshold`, `test_expectations_come_from_arguments_and_are_enforced` |
+| ffmpeg exiting nonzero while saying nothing is a blocking finding, not a clean decode | `test_a_silent_nonzero_decode_is_still_a_finding` |
+| Exports are hashed in chunks, so the largest file in the delivery is not read whole into memory to verify it | `test_hashing_reads_the_file_in_chunks_and_still_agrees` |
 | The whole contract, from a planned project to inspected exports of real files | `test_forward_from_a_minimal_brief_to_inspected_exports` |
 
 Release integrity is enforced the same way, in `scripts/validate_release.py` and in CI. Each rule below that names a test is proved the same way the others are: the test plants that exact violation in a throwaway copy of the release and requires the validator to refuse it. `test_a_clean_copy_of_the_release_passes` is the control, so a rule that fires on everything fails too:

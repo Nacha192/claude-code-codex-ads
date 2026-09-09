@@ -20,6 +20,13 @@ With `--root`, every export path is opened and its `sha256` recomputed. Use it b
 delivering: it is the difference between a manifest that describes files and a
 manifest that describes intentions.
 
+**Paths stay inside the project.** An export or asset path that is absolute, or that
+climbs with `..`, is refused, and so is one that is textually clean but resolves out
+of the tree through a link. A manifest names the files this job produced. A hash that
+matches something else on the machine proves nothing about this delivery, and without
+that rule a manifest written anywhere could pass by pointing at a file nobody here
+made.
+
 ---
 
 ## The state machine
@@ -62,12 +69,12 @@ world, and it is the one claim in this pack a script can actually check.
 | `voice` | archetype, source, provider, measured seconds, consent reference | Narration exists with no voice object, or a cloned voice with no consent |
 | `captions` | `derived_from`, style, cues with start, end, text | `derived_from` is not `final_take`, or a cue ending past the timeline |
 | `music`, `sfx` | what plays, and the rights for it | |
-| `assets` | id, path, rights, and for people the release and its expiry | An asset with no rights, or a person with no release or no expiry |
+| `assets` | id, path, rights, and for people the release and its expiry | An asset with no rights, a person with no release or no expiry, or a path that leaves the project |
 | `loudness_target` | value, unit, and **where the number came from** | No `source` |
 | `engine` | kind, name, version, `detected: true`, and why it was chosen | `detected` is not literally true |
 | `formats` | ratio, width, height, fps, safe zones and **its own composition** | Dimensions that contradict the ratio, an empty composition, a brief format never composed |
 | `render` | the commands, verbatim | |
-| `exports` | ratio, path, sha256, state, measurements | Missing hash, missing file when `--root` is given, a composed format never exported |
+| `exports` | ratio, path, sha256, state, measurements | Missing hash, a path that leaves the project, missing file when `--root` is given, a composed format never exported |
 | `qa.technical`, `qa.creative` | verdict, defects, and for creative the reviewer | A failed verdict on an approved project, a blocking defect left open |
 | `human_decisions_pending` | what a person still has to decide | Reported as a warning at delivery, never hidden |
 

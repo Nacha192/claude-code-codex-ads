@@ -1,6 +1,6 @@
 """Install selected all-in-one skills locally. Preview by default; no network."""
 # Nothing here removes or moves anything, so nothing that can is imported.
-import argparse,hashlib,json
+import argparse,hashlib,json,stat
 from pathlib import Path
 # install.py lives in system/; the unpacked packs sit in you-can-install-skill/ at the root.
 ROOT=Path(__file__).resolve().parents[1]
@@ -12,10 +12,25 @@ CHOICES={'codex':{'static':['meta-ads-static-codex','meta-ads-static-team-codex-
                    'motion':['video-ads-claude-code','video-ads-claude-code-codex']}}
 SCOPES=['static','motion']
 
+def redirected(path):
+    """True when the path itself is a link rather than the thing it names.
+
+    `is_symlink()` returns False for a Windows directory junction, so a junction
+    planted at an installation target used to walk straight past the check the
+    symlink rule exists for, and files would be written wherever it pointed. A
+    junction needs no privilege to create, unlike a symlink, so on Windows it is
+    the likelier of the two.
+    """
+    try:
+        if path.is_symlink():return True
+        info=path.lstat()
+    except OSError:return False
+    return bool(getattr(info,'st_file_attributes',0)&getattr(stat,'FILE_ATTRIBUTE_REPARSE_POINT',0))
+
 def inventory(root):
     result={}
     for p in root.rglob('*'):
-        if p.is_symlink():raise ValueError('Symbolic links are not accepted in a skill package')
+        if redirected(p):raise ValueError('Symbolic links are not accepted in a skill package')
         if p.is_file() and '__pycache__' not in p.parts:
             result[p.relative_to(root).as_posix()]=hashlib.sha256(p.read_bytes()).hexdigest()
     return result
@@ -36,7 +51,7 @@ def install(runtime,mode='both',project=None,target_root=None,apply=False,scope=
     elif target_root:target=Path(target_root).expanduser().absolute()
     else:target=Path.home()/('.agents' if runtime=='codex' else '.claude')/'skills'
     # Resolve legitimate system aliases (for example macOS /var), but refuse a redirected target leaf.
-    if target.is_symlink():raise ValueError('Refusing symlinked installation target')
+    if redirected(target):raise ValueError('Refusing symlinked installation target')
     target=target.resolve()
     names=[]
     for one in (SCOPES if scope=='both' else [scope]):
@@ -47,7 +62,7 @@ def install(runtime,mode='both',project=None,target_root=None,apply=False,scope=
         source=ROOT/'you-can-install-skill'/name
         if not (source/'SKILL.md').is_file():raise ValueError('Missing built skill '+name)
         expected=inventory(source);dest=target/name
-        if dest.is_symlink():raise ValueError('Refusing symlinked skill destination')
+        if redirected(dest):raise ValueError('Refusing symlinked skill destination')
         if dest.exists():
             if not dest.is_dir() or inventory(dest)!=expected:raise ValueError('Existing skill differs; back it up or select another target: '+str(dest))
             plans.append({'skill':name,'target':str(dest),'action':'already-identical'})

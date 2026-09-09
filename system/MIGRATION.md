@@ -1,5 +1,54 @@
 # Migration from the initial distribution
 
+## Version 4.0.1: the defects an adversarial pass found in 4.0.0
+
+Six fixes in the two motion scripts and one in the release validator. No file was
+removed, no field changed name, and a manifest that was valid before is still valid
+unless it named a file outside its own project.
+
+**Export and asset paths must stay inside the project.** This is the one that
+mattered. `--root` used to join the declared path to the root and read whatever it
+landed on, so an absolute path or one climbing with `..` reached anywhere on the
+machine, and a manifest that pointed at an unrelated file with a matching hash passed
+the export check with zero errors while nothing produced by the job had been verified.
+Absolute paths and `..` are refused outright, and the resolved path is required to
+stay under the root, which also catches a symlink or a Windows junction that is
+textually clean and still leaves the tree.
+
+**A malformed section no longer takes the checker down.** `assets` given as a number
+raised `TypeError` and killed the process; given as a string it was iterated letter by
+letter and produced a report about single characters. Every list-shaped section is now
+refused with a message.
+
+**A manifest that is not UTF-8 exits 2 instead of printing a traceback.** The handler
+caught `json.JSONDecodeError` and let `UnicodeDecodeError` through.
+
+**Fractional pixel dimensions are refused.** 1080.5 pixels wide passed.
+
+**ffmpeg failing silently is a blocking finding.** A nonzero exit with an empty stderr
+left `decode_errors` at zero and produced no finding at all, which reads exactly like
+a clean decode. Silence reading as a pass is the failure this pack exists to refuse,
+and it was in the pack.
+
+**Exports are hashed in chunks.** Both scripts read the whole file into memory to hash
+it. Exports are videos, and that is how a checker dies on the largest file it is
+handed.
+
+**The release validator no longer crashes on a markdown file that is not UTF-8.** Two
+loops read `.md` files without a handler.
+
+**The installer refuses a Windows junction, not only a symlink.** `is_symlink()`
+returns False for a directory junction, so the rule that refuses a redirected
+installation target was walked straight past by the cheaper of the two
+redirections: a junction needs no privilege to create, a symlink does. The two
+existing symlink tests skip on Windows for exactly that missing privilege, so the
+rule was going unproven on the platform where it was broken. Both new tests use a
+symlink where one is allowed and a junction otherwise, and they run everywhere.
+
+Each of the six rules is proved by mutation: neutralise the rule, and the test that
+claims to prove it must fail. All six failed. The seventh, the crash on non-UTF-8
+markdown, is covered by the release suite.
+
 ## Version 4.0.0: the video packs become a production system
 
 Nothing was removed and no existing file stopped working, but the four video packs

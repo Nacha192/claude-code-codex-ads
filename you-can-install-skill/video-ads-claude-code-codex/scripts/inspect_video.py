@@ -17,6 +17,14 @@ TIMEOUT=900
 def tool(name):
     return shutil.which(name)
 
+def digest_of(path):
+    """Hash in chunks. Exports are videos, and reading a whole one into memory to
+    hash it is how the measuring tool dies on the largest file it is given."""
+    h=hashlib.sha256()
+    with path.open('rb') as fh:
+        for chunk in iter(lambda:fh.read(1<<20),b''):h.update(chunk)
+    return h.hexdigest()
+
 def run(cmd):
     """Run a command, return (returncode, stdout, stderr). Never raises on tool failure."""
     try:
@@ -59,7 +67,8 @@ def measure(path):
     m['container']=fmt.get('format_name')
     m['duration_seconds']=rational(fmt.get('duration'))
     m['declared_bitrate']=rational(fmt.get('bit_rate'))
-    m['size_bytes']=int(fmt.get('size') or 0) or None
+    size=fmt.get('size')
+    m['size_bytes']=int(size) if isinstance(size,str) and size.isdigit() else None
 
     video=[s for s in info.get('streams',[]) if s.get('codec_type')=='video']
     audio=[s for s in info.get('streams',[]) if s.get('codec_type')=='audio']
@@ -93,6 +102,9 @@ def measure(path):
     if code!=0 or lines:
         for line in lines[:5]:fail('blocking','Decode error: '+line.strip())
         if len(lines)>5:fail('blocking','%d further decode errors'%(len(lines)-5))
+        # A nonzero exit with an empty stderr would otherwise leave decode_errors at
+        # zero and no finding at all, which reads exactly like a clean decode.
+        if not lines:fail('blocking','ffmpeg exited %d while decoding and reported nothing; treat the file as unreadable'%code)
 
     if audio:
         code,_,err=run(['ffmpeg','-nostats','-i',str(path),'-af','ebur128=peak=true','-f','null','-'])
@@ -199,9 +211,14 @@ def main():
     path=Path(a.path)
     if not path.is_file():
         print('No such file: '+str(path),file=sys.stderr);return 2
+    # Absolute from here on: a relative name beginning with "-" would be read as an
+    # option by ffprobe, which takes its input as a positional argument.
+    path=path.resolve()
 
     m,findings=measure(path)
-    m['sha256']=hashlib.sha256(path.read_bytes()).hexdigest()
+    try:m['sha256']=digest_of(path)
+    except OSError as e:
+        print('Cannot read the file to hash it: '+str(e),file=sys.stderr);return 2
     m['path']=str(path)
     findings=findings+compare(m,a)
     blocking=[f for f in findings if f['severity']=='blocking']

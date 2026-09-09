@@ -7,7 +7,7 @@ purpose, because a manifest that agrees with itself and disagrees with the rende
 exactly the failure this pack exists to catch.
 """
 import argparse,hashlib,json,math,re,sys
-from pathlib import Path
+from pathlib import Path,PurePosixPath
 
 SCHEMA='1.0.0'
 # Ordered. A project may not claim a later state while an earlier one is unmet.
@@ -30,6 +30,43 @@ def num(v):
 
 def text(v):
     return isinstance(v,str) and bool(v.strip())
+
+def whole(v):
+    """A pixel count is a whole number. A frame 1080.5 pixels wide does not exist."""
+    return num(v) and float(v).is_integer()
+
+def seq(value,name,errors):
+    """A list, or nothing at all.
+
+    A number or a string where a list belongs used to be iterated anyway, which
+    crashed on the first and produced a report about single characters on the
+    second. A malformed manifest has to be refused, not to take the checker down
+    with it.
+    """
+    if value is None:return []
+    if isinstance(value,list):return value
+    errors.append(name+' must be a list')
+    return []
+
+def escaping(value):
+    """Why a declared path could reach outside the project, or None if it cannot.
+
+    Paths in a manifest name files inside the project being delivered. An absolute
+    path or one climbing with '..' turns the export check into a read of somewhere
+    else on the machine, and lets a manifest written elsewhere pass by pointing at
+    a file that was never part of this job.
+    """
+    if re.match(r'^[A-Za-z]:',value) or value.startswith(('/','\\')):return 'absolute'
+    if '..' in PurePosixPath(value.replace('\\','/')).parts:return 'climbing out with ".."'
+    return None
+
+def digest_of(path):
+    """Hash in chunks. An export is a video, and reading one whole into memory is
+    how a checker dies on the delivery it was meant to verify."""
+    h=hashlib.sha256()
+    with path.open('rb') as fh:
+        for chunk in iter(lambda:fh.read(1<<20),b''):h.update(chunk)
+    return h.hexdigest()
 
 def walk(node,path='$'):
     """Every string in the document, keys included."""
@@ -79,12 +116,12 @@ def check(data,root=None):
                 if not (text(r) and RATIO.match(r)):errors.append('brief.formats entry is not a ratio like 9:16: '+repr(r))
 
     # The one-shot contract: proceeding without an answer is allowed, hiding it is not.
-    for i,a in enumerate(data.get('assumptions',[]) or []):
+    for i,a in enumerate(seq(data.get('assumptions'),'assumptions',errors)):
         if not isinstance(a,dict):errors.append('assumptions[%d] must be an object'%i);continue
         for field in ['field','value','because','changes_if_wrong']:
             if not text(a.get(field)):errors.append('assumptions[%d].%s required'%(i,field))
 
-    evidence=data.get('evidence',[]) or []
+    evidence=seq(data.get('evidence'),'evidence',errors)
     ids=set()
     for i,e in enumerate(evidence):
         if not isinstance(e,dict):errors.append('evidence[%d] must be an object'%i);continue
@@ -94,7 +131,7 @@ def check(data,root=None):
         ids.add(eid)
         if not text(e.get('type')):errors.append('evidence[%s].type required'%eid)
         if not text(e.get('source')):errors.append('evidence[%s].source required'%eid)
-    for i,c in enumerate(data.get('claims',[]) or []):
+    for i,c in enumerate(seq(data.get('claims'),'claims',errors)):
         if not isinstance(c,dict):errors.append('claims[%d] must be an object'%i);continue
         if not text(c.get('text')):errors.append('claims[%d].text required'%i)
         proofs=c.get('proof_ids')
@@ -208,13 +245,16 @@ def check(data,root=None):
     elif loud is not None:errors.append('loudness_target must be an object')
 
     asset_ids=set()
-    for i,a in enumerate(data.get('assets',[]) or []):
+    for i,a in enumerate(seq(data.get('assets'),'assets',errors)):
         if not isinstance(a,dict):errors.append('assets[%d] must be an object'%i);continue
         aid=a.get('id')
         if not text(aid):errors.append('assets[%d].id required'%i);continue
         if aid in asset_ids:errors.append('Duplicate asset id: '+aid)
         asset_ids.add(aid)
         if not text(a.get('rights')):errors.append('Asset '+aid+' has no recorded rights')
+        if text(a.get('path')):
+            why=escaping(a['path'])
+            if why:errors.append('Asset %s has a path %s: an asset path names a file inside the project'%(aid,why))
         if a.get('identifiable_person'):
             if not text(a.get('release_ref')):errors.append('Asset '+aid+' shows an identifiable person and has no release_ref')
             if not text(a.get('release_expires')):errors.append('Asset '+aid+' has a release with no expiry date recorded')
@@ -225,7 +265,10 @@ def check(data,root=None):
             if refs is None:continue
             if not isinstance(refs,list):errors.append('Scene %d: assets must be a list of ids'%i);continue
             for aid in refs:
-                if aid not in asset_ids:errors.append('Scene %d references unknown asset %r'%(i,aid))
+                # A dict or a list here would reach a set membership test and raise
+                # TypeError: unhashable. An id is a string or it is not an id.
+                if not isinstance(aid,str) or aid not in asset_ids:
+                    errors.append('Scene %d references unknown asset %r'%(i,aid))
 
     engine=data.get('engine')
     if not isinstance(engine,dict):errors.append('engine object required')
@@ -245,7 +288,7 @@ def check(data,root=None):
             if not (text(r) and RATIO.match(r)):errors.append('formats[%d].ratio must look like 9:16'%i);continue
             if r in built:errors.append('Format %s appears twice'%r)
             built.add(r)
-            if not (num(w) and num(h) and w>0 and h>0):errors.append('formats[%s]: width and height required'%r);continue
+            if not (whole(w) and whole(h) and w>0 and h>0):errors.append('formats[%s]: width and height must be whole positive pixel counts'%r);continue
             if ratio_of(w,h)!=r:errors.append('formats[%s]: %dx%d is %s, not %s'%(r,int(w),int(h),ratio_of(w,h),r))
             if not (num(fps) and fps>0):errors.append('formats[%s].fps required'%r)
             if not isinstance(f.get('safe_zones'),dict):errors.append('formats[%s].safe_zones required'%r)
@@ -255,7 +298,7 @@ def check(data,root=None):
         for r in brief['formats']:
             if isinstance(r,str) and r not in built:errors.append('Brief asks for %s and no format was composed for it'%r)
 
-    exports=data.get('exports',[]) or []
+    exports=seq(data.get('exports'),'exports',errors)
     if rank>=NEEDS_FILE:
         if not exports:errors.append('state is "%s" and no export is listed'%state)
         done=set()
@@ -265,15 +308,26 @@ def check(data,root=None):
             if not (text(r) and RATIO.match(r)):errors.append('exports[%d].ratio required'%i)
             else:done.add(r)
             if not text(path):errors.append('exports[%d].path required'%i);continue
+            why=escaping(path)
+            if why:
+                errors.append('exports[%s] has a path %s: an export path names a file inside the project'%(r,why));continue
             digest=e.get('sha256')
             good=isinstance(digest,str) and re.fullmatch(r'[0-9a-f]{64}',digest)
             if not good:
                 errors.append('exports[%s] has no sha256: an export nobody hashed is an export nobody can prove'%r)
             if root is not None:
-                p=Path(root)/path
+                base=Path(root).resolve()
+                p=base/path
+                # Second lock, after the textual one: a symlink inside the tree can
+                # still point out of it, and only resolving the real path sees that.
+                try:p.resolve().relative_to(base)
+                except (OSError,ValueError):
+                    errors.append('exports[%s] resolves outside the project root: %s'%(r,path));continue
                 if not p.is_file():errors.append('exports[%s] names a file that is not there: %s'%(r,path))
-                elif good and hashlib.sha256(p.read_bytes()).hexdigest()!=digest:
-                    errors.append('exports[%s] hash does not match the file on disk'%r)
+                elif good:
+                    try:
+                        if digest_of(p)!=digest:errors.append('exports[%s] hash does not match the file on disk'%r)
+                    except OSError as exc:errors.append('exports[%s] could not be read: %s'%(r,exc))
         for r in sorted(built-done):errors.append('Format %s was composed and never exported'%r)
     elif exports:
         warnings.append('Exports are listed while the state is "%s"; the state is what the delivery is judged on'%state)
@@ -289,7 +343,7 @@ def check(data,root=None):
                     errors.append('qa.%s.verdict must be one of: %s'%(half,', '.join(VERDICTS)))
                 if block.get('verdict')=='fail' and rank>=STATES.index('approved'):
                     errors.append('qa.%s failed and the project claims to be %s'%(half,state))
-                for j,d in enumerate(block.get('defects',[]) or []):
+                for j,d in enumerate(seq(block.get('defects'),'qa.'+half+'.defects',errors)):
                     if not isinstance(d,dict):errors.append('qa.%s.defects[%d] must be an object'%(half,j));continue
                     for field in DEFECT:
                         if not text(d.get(field)):errors.append('qa.%s.defects[%d].%s required'%(half,j,field))
@@ -311,7 +365,7 @@ def main():
     p.add_argument('--root',help='Directory the export paths are relative to; enables file and hash checks')
     a=p.parse_args()
     try:data=json.loads(Path(a.path).read_text(encoding='utf-8'))
-    except (OSError,json.JSONDecodeError) as e:print('Unreadable manifest: '+str(e));return 2
+    except (OSError,ValueError) as e:print('Unreadable manifest: '+str(e));return 2
     errors,warnings=check(data,a.root)
     for w in warnings:print('warning: '+w)
     for e in errors:print('error: '+e)

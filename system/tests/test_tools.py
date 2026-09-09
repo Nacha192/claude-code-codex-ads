@@ -130,6 +130,30 @@ class ToolTests(unittest.TestCase):
    except OSError as e:self.skipTest('Symlink privilege unavailable: '+str(e))
    installer.install('codex','solo',target_root=alias/'skills',apply=True)
    with self.assertRaises(ValueError):installer.install('codex','solo',target_root=alias,apply=True)
+ def link_dir(self,link,target):
+  """A symlink where that is allowed, a directory junction on Windows. A junction
+  needs no privilege, which is why the rule has to hold for it too."""
+  try:
+   link.symlink_to(target,target_is_directory=True);return True
+  except (OSError,NotImplementedError):
+   r=subprocess.run(['cmd','/c','mklink','/J',str(link),str(target)],capture_output=True)
+   return r.returncode==0 and link.exists()
+ def test_a_redirected_installation_target_is_refused_including_a_junction(self):
+  """`is_symlink()` is False for a Windows junction, so the symlink rule used to be
+  walked straight past by the cheaper of the two redirections."""
+  with tempfile.TemporaryDirectory() as t:
+   root=Path(t);real=root/'real';real.mkdir();alias=root/'alias'
+   if not self.link_dir(alias,real):self.skipTest('no way to make a directory link here')
+   self.assertTrue(installer.redirected(alias),'a junction or symlink target must read as redirected')
+   with self.assertRaises(ValueError):installer.install('codex','solo',target_root=alias,apply=True)
+   # An ordinary directory underneath a redirected ancestor stays legitimate.
+   installer.install('codex','solo',target_root=alias/'skills',apply=True)
+ def test_a_junction_planted_as_a_skill_destination_is_refused(self):
+  with tempfile.TemporaryDirectory() as t:
+   root=Path(t);real=root/'real';real.mkdir();skills=root/'skills';skills.mkdir()
+   if not self.link_dir(skills/'video-ads-codex',real):self.skipTest('no way to make a directory link here')
+   with self.assertRaises(ValueError):installer.install('codex','solo',target_root=skills,apply=True,scope='motion')
+   self.assertEqual([x for x in real.rglob('*') if x.is_file()],[],'nothing may be written through the link')
  def test_scope_selection(self):
   with tempfile.TemporaryDirectory() as t:
    both=installer.install('codex',target_root=Path(t)/'a');self.assertEqual(len(both),4)
@@ -263,6 +287,100 @@ class MotionProjectTests(unittest.TestCase):
   self.refused(lambda d:d.__setitem__('sk-'+'y'*30,'harmless'),'credential-shaped')
  def test_rendered_state_with_no_export_refused(self):
   self.refused(lambda d:d.__setitem__('exports',[]),'no export is listed')
+ def test_export_path_that_leaves_the_project_refused(self):
+  """A manifest names files inside the job it describes.
+
+  Before this rule an absolute path, or one climbing with "..", was joined to
+  --root and read wherever it landed. A manifest written anywhere could point at
+  any file on the machine, and if the hash matched, the export check passed while
+  nothing produced here had been verified at all.
+  """
+  self.refused(lambda d:d['exports'][0].__setitem__('path','/etc/hosts'),'absolute')
+  self.refused(lambda d:d['exports'][0].__setitem__('path','C:/Windows/win.ini'),'absolute')
+  self.refused(lambda d:d['exports'][0].__setitem__('path','../../elsewhere.mp4'),'climbing out')
+  self.refused(lambda d:d['assets'][0].__setitem__('path','../../elsewhere.png'),'climbing out')
+ def test_a_file_outside_the_root_is_never_hashed_as_an_export(self):
+  with tempfile.TemporaryDirectory() as box:
+   outside=Path(box)/'outside.bin';outside.write_bytes(b'never part of this job')
+   root=Path(box)/'project';root.mkdir()
+   d=self.project()
+   d['exports']=[dict(d['exports'][0])];d['formats']=[d['formats'][0]]
+   d['brief']['formats']=[d['formats'][0]['ratio']];d['exports'][0]['ratio']=d['formats'][0]['ratio']
+   d['exports'][0]['path']=outside.as_posix()
+   d['exports'][0]['sha256']=hashlib.sha256(outside.read_bytes()).hexdigest()
+   e,_=motion.check(d,root)
+   self.assertTrue(e,'a correct hash of a file outside the project must not validate it')
+   self.assertTrue(any('absolute' in x for x in e),repr(e[:3]))
+ def test_a_link_pointing_out_of_the_project_refused(self):
+  with tempfile.TemporaryDirectory() as box:
+   outside=Path(box)/'outside.bin';outside.write_bytes(b'never part of this job')
+   root=Path(box)/'project';root.mkdir()
+   d=self.project()
+   d['exports']=[dict(d['exports'][0])];d['formats']=[d['formats'][0]]
+   d['brief']['formats']=[d['formats'][0]['ratio']];d['exports'][0]['ratio']=d['formats'][0]['ratio']
+   # A path can be textually clean and still leave the tree, so the second lock
+   # resolves it. Symlink where that is allowed, directory junction on Windows,
+   # which needs no privilege and is the form this actually turns up in.
+   link=root/'exports'
+   try:link.symlink_to(outside.parent,target_is_directory=True)
+   except (OSError,NotImplementedError,AttributeError):
+    r=subprocess.run(['cmd','/c','mklink','/J',str(link),str(outside.parent)],capture_output=True)
+    if r.returncode!=0 or not link.exists():self.skipTest('no way to make a link on this machine')
+   d['exports'][0]['path']='exports/outside.bin'
+   d['exports'][0]['sha256']=hashlib.sha256(outside.read_bytes()).hexdigest()
+   e,_=motion.check(d,root)
+   self.assertTrue(any('resolves outside' in x for x in e),'a link out of the tree must be refused; got '+repr(e[:3]))
+ def test_a_section_that_is_not_a_list_is_refused_not_iterated(self):
+  """A number where a list belongs used to raise TypeError and take the checker
+  down. A malformed manifest has to be refused with a message, not a traceback."""
+  for field,value in [('assets',5),('exports',5),('claims',{'a':1}),('evidence',7),('assumptions','none')]:
+   d=self.project();d[field]=value
+   e,_=motion.check(d)
+   self.assertTrue(any(field+' must be a list' in x for x in e),field+' -> '+repr(e[:3]))
+  d=self.project();d['qa']['technical']['defects']='blocked'
+  e,_=motion.check(d)
+  self.assertTrue(any('defects must be a list' in x for x in e),repr(e[:3]))
+ def test_an_unhashable_asset_reference_does_not_crash(self):
+  """A dict or a list in scenes[].assets used to reach a set membership test and
+  raise TypeError. Same class of defect as the one already fixed in the artifact
+  checker, found here by fuzzing every field with every hostile shape."""
+  for bad in [[[]],[{'a':1}],[None],[5]]:
+   d=self.project();d['scenes'][0]['assets']=bad
+   e,_=motion.check(d)
+   self.assertTrue(any('unknown asset' in x for x in e),repr(bad)+' -> '+repr(e[:3]))
+ def test_fractional_pixel_dimensions_refused(self):
+  self.refused(lambda d:d['formats'][0].__setitem__('width',1080.5),'whole positive pixel counts')
+ def test_a_manifest_that_is_not_utf8_exits_cleanly(self):
+  """Exit 2 and one line, not a traceback: the caller reads the exit code."""
+  with tempfile.TemporaryDirectory() as box:
+   bad=Path(box)/'m.json';bad.write_bytes(bytes([255,254,0])+b'binary')
+   r=subprocess.run([sys.executable,str(BUILD/'src/motion/scripts/check_motion_project.py'),str(bad)],
+                    capture_output=True,text=True)
+   self.assertEqual(r.returncode,2)
+   self.assertNotIn('Traceback',(r.stdout or '')+(r.stderr or ''))
+ def test_hashing_reads_the_file_in_chunks_and_still_agrees(self):
+  """Exports are videos. The digest is streamed, so it must match the one-shot
+  hash of the same bytes across a file larger than a single chunk."""
+  with tempfile.TemporaryDirectory() as box:
+   big=Path(box)/'big.bin';payload=(b'motion'*400000)  # about 2.4 MB, several chunks
+   big.write_bytes(payload)
+   self.assertEqual(motion.digest_of(big),hashlib.sha256(payload).hexdigest())
+   self.assertEqual(inspector.digest_of(big),hashlib.sha256(payload).hexdigest())
+ def test_a_silent_nonzero_decode_is_still_a_finding(self):
+  """ffmpeg failing with an empty stderr used to leave decode_errors at zero and
+  produce no finding, which reads exactly like a clean decode."""
+  original=inspector.run
+  def fake(cmd):
+   if cmd[0]=='ffprobe':
+    return 0,json.dumps({'format':{'duration':'4.0','size':'1000'},
+     'streams':[{'codec_type':'video','width':1080,'height':1920,'avg_frame_rate':'30/1'}]}),''
+   if '-f' in cmd and 'null' in cmd and '-vf' not in cmd and '-af' not in cmd:return 137,'',''
+   return 0,'',''
+  inspector.run=fake
+  try:m,findings=inspector.measure(Path('unused.mp4'))
+  finally:inspector.run=original
+  self.assertTrue(any(f['severity']=='blocking' for f in findings),
+                  'a nonzero decode must be reported even when ffmpeg says nothing: '+repr(findings))
  def test_export_file_and_hash_are_checked_against_disk(self):
   with tempfile.TemporaryDirectory() as box:
    root=Path(box);d=self.project()

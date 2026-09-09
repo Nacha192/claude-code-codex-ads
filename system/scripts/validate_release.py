@@ -101,9 +101,12 @@ def validate(root=None,build=None,report=True):
    # obvious recovery is to write the missing script and run that instead.
    for file in p.rglob('*.md'):
     local_links(file,errors,root)
+    # local_links already reported the unreadable file; do not crash on it here.
+    try:body=file.read_text(encoding='utf-8')
+    except (OSError,UnicodeDecodeError):continue
     # Subdirectories count, and a directory that happens to end in .py is not a
     # script: the question is whether the assistant can run what it was told to run.
-    for cited in sorted(set(re.findall(r'scripts/([A-Za-z0-9_./-]*[A-Za-z0-9_-]\.(?:py|mjs|js|sh))',file.read_text(encoding='utf-8')))):
+    for cited in sorted(set(re.findall(r'scripts/([A-Za-z0-9_./-]*[A-Za-z0-9_-]\.(?:py|mjs|js|sh))',body))):
      if '..' in cited.split('/') or not (p/'scripts'/cited).is_file():errors.append('Script cited but not shipped in '+name+': '+cited)
    zpath=root/f'install-{name}.zip'
    with zipfile.ZipFile(zpath) as z:
@@ -133,7 +136,9 @@ def validate(root=None,build=None,report=True):
  # 404s in every published pack at once, and no offline check would notice.
  for file in root.rglob('*.md'):
   if '.git' in file.parts:continue
-  for cited in sorted(set(re.findall(r'https://github\.com/Nacha192/([A-Za-z0-9._-]+)',file.read_text(encoding='utf-8')))):
+  try:body=file.read_text(encoding='utf-8')
+  except (OSError,UnicodeDecodeError):errors.append('Unreadable markdown '+str(file.relative_to(root)));continue
+  for cited in sorted(set(re.findall(r'https://github\.com/Nacha192/([A-Za-z0-9._-]+)',body))):
    if cited not in KNOWN_REPOS:errors.append('Repository name that is not the published one, in '+str(file.relative_to(root))+': '+cited)
  # Documentation outside the build sources: its links must resolve as published.
  for file in root.rglob('*.md'):
