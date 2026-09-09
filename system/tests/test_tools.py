@@ -1,4 +1,4 @@
-import copy,hashlib,importlib.util,json,shutil,subprocess,sys,tempfile,unittest,zipfile
+import copy,hashlib,importlib.util,io,json,shutil,subprocess,sys,tempfile,unittest,unittest.mock,zipfile
 from pathlib import Path
 BUILD=Path(__file__).resolve().parents[1]
 ROOT=BUILD.parent
@@ -17,6 +17,14 @@ renderer=load('renderer',BUILD/'src/motion/scripts/render_motion.py')
 EXAMPLE=BUILD/'src/motion/examples/motion-project.example.json'
 RENDER_EXAMPLE=BUILD/'src/motion/examples/motion-project.render.json'
 FFMPEG=shutil.which('ffmpeg') and shutil.which('ffprobe')
+# ffmpeg being on PATH is not the same as ffmpeg being able to draw. Homebrew's
+# macOS bottle ships libx264 and aac and no libfreetype, so `drawtext` and
+# `subtitles` do not exist and nothing with a word in it can be rendered. The engine
+# already refuses that machine by name; these tests have to make the same
+# distinction instead of failing on a runner that is behaving exactly as designed.
+_CAPS=engine.detect() if FFMPEG else {'usable':False,'reason':'no ffmpeg on PATH'}
+RENDERABLE=bool(_CAPS.get('usable'))
+WHY_NOT=_CAPS.get('reason','')
 
 class ToolTests(unittest.TestCase):
  def brief(self):return {'schema_v':'1.0.0','kind':'brief','offer':'A fictional repair service','country':'FR','ad_language':'fr-FR','objective':'qualified inquiries','window':{'start':'2026-08-01','end':'2026-08-31'}}
@@ -587,12 +595,23 @@ class MotionEngineTests(unittest.TestCase):
   caps=engine.detect()
   self.assertIn('missing_filters',caps);self.assertIn('usable',caps)
   if not caps['usable']:self.assertTrue(caps.get('reason'),'unusable without saying why')
- @unittest.skipUnless(FFMPEG,'ffmpeg and ffprobe are required')
- def test_this_machine_has_every_filter_the_pipeline_issues(self):
+ @unittest.skipUnless(RENDERABLE,'this ffmpeg cannot draw: '+WHY_NOT)
+ def test_a_complete_build_reports_nothing_missing(self):
   caps=engine.detect()
   self.assertEqual(caps['missing_filters'],[])
-  self.assertTrue(caps['freetype'],'no libfreetype, so no text could be drawn')
+  self.assertTrue(caps['freetype'])
   self.assertIsNotNone(caps['font_file'])
+ def test_an_ffmpeg_that_cannot_draw_is_named_rather_than_used(self):
+  """Homebrew's macOS ffmpeg has x264 and aac and no libfreetype, so it encodes
+  perfectly and cannot put one character on screen. Detection has to say so, and the
+  run has to stop, because the alternative is an ad delivered with no words in it."""
+  caps=engine.detect()
+  if caps['usable']:
+   caps=dict(caps,missing_filters=['drawtext','subtitles'],freetype=False,usable=False)
+   caps['reason']='missing filters: drawtext, subtitles; ffmpeg built without libfreetype, so no text can be drawn'
+  self.assertFalse(caps['usable'])
+  self.assertTrue(caps['reason'])
+  self.assertIn('drawtext' if caps['missing_filters'] else 'ffmpeg',caps['reason'])
  def test_brand_tokens_replace_the_defaults(self):
   m=self.manifest();m.setdefault('design',{}).setdefault('palette',{})['accent']='0x00FF00'
   d=engine.resolve_design(m)
@@ -831,7 +850,7 @@ class MotionEngineTests(unittest.TestCase):
      if x<lo:lo=x
      if x>hi:hi=x
   return (hi-lo+1) if hi>=0 else None
- @unittest.skipUnless(FFMPEG,'ffmpeg is required')
+ @unittest.skipUnless(RENDERABLE,'this ffmpeg cannot draw: '+WHY_NOT)
  def test_the_measured_width_is_the_width_that_gets_drawn(self):
   """The parser is checked against the renderer, not against itself.
 
@@ -879,6 +898,33 @@ class MotionEngineTests(unittest.TestCase):
     for line in wrapped.split(chr(10)):
      if len(line.split())>1:
       self.assertLessEqual(engine.measure_text(line,size,font),width,repr(line))
+ def test_a_machine_that_cannot_draw_stops_instead_of_shipping_a_silent_ad(self):
+  """Exit 3, with the missing part named, and nothing written.
+
+  This is the case Homebrew's macOS ffmpeg actually produces: libx264 and aac
+  present, libfreetype absent, so every encode succeeds and no character can be put
+  on screen. Rendering anyway would deliver an ad with the words missing, which
+  passes a duration check and fails in front of a viewer."""
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  root=Path(box.name);(root/'examples').mkdir()
+  shutil.copytree(BUILD/'src/motion/scripts',root/'scripts',
+                  ignore=shutil.ignore_patterns('__pycache__'))
+  shutil.copy2(RENDER_EXAMPLE,root/'examples/motion-project.render.json')
+  crippled={'ffmpeg':'/usr/bin/ffmpeg','ffprobe':'/usr/bin/ffprobe','filters':[],
+            'missing_filters':['drawtext','subtitles'],'freetype':False,'fonts':370,
+            'font_file':None,'engine':'ffmpeg-python-reference','javascript_required':False,
+            'encoders':{'libx264':True,'aac':True},'usable':False,
+            'reason':'missing filters: drawtext, subtitles; ffmpeg built without '
+                     'libfreetype, so no text can be drawn'}
+  argv=['render_motion.py',str(root/'examples/motion-project.render.json'),
+        '--root',str(root),'--apply']
+  with unittest.mock.patch.object(renderer.engine,'detect',return_value=crippled), \
+       unittest.mock.patch.object(sys,'argv',argv), \
+       unittest.mock.patch('sys.stdout',io.StringIO()) as out,        unittest.mock.patch('sys.stderr',io.StringIO()):
+   code=renderer.main()
+  self.assertEqual(code,3)
+  self.assertIn('drawtext',out.getvalue())
+  self.assertFalse((root/'exports').exists(),'it wrote an export it could not draw')
  def test_a_gradient_is_the_same_gradient_on_the_next_run(self):
   """`gradients` defaults to a random seed, so two renders of one manifest differed
   in every byte and the hash written into the manifest meant nothing."""
@@ -896,7 +942,7 @@ class MotionRenderTests(unittest.TestCase):
  SLUG='chauffe-eau-prix-ecrit'
  @classmethod
  def setUpClass(cls):
-  if not FFMPEG:raise unittest.SkipTest('ffmpeg and ffprobe are required')
+  if not RENDERABLE:raise unittest.SkipTest('this ffmpeg cannot draw: '+WHY_NOT)
   cls.box=tempfile.TemporaryDirectory();cls.root=Path(cls.box.name)
   shutil.copytree(BUILD/'src/motion/scripts',cls.root/'scripts',
                   ignore=shutil.ignore_patterns('__pycache__'))

@@ -80,6 +80,14 @@ what is present and, when something is missing, one sentence naming which part:
 A run on a machine that cannot render stops with exit 3 and says why. It does not
 render a version with no text and call it done.
 
+**This is not hypothetical, and macOS is where it bites.** `brew install ffmpeg`
+installed a build carrying libx264 and aac and no libfreetype or libass, so every
+encode succeeded and `drawtext` and `subtitles` did not exist. An engine that trusted
+"ffmpeg is installed" would have delivered a finished-looking ad with none of the
+words in it, at the right duration and the right loudness, and every technical check
+would have passed. If you are on a Mac and the run stops with that reason, install an
+ffmpeg built with libfreetype and libass rather than working around the message.
+
 ---
 
 ## Three compositions, not one crop

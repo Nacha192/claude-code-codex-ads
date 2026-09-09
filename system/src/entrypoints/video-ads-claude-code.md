@@ -57,9 +57,12 @@ comprehension, hierarchy, tension, proof, continuity, emotion or passage.
 **Produce.** [Video models](references/video-models.md),
 [prompting](references/video-prompting.md), [voice](references/video-voice.md),
 [music](references/video-music.md), [assembly](references/video-assembly.md), and
-[real production](references/live-action.md) when filming beats generating. Each
-requested ratio gets its own composition; the mandatory ratios are the ones in the
-brief and nowhere else.
+[real production](references/live-action.md) when filming beats generating. A still
+used as a layer is prompted with [image prompting](references/image-prompting.md),
+which carries the slot order a model actually weights, the canvases it will accept
+and why 1080 is not one of them, and the three ways a generated picture fails as an
+ad before anyone judges it. Each requested ratio gets its own composition; the
+mandatory ratios are the ones in the brief and nowhere else.
 
 **A reference engine is supplied and it runs.** One command turns the manifest into
 real files, one composition per ratio, on Python and FFmpeg alone:

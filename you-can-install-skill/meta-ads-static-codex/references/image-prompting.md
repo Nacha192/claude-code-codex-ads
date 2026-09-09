@@ -84,6 +84,13 @@ product photograph is real. If the multiple-of-16 rule has changed since this sn
 the arithmetic above is how to recompute: pick the smallest whole `k` that clears your
 delivery size.
 
+**A still that will move needs more pixels than the frame.** A layer with a camera
+push or a parallax offset shows more of itself over the scene than the first frame
+does. A `camera_amount` of 0.08 travels eight percent of the frame, so a still
+generated at exactly the delivery size runs out of picture and exposes whatever sits
+behind it. Add the travel to both edges before picking the legal size: 1152 x 2048
+covers a static 9:16 layer, a moving one wants the next step up.
+
 ---
 
 ## Parameters worth setting deliberately
@@ -130,5 +137,8 @@ one at maximum, and the composition is what you are actually choosing between.
 
 Whether the picture argues for the product. A technically flawless image of the wrong
 idea is the most expensive output in this whole pipeline, because it looks finished.
-Go back to [static production](static.md) for the visual role the image is supposed to
-play, and choose that before writing a prompt.
+Decide the role before writing a prompt: the brief in [intake](intake.md) says what
+the picture has to prove, and [output standard](output-standard.md) says what has to
+come back. In a still pack the role is the frame itself; in a motion pack it is one
+layer of a scene, and a layer that will be covered by a headline does not need the
+detail a full-bleed opener does.

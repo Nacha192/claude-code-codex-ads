@@ -13,7 +13,7 @@ REPO='skill-claude-code-codex-ads'
 # Repositories the published text may point at: this one, and the duo method it is
 # built on. Any other name under that account is a name that drifted from reality.
 KNOWN_REPOS={REPO,'Codex-Claude-Code-team'}
-VERSION='4.3.0'
+VERSION='4.3.1'
 HOST={'copy':('Draft in the target language using the brief and actual source records.','Use native file/MCP tools for the same brief; no Codex-only tool names.'),
 'research':('Use available web/library tools and record actual coverage.','Discover the connected research tools; use supplied exports if unavailable.'),
 'image':('Use the actual available image tool or editable composition workflow after approval.','Use a connected image/Design tool or an explicitly requested genuine Codex peer in team mode; never simulate image generation.'),
@@ -48,7 +48,7 @@ NAMES=[n for s in SCOPES.values() for n in s['names']]
 # otherwise reach all eight packs the moment one shared file linked to it, and
 # nothing structural would object. Adding a line here is the deliberate act.
 COMMON_REFERENCES={'campaign-operations.md','compliance.md','conversion.md','copywriting.md','core.md','hooks.md',
-'intake.md','memory-testing.md','models.md','one-shot.md','output-standard.md','quality-control.md','research.md','runtime.md','second-brain.md',
+'image-prompting.md','intake.md','memory-testing.md','models.md','one-shot.md','output-standard.md','quality-control.md','research.md','runtime.md','second-brain.md',
 'team.md','thresholds.md','v11-lessons.md'}
 
 def write(p,s):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(s,encoding='utf-8',newline='\n')
