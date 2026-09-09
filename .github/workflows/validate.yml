@@ -33,8 +33,10 @@ jobs:
       # so a file published once and removed later is still published.
       - name: Scan every commit, not only the tree
         run: python system/scripts/scan_history.py
-      # Without ffmpeg the seven measurement tests skip, and the half of quality
-      # control this repository is actually about is never exercised in CI.
+      # Without ffmpeg every test that decodes or renders a file skips, which is the
+      # half of quality control this repository is actually about. This runner is
+      # where the reference engine renders the fixture ad to three real files and
+      # something measures them; macOS has no ffmpeg here and skips that part.
       - name: Install ffmpeg so the measurement tests really run
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
