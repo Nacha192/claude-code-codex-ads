@@ -82,6 +82,58 @@ def ratio_of(w,h):
     g=math.gcd(int(w),int(h)) or 1
     return '%d:%d'%(int(w)//g,int(h)//g)
 
+LAYER_KINDS = {'image', 'video', 'text', 'shape'}
+# Fractions of the frame, so a layout survives being composed at three sizes. A value
+# outside this range is a pixel count somebody wrote in the wrong field.
+FRACTION = ['x', 'y', 'w', 'h', 'opacity', 'parallax', 'camera_amount', 'gap']
+
+
+def check_layers(scene, index, errors, asset_ids):
+    """The drawing instructions of one scene, checked before a renderer sees them.
+
+    A layer the renderer cannot draw is a failure halfway through a job that has
+    already spent minutes encoding, and the message it produces names a filter rather
+    than the scene. Catching it here costs nothing and says where to look.
+    """
+    layers = scene.get('layers')
+    if layers is None:
+        return
+    if not isinstance(layers, list):
+        errors.append('Scene %d: layers must be a list' % index)
+        return
+    for n, layer in enumerate(layers):
+        where = 'Scene %d layer %d' % (index, n)
+        if not isinstance(layer, dict):
+            errors.append(where + ' must be an object')
+            continue
+        kind = layer.get('kind')
+        if kind not in LAYER_KINDS:
+            errors.append('%s has kind %r, and only %s can be drawn'
+                          % (where, kind, ', '.join(sorted(LAYER_KINDS))))
+            continue
+        if kind in ('image', 'video'):
+            ref = layer.get('asset')
+            if not isinstance(ref, str) or ref not in asset_ids:
+                errors.append('%s references unknown asset %r' % (where, ref))
+        if kind == 'text' and not text(layer.get('content')):
+            errors.append(where + ' is text with nothing to say')
+        for field in FRACTION:
+            value = layer.get(field)
+            if value is None:
+                continue
+            if not num(value) or not 0 <= value <= 1:
+                errors.append('%s: %s is %r, and these are fractions of the frame '
+                              'between 0 and 1, not pixels' % (where, field, value))
+        at = layer.get('at')
+        if at is not None:
+            span = float(scene['end']) - float(scene['start'])
+            if not num(at) or at < 0:
+                errors.append('%s starts at %r' % (where, at))
+            elif at >= span:
+                errors.append('%s starts at %.2fs, after its own scene has ended'
+                              % (where, at))
+
+
 def check(data,root=None):
     """Return (errors, warnings). Errors block delivery, warnings are reported and pass."""
     errors=[];warnings=[]
@@ -261,6 +313,8 @@ def check(data,root=None):
     if isinstance(scenes,list):
         for i,s in enumerate(scenes):
             if not isinstance(s,dict):continue
+            if num(s.get('start')) and num(s.get('end')) and s['end']>s['start']:
+                check_layers(s,i,errors,asset_ids)
             refs=s.get('assets')
             if refs is None:continue
             if not isinstance(refs,list):errors.append('Scene %d: assets must be a list of ids'%i);continue

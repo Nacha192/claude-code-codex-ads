@@ -1,5 +1,57 @@
 # Migration from the initial distribution
 
+## Version 4.1.0: the pack could judge a video and not make one
+
+Four releases of rules about rendering, and nothing in the repository rendered. The
+manifest schema, the inspector, the QA grids and the correction loop all assumed a
+renderer that the assistant was expected to find somewhere. That is why the honest
+score on real motion production was 8.3, and why the failure mode was always the
+same: a slideshow, or a JavaScript toolchain nobody agreed to install.
+
+`scripts/render_motion.py` and `scripts/motion_engine.py` are that renderer, on
+Python and FFmpeg alone. One command turns `motion-project.json` into real MP4 files,
+one composition per ratio, and writes back what the decoder measured. **JavaScript is
+never mandatory**, and the adapters in `references/providers.md` are unchanged: this
+is the floor, not a replacement for a better route.
+
+A sixteen second fixture ad ships with it, at `examples/motion-project.render.json`,
+with the script that generates its synthetic assets. It renders to 1080x1920,
+1080x1350 and 1920x1080, and the suite renders all three and measures them rather
+than describing them.
+
+**What changed for an existing manifest.** Nothing is required. `design` and
+`scenes[].layers` are new and optional, and a manifest without them validates exactly
+as before. If you add them, the validator now refuses a layer kind nothing can draw,
+a picture layer naming an asset that does not exist, text with nothing to say, a
+pixel count in a field that holds a fraction of the frame, and a layer starting after
+its own scene has ended.
+
+**Defects found and fixed while building it**, each one now covered by a test:
+
+- `xfade` refuses two inputs whose timebases differ, with an error naming neither the
+  scene nor the cause. Every branch is normalised before it is joined.
+- Transitions were shortening the film by their own duration, so a correct sixteen
+  second timeline rendered 15.35 seconds and the duration check failed on a timeline
+  nobody got wrong. Each clip now carries a tail exactly as long as the transition
+  that follows it.
+- `-t` cuts at the last frame strictly before the mark, losing a frame per scene.
+  Clips are cut to an exact frame count and padded on the last frame when an input
+  ends a fraction of a frame early.
+- The renderer and the resume check computed that frame count separately and
+  disagreed by one, because `3.2 + 0.35` is not `3.55`. One function answers both.
+- Resume discarded everything after an interruption. The plan fingerprint was written
+  when a run finished, and an interrupted run never gets there. It is written before
+  the first scene now, and a clip is reused only if its frames are counted and match.
+- A run limited with `--formats` erased the export records of the formats it did not
+  touch. Re-rendering a vertical is not a statement that the landscape never existed.
+- Burned captions landed on the body copy, and long lines ran off the frame. Both
+  were found by looking at a contact sheet, and neither was visible in any
+  measurement.
+- Text layers used one absolute vertical position shared by all three ratios, which
+  is the crop problem in a different costume. Blocks are measured and stacked per
+  format now, and a per-layer clamp that could place two blocks on the same line was
+  removed: measuring first is what prevents the collision, not clamping after.
+
 ## Version 4.0.4: the history was never scanned
 
 `validate_release.py` reads the tree that is checked out. A clone carries every

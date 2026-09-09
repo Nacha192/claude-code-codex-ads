@@ -75,6 +75,39 @@ And on the exported files, `scripts/inspect_video.py` decodes each one in full:
 | Exports are hashed in chunks, so the largest file in the delivery is not read whole into memory to verify it | `test_hashing_reads_the_file_in_chunks_and_still_agrees` |
 | The whole contract, from a planned project to inspected exports of real files | `test_forward_from_a_minimal_brief_to_inspected_exports` |
 
+## In the motion packs, on the reference engine
+
+`scripts/render_motion.py` turns the manifest into real files with Python and FFmpeg.
+It is one adapter among several, and it is the one that ships, so it carries rules of
+its own. Nothing here is enforced by taste: each row is a test that renders or
+measures something.
+
+| Rule | Test |
+|---|---|
+| The supplied engine never requires JavaScript, a package manager or a browser, and it says so in the manifest it writes | `test_the_reference_engine_never_requires_javascript` |
+| The machine is asked what it can do, and an unusable machine is named rather than discovered halfway through an encode | `test_detection_names_what_is_missing_rather_than_failing_late`, `test_this_machine_has_every_filter_the_pipeline_issues` |
+| Each ratio is composed from its own frame. There is no master, which is the only structural way to make a blind crop impossible | `test_the_three_ratios_are_three_compositions_and_not_one_crop`, `test_type_is_sized_from_the_frame_not_copied_between_frames`, `test_the_exports_are_not_the_same_picture_three_times` |
+| The stack is measured before it is placed, so two blocks can never be clamped onto the same line, and copy never enters the caption band | `test_the_stack_is_measured_before_it_is_placed`, `test_a_rule_declared_between_two_lines_lands_between_them` |
+| Copy that does not fit its column shrinks the type once for the whole film, and copy that cannot fit at all is refused instead of hidden. Captions never shrink with it | `test_the_type_shrinks_until_the_tallest_scene_fits`, `test_copy_that_cannot_fit_is_refused_rather_than_hidden`, `test_captions_never_shrink_with_the_copy` |
+| Every line stays inside its column, and no word is dropped to make it | `test_wrapping_keeps_every_word_and_every_line_inside_the_column`, `test_a_single_word_longer_than_the_column_still_comes_back` |
+| Ad copy reaches the renderer through a file rather than through three levels of escaping, and paths and expressions are escaped for the filter graph | `test_text_goes_to_a_file_so_nothing_has_to_be_escaped`, `test_filter_paths_and_expressions_are_escaped_for_ffmpeg` |
+| A transition borrows material from the scene before it, so a crossfade cannot silently shorten the ad | `test_a_transition_borrows_from_the_scene_before_it` |
+| The renderer and the resume check get one answer about frame counts, not two that agree by luck | `test_one_frame_count_answers_the_renderer_and_the_resume_check` |
+| Camera moves and easings are bounded expressions, so a long scene cannot zoom past its own frame | `test_camera_moves_are_bounded_expressions`, `test_easings_are_clamped_at_both_ends` |
+| Colour, type, motion and grid come from the brand block, never from a value written into the engine | `test_brand_tokens_replace_the_defaults` |
+| The one-shot produces three real files at the three declared sizes, each decoded, each normalised to the declared loudness | `test_three_real_files_at_the_three_declared_sizes`, `test_every_export_is_normalised_to_the_declared_loudness`, `test_the_fixture_is_a_real_ad_length` |
+| Contact sheets and control frames are written to be looked at, because every layout defect found while building this engine was found by looking at one | `test_contact_sheets_and_control_frames_exist_to_be_looked_at` |
+| The manifest is updated from the files that exist, with their real hashes and measured dimensions, and it still validates against them afterwards | `test_the_manifest_is_updated_from_the_files_and_not_from_the_plan`, `test_the_updated_manifest_still_validates_against_its_own_files` |
+| Without `--apply` nothing renders and nothing is written | `test_a_preview_renders_nothing_and_changes_nothing` |
+| A resume reuses only clips whose frames are counted and match. A file that exists is not a file that is finished | `test_a_truncated_clip_is_not_mistaken_for_a_finished_one`, `test_resume_reuses_the_clips_that_survived_and_rebuilds_the_rest` |
+| An asset path that leaves the project stops the render before anything is encoded | `test_an_asset_outside_the_project_is_refused` |
+| A layer nothing can draw, a picture naming an asset that does not exist, text with nothing to say, a pixel count in a field that holds a fraction, or a layer starting after its own scene has ended | `test_a_layer_the_engine_cannot_draw_is_refused_before_rendering`, `test_a_picture_layer_must_name_an_asset_that_exists`, `test_a_text_layer_with_nothing_to_say_is_refused`, `test_a_pixel_value_in_a_fraction_field_is_refused`, `test_a_layer_cannot_start_after_its_own_scene_ends`, `test_layers_must_be_a_list`, `test_the_shipped_render_example_validates_on_its_own` |
+
+What the engine does not enforce is what it does not do: it composes, it does not
+generate footage and it does not speak. Those come from the adapters in
+`references/providers.md`, and a run that had neither says so rather than shipping
+less in silence.
+
 Release integrity is enforced the same way, in `scripts/validate_release.py` and in CI. Each rule below that names a test is proved the same way the others are: the test plants that exact violation in a throwaway copy of the release and requires the validator to refuse it. `test_a_clean_copy_of_the_release_passes` is the control, so a rule that fires on everything fails too:
 
 - A file with no source cannot survive in a shipped pack, and a rebuild deletes it.

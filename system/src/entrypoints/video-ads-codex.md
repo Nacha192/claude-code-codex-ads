@@ -58,6 +58,19 @@ comprehension, hierarchy, tension, proof, continuity, emotion or passage.
 requested ratio gets its own composition; the mandatory ratios are the ones in the
 brief and nowhere else.
 
+**A reference engine is supplied and it runs.** One command turns the manifest into
+real files, one composition per ratio, on Python and FFmpeg alone:
+
+```bash
+python scripts/render_motion.py motion-project.json --root . --apply --contact-sheet
+```
+
+No Node, no browser, no account. **JavaScript is never mandatory.**
+[The engine](references/motion-engine.md) covers the layer vocabulary, the brand
+design tokens, the audio graph with ducking and loudness normalisation, resume after
+an interruption, and what it deliberately does not do. Prefer a better renderer
+whenever one is actually available; never skip the step and call a storyboard a video.
+
 **Then the loop, which is not optional.** Measure every export with
 `scripts/inspect_video.py`, which decodes the whole file. Inspect with both grids:
 the technical one it produces and the human one in

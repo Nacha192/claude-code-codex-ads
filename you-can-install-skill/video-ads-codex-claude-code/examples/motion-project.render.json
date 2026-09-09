@@ -1,0 +1,614 @@
+{
+  "schema_v": "1.0.0",
+  "kind": "motion_project",
+  "state": "planned",
+  "slug": "chauffe-eau-prix-ecrit",
+  "brief": {
+    "offer": "Un entretien de chaudière à prix fixe pour appartement, 149 euros, réservable en ligne",
+    "audience": "Propriétaires d'appartement qui ont déjà eu une panne et n'ont pas de chauffagiste attitré",
+    "objective": "Rendez-vous réservés",
+    "market": "FR",
+    "ad_language": "fr-FR",
+    "cta_destination": "https://example.invalid/reserver",
+    "duration_seconds": 16,
+    "formats": [
+      "9:16",
+      "4:5",
+      "16:9"
+    ],
+    "brand_constraints": "Une seule famille typographique, pas de visages souriants de banque d'images",
+    "channel": "Meta feed et reels"
+  },
+  "assumptions": [
+    {
+      "field": "register",
+      "value": "Sérieux et retenu, proche d'un artisan qui parle",
+      "because": "Le brief demande la confiance avant l'énergie, et le prix porte déjà l'argument",
+      "changes_if_wrong": "Le rythme et la voix seraient refaits, pas seulement le texte"
+    },
+    {
+      "field": "voix",
+      "value": "Fichier de substitution synthétique, généré localement",
+      "because": "Cet exemple doit se rendre sur une machine nue, sans fournisseur de synthèse vocale branché",
+      "changes_if_wrong": "Une vraie prise remplace le fichier et les sous-titres sont refaits depuis elle"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "user_stated",
+      "source": "Brief annonceur du 14 août 2026, grille tarifaire jointe",
+      "supports": "Le prix de 149 euros couvre la visite et les pièces sous 20 euros"
+    },
+    {
+      "id": "E2",
+      "type": "measurement",
+      "source": "Export interne des interventions, juin à août 2026",
+      "supports": "391 interventions sur 412 réglées à la première visite"
+    }
+  ],
+  "claims": [
+    {
+      "text": "Le prix est de 149 euros, écrit avant la visite",
+      "proof_ids": [
+        "E1"
+      ]
+    },
+    {
+      "text": "391 interventions sur 412 réglées en une seule visite",
+      "proof_ids": [
+        "E2"
+      ]
+    }
+  ],
+  "creative_lock": {
+    "insight": "Ce qui fait peur n'est pas le prix, c'est la deuxième visite qui transforme la facture",
+    "problem": "Personne ne chiffre un entretien sans être venu voir",
+    "angle": "Le devis est le prix, et la visite est une seule visite",
+    "promise": "Vous savez ce que vous payez avant qu'on sonne",
+    "mechanism": "Périmètre fixe, grille publiée, pièces sous 20 euros incluses",
+    "proof": "391 interventions sur 412 réglées à la première visite",
+    "objection": "Il y aura un supplément une fois qu'ils seront entrés",
+    "cta": "Réservez un créneau, le prix s'affiche avant de confirmer",
+    "register": "Sérieux et retenu, sans promesse de rapidité",
+    "emotion": "Le soulagement d'une facture connue d'avance",
+    "hook": "149 euros. Écrit avant qu'on sonne chez vous.",
+    "reason_to_keep_watching": "Le spectateur cherche le piège, et la pub le lui donne elle-même",
+    "payoff": "Le même chiffre revient à la fin, inchangé, à côté du bouton"
+  },
+  "hooks_considered": [
+    {
+      "text": "149 euros. Écrit avant qu'on sonne chez vous.",
+      "scores": {
+        "specificity": 9,
+        "speed_of_understanding": 9,
+        "audience_fit": 8,
+        "tension": 7,
+        "continuity_with_payoff": 9,
+        "credibility": 8,
+        "first_frame_strength": 8
+      },
+      "selected": true,
+      "why": "Le chiffre est lisible à taille de vignette et il est encore là à la fin, donc l'ouverture et la chute parlent de la même chose"
+    },
+    {
+      "text": "Votre chaudière va vous coûter combien cette année ?",
+      "scores": {
+        "specificity": 3,
+        "speed_of_understanding": 7,
+        "audience_fit": 6,
+        "tension": 5,
+        "continuity_with_payoff": 4,
+        "credibility": 5,
+        "first_frame_strength": 3
+      },
+      "selected": false,
+      "why": "Une question que n'importe quel concurrent pourrait poser"
+    },
+    {
+      "text": "On vous a déjà annoncé un prix, puis un autre ?",
+      "scores": {
+        "specificity": 6,
+        "speed_of_understanding": 8,
+        "audience_fit": 8,
+        "tension": 8,
+        "continuity_with_payoff": 6,
+        "credibility": 6,
+        "first_frame_strength": 4
+      },
+      "selected": false,
+      "why": "Bonne tension, mais l'ouverture est du texte et il n'y a rien à voir à la première image"
+    }
+  ],
+  "script": {
+    "spoken": "149 euros. Écrit avant qu'on sonne chez vous. Pas une fourchette, un prix. Le périmètre est publié, les pièces sous 20 euros sont dedans. Sur 412 interventions cet été, 391 se sont réglées en une seule visite. Et s'il faut revenir, la deuxième visite ne se facture pas. Réservez un créneau, le prix s'affiche avant que vous confirmiez.",
+    "words": 63,
+    "written_for": "spoken"
+  },
+  "design": {
+    "palette": {
+      "ink": "0x111A22",
+      "paper": "0xF6F2EA",
+      "accent": "0xF5A623",
+      "muted": "0x93A3B1",
+      "support": "0x1E3A52"
+    },
+    "type": {
+      "family_preference": [
+        "Inter",
+        "Helvetica",
+        "Arial",
+        "DejaVu Sans"
+      ],
+      "scale": {
+        "display": 0.082,
+        "title": 0.048,
+        "body": 0.028,
+        "caption": 0.032
+      }
+    },
+    "motion": {
+      "enter_seconds": 0.42,
+      "ease": "ease_out",
+      "camera_amount": 0.12
+    },
+    "grid": {
+      "margin": 0.075,
+      "safe_top": 0.11,
+      "safe_bottom": 0.17
+    }
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "start": 0,
+      "end": 3.2,
+      "role": "hook",
+      "narration": "149 euros. Écrit avant qu'on sonne chez vous.",
+      "measured_voice_seconds": 2.7,
+      "on_screen": "149 EUR, puis la précision sous le chiffre",
+      "composition": "Le nombre occupe le tiers haut du bloc de texte, la matière chauffe derrière",
+      "subject": "Le prix, seul, lisible à taille de vignette",
+      "primary_motion": "Le nombre monte de quelques pixels et se pose",
+      "secondary_motion": "Poussée lente de la caméra sur la matière",
+      "transition": "cut",
+      "assets": [
+        "a-still"
+      ],
+      "sound": "Frappe d'accent sur la pose du nombre",
+      "reframing": "En 16:9 le nombre passe à gauche et la matière occupe la colonne droite",
+      "legibility_risk": "Le nombre sur la zone claire du dégradé",
+      "acceptance": "Le nombre est lisible sur une image figée de la première seconde",
+      "background": {
+        "kind": "gradient",
+        "from": "0x111A22",
+        "to": "0x1E3A52"
+      },
+      "layers": [
+        {
+          "kind": "image",
+          "asset": "a-still",
+          "camera": "push",
+          "camera_amount": 0.12,
+          "parallax": 0.012
+        },
+        {
+          "kind": "shape",
+          "w": 0.34,
+          "h": 0.006,
+          "colour": "accent",
+          "grow": true,
+          "at": 0.1,
+          "enter_seconds": 0.5
+        },
+        {
+          "kind": "text",
+          "role": "display",
+          "content": "149 €",
+          "at": 0.15,
+          "enter": "rise",
+          "colour": "paper"
+        },
+        {
+          "kind": "text",
+          "role": "body",
+          "content": "Écrit avant qu'on sonne chez vous.",
+          "at": 0.9,
+          "enter": "rise",
+          "colour": "muted"
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "start": 3.2,
+      "end": 6.6,
+      "role": "mechanism",
+      "narration": "Pas une fourchette, un prix. Le périmètre est publié, les pièces sous 20 euros sont dedans.",
+      "measured_voice_seconds": 3.0,
+      "on_screen": "Périmètre publié. Pièces sous 20 € incluses.",
+      "composition": "Texte en deux lignes sur la matière en mouvement",
+      "subject": "La règle, écrite comme une règle",
+      "primary_motion": "Les deux lignes arrivent décalées",
+      "secondary_motion": "La matière dérive latéralement",
+      "transition": "dissolve",
+      "transition_seconds": 0.35,
+      "assets": [
+        "a-texture"
+      ],
+      "sound": "Nappe seule",
+      "reframing": "En 16:9 les deux lignes tiennent sur la colonne gauche",
+      "legibility_risk": "Contraste du texte gris sur la partie claire de la matière",
+      "acceptance": "Les deux lignes sont lues avant la fin du plan",
+      "background": {
+        "kind": "solid",
+        "colour": "0x111A22"
+      },
+      "layers": [
+        {
+          "kind": "video",
+          "asset": "a-texture",
+          "camera": "none",
+          "parallax": 0.02
+        },
+        {
+          "kind": "text",
+          "role": "title",
+          "content": "Pas une fourchette.",
+          "at": 0.1,
+          "enter": "slide",
+          "colour": "paper"
+        },
+        {
+          "kind": "text",
+          "role": "title",
+          "content": "Un prix.",
+          "at": 0.55,
+          "enter": "slide",
+          "colour": "accent"
+        },
+        {
+          "kind": "text",
+          "role": "body",
+          "content": "Périmètre publié, pièces sous 20 € incluses.",
+          "at": 1.2,
+          "enter": "rise",
+          "colour": "muted"
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "start": 6.6,
+      "end": 9.8,
+      "role": "proof",
+      "narration": "Sur 412 interventions cet été, 391 se sont réglées en une seule visite.",
+      "measured_voice_seconds": 2.8,
+      "on_screen": "391 / 412 en une seule visite",
+      "composition": "Le rapport chiffré tenu par une barre d'accent",
+      "subject": "Le rapport, pas la phrase",
+      "primary_motion": "La barre se déploie sous le chiffre",
+      "secondary_motion": "Retrait lent de la caméra",
+      "transition": "cut",
+      "assets": [
+        "a-still"
+      ],
+      "sound": "Frappe d'accent sur la barre",
+      "reframing": "En 16:9 le rapport est cadré à gauche, la matière à droite",
+      "legibility_risk": "Le slash entre les deux nombres à petite taille",
+      "acceptance": "Les deux nombres se lisent sans reculer l'image",
+      "background": {
+        "kind": "gradient",
+        "from": "0x1E3A52",
+        "to": "0x111A22"
+      },
+      "layers": [
+        {
+          "kind": "image",
+          "asset": "a-still",
+          "camera": "pull",
+          "camera_amount": 0.1
+        },
+        {
+          "kind": "text",
+          "role": "display",
+          "content": "391 / 412",
+          "at": 0.1,
+          "enter": "rise",
+          "colour": "paper"
+        },
+        {
+          "kind": "shape",
+          "w": 0.5,
+          "h": 0.008,
+          "colour": "accent",
+          "grow": true,
+          "at": 0.45,
+          "enter_seconds": 0.6
+        },
+        {
+          "kind": "text",
+          "role": "body",
+          "content": "réglées en une seule visite",
+          "at": 0.8,
+          "enter": "rise",
+          "colour": "muted"
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "start": 9.8,
+      "end": 13.0,
+      "role": "objection",
+      "narration": "Et s'il faut revenir, la deuxième visite ne se facture pas.",
+      "measured_voice_seconds": 2.6,
+      "on_screen": "La deuxième visite ne se facture pas",
+      "composition": "Une seule ligne, plein cadre, rien d'autre",
+      "subject": "L'objection, nommée par l'annonceur avant le spectateur",
+      "primary_motion": "La ligne glisse depuis la marge",
+      "secondary_motion": "Aucun, le plan respire",
+      "transition": "dissolve",
+      "transition_seconds": 0.3,
+      "assets": [
+        "a-texture"
+      ],
+      "sound": "Silence délibéré sur la première demi-seconde",
+      "reframing": "En 16:9 la ligne reste sur la colonne gauche, la matière est assombrie",
+      "legibility_risk": "Ligne longue qui pourrait déborder en 9:16",
+      "acceptance": "La ligne tient sur deux lignes maximum dans chaque format",
+      "background": {
+        "kind": "solid",
+        "colour": "0x111A22"
+      },
+      "layers": [
+        {
+          "kind": "video",
+          "asset": "a-texture",
+          "camera": "none",
+          "parallax": 0.008
+        },
+        {
+          "kind": "text",
+          "role": "title",
+          "content": "La deuxième visite",
+          "at": 0.15,
+          "enter": "slide",
+          "colour": "paper"
+        },
+        {
+          "kind": "text",
+          "role": "title",
+          "content": "ne se facture pas.",
+          "at": 0.5,
+          "enter": "slide",
+          "colour": "accent"
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "start": 13.0,
+      "end": 16.0,
+      "role": "payoff",
+      "narration": "Réservez un créneau, le prix s'affiche avant que vous confirmiez.",
+      "measured_voice_seconds": 2.7,
+      "on_screen": "149 € — Réserver un créneau",
+      "composition": "Le chiffre d'ouverture revient, inchangé, au-dessus de l'appel",
+      "subject": "Le même nombre qu'à la première seconde",
+      "primary_motion": "Le nombre se pose, la barre d'appel se déploie",
+      "secondary_motion": "Aucun",
+      "transition": "cut",
+      "assets": [],
+      "sound": "Frappe d'accent sur l'appel",
+      "reframing": "En 16:9 l'appel passe sous le nombre, colonne gauche",
+      "legibility_risk": "L'appel sous la zone d'interface de la plateforme",
+      "acceptance": "L'appel reste visible au moins une seconde et demie",
+      "background": {
+        "kind": "gradient",
+        "from": "0x111A22",
+        "to": "0x1E3A52"
+      },
+      "layers": [
+        {
+          "kind": "shape",
+          "w": 0.28,
+          "h": 0.006,
+          "colour": "accent",
+          "grow": true,
+          "at": 0.05,
+          "enter_seconds": 0.4
+        },
+        {
+          "kind": "text",
+          "role": "display",
+          "content": "149 €",
+          "at": 0.15,
+          "enter": "rise",
+          "colour": "paper"
+        },
+        {
+          "kind": "text",
+          "role": "title",
+          "content": "Réserver un créneau",
+          "at": 0.75,
+          "enter": "rise",
+          "colour": "accent"
+        },
+        {
+          "kind": "text",
+          "role": "body",
+          "content": "Le prix s'affiche avant de confirmer.",
+          "at": 1.2,
+          "enter": "rise",
+          "colour": "muted"
+        }
+      ]
+    }
+  ],
+  "voice": {
+    "archetype": "Artisan, la quarantaine, sans hâte, aucune vente dans la diction",
+    "source": "fixture_synthetic_standin",
+    "provider": "aucun, fichier généré localement par make_fixture_assets.py",
+    "file": "fixtures/voice-standin.wav",
+    "measured_total_seconds": 16.6,
+    "rights": "Synthétique, généré localement, aucun tiers concerné",
+    "note": "Fichier de substitution pour que l'exemple se rende sur une machine nue. Ce n'est pas une prise de voix et rien ici ne doit le présenter comme telle."
+  },
+  "captions": {
+    "derived_from": "final_take",
+    "style": "Deux à quatre mots par bloc, tiers bas, au-dessus de la zone d'interface",
+    "cues": [
+      {
+        "start": 0.2,
+        "end": 1.6,
+        "text": "149 euros"
+      },
+      {
+        "start": 1.7,
+        "end": 3.1,
+        "text": "écrit avant qu'on sonne"
+      },
+      {
+        "start": 3.4,
+        "end": 5.0,
+        "text": "pas une fourchette"
+      },
+      {
+        "start": 5.1,
+        "end": 6.5,
+        "text": "un prix"
+      },
+      {
+        "start": 6.8,
+        "end": 8.4,
+        "text": "391 sur 412"
+      },
+      {
+        "start": 8.5,
+        "end": 9.7,
+        "text": "en une seule visite"
+      },
+      {
+        "start": 10.0,
+        "end": 12.8,
+        "text": "la deuxième visite ne se facture pas"
+      },
+      {
+        "start": 13.2,
+        "end": 15.8,
+        "text": "réserver un créneau"
+      }
+    ]
+  },
+  "music": {
+    "track": "Nappe synthétique générée localement pour l'exemple",
+    "file": "fixtures/music-bed.wav",
+    "gain_db": -19,
+    "rights": "Synthétique, généré localement, aucune licence tierce",
+    "ducking": "Compresseur en chaîne latérale piloté par la voix, la nappe remonte dans les silences"
+  },
+  "sfx": [
+    {
+      "at": 0.55,
+      "what": "Frappe d'accent sur la pose du nombre",
+      "file": "fixtures/accent-hit.wav",
+      "gain_db": -12,
+      "rights": "Synthétique, généré localement"
+    },
+    {
+      "at": 7.05,
+      "what": "Frappe d'accent sur la barre de preuve",
+      "file": "fixtures/accent-hit.wav",
+      "gain_db": -14,
+      "rights": "Synthétique, généré localement"
+    },
+    {
+      "at": 13.15,
+      "what": "Frappe d'accent sur l'appel",
+      "file": "fixtures/accent-hit.wav",
+      "gain_db": -13,
+      "rights": "Synthétique, généré localement"
+    }
+  ],
+  "assets": [
+    {
+      "id": "a-still",
+      "path": "fixtures/product-still.png",
+      "rights": "Synthétique, généré localement par make_fixture_assets.py",
+      "identifiable_person": false
+    },
+    {
+      "id": "a-texture",
+      "path": "fixtures/texture-loop.mp4",
+      "rights": "Synthétique, généré localement par make_fixture_assets.py",
+      "identifiable_person": false
+    }
+  ],
+  "loudness_target": {
+    "value": -14,
+    "unit": "LUFS",
+    "true_peak": -1.5,
+    "lra": 11,
+    "source": "Cible déclarée par l'annonceur pour ce placement, alignée sur ses autres diffusions"
+  },
+  "engine": {
+    "kind": "deterministic_composition",
+    "name": "ffmpeg-python-reference",
+    "version": "détecté à l'exécution",
+    "detected": true,
+    "why": "Moteur de référence du pack : Python et FFmpeg, déjà exigés, sans JavaScript ni dépendance à installer"
+  },
+  "formats": [
+    {
+      "ratio": "9:16",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "composition": "Vertical plein cadre : matière sur les deux tiers hauts, bloc typographique posé au tiers bas, au-dessus de la zone d'interface",
+      "safe_zones": {
+        "top": 0.11,
+        "bottom": 0.17,
+        "left": 0.075,
+        "right": 0.075
+      }
+    },
+    {
+      "ratio": "4:5",
+      "width": 1080,
+      "height": 1350,
+      "fps": 30,
+      "composition": "Feed vertical court : la matière occupe la moitié haute, le bloc typographique remonte et la taille d'affichage baisse pour tenir sans casse",
+      "safe_zones": {
+        "top": 0.1,
+        "bottom": 0.14,
+        "left": 0.075,
+        "right": 0.075
+      }
+    },
+    {
+      "ratio": "16:9",
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "composition": "Deux colonnes : la typographie tient la colonne gauche sur toute la hauteur, la matière occupe la colonne droite. Ce n'est pas le vertical recadré, c'est une autre composition",
+      "safe_zones": {
+        "top": 0.08,
+        "bottom": 0.1,
+        "left": 0.05,
+        "right": 0.05
+      }
+    }
+  ],
+  "render": {
+    "commands": [
+      "python scripts/make_fixture_assets.py --out fixtures",
+      "python scripts/render_motion.py examples/motion-project.render.json --root . --apply"
+    ],
+    "note": "Deux commandes, aucune dépendance à installer. La seconde écrit les exports, les planches contact, les images de contrôle et met à jour ce manifeste depuis les fichiers réellement produits."
+  },
+  "human_decisions_pending": [
+    "Remplacer le fichier de voix de substitution par une vraie prise, puis refaire les sous-titres depuis cette prise",
+    "Confirmer que la grille tarifaire du 14 août 2026 est toujours celle qui s'applique"
+  ]
+}

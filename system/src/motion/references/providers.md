@@ -14,14 +14,20 @@ compositor, a real editing application, an AI video tool or an FFmpeg filter gra
 can produce the result, that is a legitimate pipeline and the manifest records which
 one was used.
 
+**One adapter is supplied and runs.** [The reference motion engine](motion-engine.md)
+is Python and FFmpeg, both already required by this pack, and it turns a manifest
+into real files with one command. It is the floor, so that "nothing was rendered" is
+never caused by the pack itself. Every other route below stays first-class, and a
+better one should be preferred whenever it is actually available.
+
 | Capability | What it must do | Adapters that can provide it | When nothing provides it |
 |---|---|---|---|
 | **AI video generation** | Produce footage from a prompt or a reference | A connected video model, per the table below | Route to deterministic composition, or to real filming per [real production](live-action.md) |
-| **Deterministic motion composition** | Place, animate and time elements exactly | Remotion, an FFmpeg filter graph, a Python compositor, an editing application driven by hand | Deliver the storyboard and the exact prompts, and say no composition ran |
+| **Deterministic motion composition** | Place, animate and time elements exactly | **The supplied engine** (`scripts/render_motion.py`, [documented here](motion-engine.md)), Remotion, another FFmpeg filter graph, a Python compositor, an editing application driven by hand | Deliver the storyboard and the exact prompts, and say no composition ran |
 | **Voice** | Speak the script, or record a real one | A connected speech tool, a recorded human take, the advertiser's own voice | Deliver the script with the voice direction, marked as not produced |
 | **Music and sound design** | A bed and effects that are licensed | A licensed library, provider-supplied audio, silence used deliberately | Deliver silent, and say the mix is pending |
 | **Captions** | Cues derived from the final take | A transcription tool, a manual pass against the take | Deliver the transcript and say cues were not timed |
-| **Rendering** | Turn the composition into a file | FFmpeg, the compositor's own renderer, the editor's export | Nothing was rendered. Say exactly that, and never call a plan a video |
+| **Rendering** | Turn the composition into a file | `scripts/render_motion.py`, FFmpeg by hand, the compositor's own renderer, the editor's export | Nothing was rendered. Say exactly that, and never call a plan a video |
 | **Video inspection** | Decode and measure the export | `scripts/inspect_video.py`, which needs ffprobe and ffmpeg | Say the checks did not run. Silence reads as a pass and it must not |
 | **Multi-format adaptation** | Compose each requested ratio on its own terms | The composition tool, per [assembly](video-assembly.md) | Deliver the ratios you could compose and name the ones you could not |
 

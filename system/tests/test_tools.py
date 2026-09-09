@@ -12,7 +12,10 @@ sys.path.insert(0,str(BUILD/'scripts'))
 releaser=load('releaser',BUILD/'scripts/validate_release.py')
 motion=load('motion',BUILD/'src/motion/scripts/check_motion_project.py')
 inspector=load('inspector',BUILD/'src/motion/scripts/inspect_video.py')
+engine=load('engine',BUILD/'src/motion/scripts/motion_engine.py')
+renderer=load('renderer',BUILD/'src/motion/scripts/render_motion.py')
 EXAMPLE=BUILD/'src/motion/examples/motion-project.example.json'
+RENDER_EXAMPLE=BUILD/'src/motion/examples/motion-project.render.json'
 FFMPEG=shutil.which('ffmpeg') and shutil.which('ffprobe')
 
 class ToolTests(unittest.TestCase):
@@ -561,5 +564,321 @@ class BuildDeterminismTests(unittest.TestCase):
     if '__pycache__' in f.parts or f.suffix in ('.pyc','.tmp','.log','.bak') or rel.startswith('.'):
      bad.append(pack.name+'/'+rel)
   self.assertEqual(bad,[],'cache or temporary files in the published packs')
+
+
+class MotionEngineTests(unittest.TestCase):
+ """The engine's decisions, checked without rendering anything: what it would draw."""
+ def manifest(self):return json.loads(RENDER_EXAMPLE.read_text(encoding='utf-8'))
+ def design(self):return engine.resolve_design(self.manifest())
+ def fmt(self,ratio):
+  return next(f for f in self.manifest()['formats'] if f['ratio']==ratio)
+ def layouts(self):
+  d=self.design();m=self.manifest()
+  return {f['ratio']:engine.fit_layout(engine.layout_for(f,d),d,m['scenes']) for f in m['formats']}
+ def test_the_reference_engine_never_requires_javascript(self):
+  """The pack may not smuggle in a toolchain nobody agreed to install."""
+  caps=engine.detect()
+  self.assertFalse(caps['javascript_required'])
+  self.assertEqual(caps['engine'],'ffmpeg-python-reference')
+  source=(BUILD/'src/motion/scripts/motion_engine.py').read_text(encoding='utf-8')
+  for word in ['npm ','npx ','node_modules','require(','yarn ']:
+   self.assertNotIn(word,source,'the reference engine reached for '+word.strip())
+ def test_detection_names_what_is_missing_rather_than_failing_late(self):
+  caps=engine.detect()
+  self.assertIn('missing_filters',caps);self.assertIn('usable',caps)
+  if not caps['usable']:self.assertTrue(caps.get('reason'),'unusable without saying why')
+ @unittest.skipUnless(FFMPEG,'ffmpeg and ffprobe are required')
+ def test_this_machine_has_every_filter_the_pipeline_issues(self):
+  caps=engine.detect()
+  self.assertEqual(caps['missing_filters'],[])
+  self.assertTrue(caps['freetype'],'no libfreetype, so no text could be drawn')
+  self.assertIsNotNone(caps['font_file'])
+ def test_brand_tokens_replace_the_defaults(self):
+  m=self.manifest();m.setdefault('design',{}).setdefault('palette',{})['accent']='0x00FF00'
+  d=engine.resolve_design(m)
+  self.assertEqual(engine.colour(d,'accent'),'0x00FF00')
+  self.assertEqual(engine.colour(d,'not-a-token','0x123456'),'0x123456')
+ def test_the_three_ratios_are_three_compositions_and_not_one_crop(self):
+  """A crop shares its arrangement. These must not: different media rectangle,
+  different type column, different stacking, sized from each frame."""
+  l=self.layouts()
+  self.assertEqual(l['9:16']['shape'],'portrait')
+  self.assertEqual(l['4:5']['shape'],'square')
+  self.assertEqual(l['16:9']['shape'],'landscape')
+  # Portrait and square put the picture across the top; landscape gives it a column.
+  for ratio in ('9:16','4:5'):
+   self.assertEqual(l[ratio]['media']['x'],0)
+   self.assertEqual(l[ratio]['media']['w'],l[ratio]['width'])
+   self.assertLess(l[ratio]['media']['h'],l[ratio]['height'])
+  self.assertGreater(l['16:9']['media']['x'],0)
+  self.assertEqual(l['16:9']['media']['h'],l['16:9']['height'])
+  self.assertLess(l['16:9']['text_width'],l['16:9']['width']*0.5)
+  # Nothing is shared by all three, which is what a crop would produce.
+  self.assertEqual(len({(l[r]['text_top'],l[r]['text_width'],l[r]['media']['w']) for r in l}),3)
+ def test_type_is_sized_from_the_frame_not_copied_between_frames(self):
+  l=self.layouts()
+  self.assertNotEqual(l['9:16']['sizes']['display'],l['4:5']['sizes']['display'])
+  for ratio,lay in l.items():
+   self.assertGreater(lay['sizes']['display'],lay['sizes']['title'])
+   self.assertGreater(lay['sizes']['title'],lay['sizes']['body'])
+ def test_the_stack_is_measured_before_it_is_placed(self):
+  """Every block below the one before it, none inside the caption band."""
+  d=self.design();m=self.manifest()
+  for ratio,lay in self.layouts().items():
+   for scene in m['scenes']:
+    placed=engine.place_stack(scene,lay,d)
+    bottom=lay['text_top']
+    for n in sorted(placed):
+     item=placed[n]
+     self.assertGreaterEqual(item['y'],bottom,'%s %s overlaps the block above'%(ratio,scene['id']))
+     bottom=item['y']+item['height']
+    self.assertLessEqual(bottom,lay['copy_bottom'],'%s %s runs into the caption band'%(ratio,scene['id']))
+ def test_a_rule_declared_between_two_lines_lands_between_them(self):
+  d=self.design();lay=self.layouts()['9:16']
+  scene={'id':'t','start':0,'end':3,'layers':[
+   {'kind':'text','role':'title','content':'Above'},
+   {'kind':'shape','h':0.006},
+   {'kind':'text','role':'body','content':'Below'}]}
+  p=engine.place_stack(scene,lay,d)
+  self.assertLess(p[0]['y'],p[1]['y']);self.assertLess(p[1]['y'],p[2]['y'])
+ def test_the_type_shrinks_until_the_tallest_scene_fits(self):
+  d=self.design();lay=engine.layout_for(self.fmt('9:16'),d)
+  crowded=[{'id':'x','start':0,'end':3,'layers':[
+   {'kind':'text','role':'display','content':'A headline that will not fit'},
+   {'kind':'text','role':'title','content':'And a second line under it'},
+   {'kind':'text','role':'body','content':'And a third that makes the column overflow entirely'}]}]
+  fitted=engine.fit_layout(lay,d,crowded)
+  self.assertLess(fitted['fit_scale'],1.0)
+  self.assertLess(fitted['sizes']['display'],lay['sizes']['display'])
+  _items,total=engine.stack_items(crowded[0],fitted,fitted['sizes'],d)
+  self.assertLessEqual(total,fitted['copy_bottom']-fitted['text_top'])
+ def test_copy_that_cannot_fit_is_refused_rather_than_hidden(self):
+  d=self.design();lay=engine.layout_for(self.fmt('9:16'),d)
+  wall=[{'id':'x','start':0,'end':3,'layers':[
+   {'kind':'text','role':'display','content':' '.join(['mot']*400)}]}]
+  with self.assertRaises(engine.EngineError):engine.fit_layout(lay,d,wall)
+ def test_captions_never_shrink_with_the_copy(self):
+  d=self.design();lay=engine.layout_for(self.fmt('9:16'),d)
+  crowded=[{'id':'x','start':0,'end':3,'layers':[
+   {'kind':'text','role':'display','content':'A headline long enough to force a fit'},
+   {'kind':'text','role':'title','content':'A second line under it as well'},
+   {'kind':'text','role':'body','content':'A third line so the column has to give way'}]}]
+  fitted=engine.fit_layout(lay,d,crowded)
+  self.assertLess(fitted['fit_scale'],1.0)
+  self.assertEqual(fitted['sizes']['caption'],lay['sizes']['caption'])
+ def test_wrapping_keeps_every_word_and_every_line_inside_the_column(self):
+  text='Un entretien de chaudiere a prix fixe pour appartement, reservable en ligne'
+  wrapped=engine.wrap_text(text,600,48)
+  self.assertEqual(wrapped.replace('\n',' ').split(),text.split())
+  for line in wrapped.split('\n'):
+   self.assertLessEqual(len(line)*48*0.52,600+48*0.52)
+ def test_a_single_word_longer_than_the_column_still_comes_back(self):
+  self.assertEqual(engine.wrap_text('anticonstitutionnellement',10,90),'anticonstitutionnellement')
+ def test_filter_paths_and_expressions_are_escaped_for_ffmpeg(self):
+  self.assertEqual(engine.filter_path('C:'+chr(92)+'a'+chr(92)+'b.ttf'),'C'+chr(92)+':/a/b.ttf')
+  self.assertNotIn(chr(92)+'a',engine.filter_path('C:'+chr(92)+'a'+chr(92)+'b.ttf'))
+  self.assertNotIn(',',engine.expr('min(1,max(0,t))').replace(chr(92)+',',''))
+ def test_text_goes_to_a_file_so_nothing_has_to_be_escaped(self):
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  awkward="Prix : 19,90 EUR (offre 'lancement') 100% = "+chr(92)+"n"
+  path=engine.text_file(Path(box.name),'k',awkward)
+  self.assertEqual(Path(path).read_text(encoding='utf-8'),awkward)
+ def test_one_frame_count_answers_the_renderer_and_the_resume_check(self):
+  """Computed twice from the same floats these disagreed by a frame, and a resume
+  then rebuilt clips it already had."""
+  self.assertEqual(engine.scene_frames(3.2+0.35,30),engine.scene_frames(round(3.55,3),30))
+  self.assertEqual(engine.scene_frames(3.2,30),96)
+  self.assertEqual(engine.scene_frames(16.0,30),480)
+ def test_a_transition_borrows_from_the_scene_before_it(self):
+  scenes=[{'id':'a','start':0,'end':3},{'id':'b','start':3,'end':6,'transition':'dissolve','transition_seconds':0.4},
+          {'id':'c','start':6,'end':9,'transition':'cut'}]
+  self.assertAlmostEqual(engine.transition_tail(scenes,0),0.4)
+  self.assertAlmostEqual(engine.transition_tail(scenes,1),0.0)
+  self.assertAlmostEqual(engine.transition_tail(scenes,2),0.0)
+ def test_camera_moves_are_bounded_expressions(self):
+  self.assertIn('min(',engine.camera_zoom('push',0.1,120))
+  self.assertIn('max(',engine.camera_zoom('pull',0.1,120))
+  self.assertEqual(engine.camera_zoom('none',0.1,120),'1')
+ def test_easings_are_clamped_at_both_ends(self):
+  for name in engine.EASINGS:
+   e=engine.eased(1.0,0.5,name)
+   self.assertIn('min(1',e);self.assertIn('max(0',e)
+
+ def render_project(self):return json.loads(RENDER_EXAMPLE.read_text(encoding='utf-8'))
+ def test_the_shipped_render_example_validates_on_its_own(self):
+  e,w=motion.check(self.render_project());self.assertEqual(e,[]);self.assertEqual(w,[])
+ def test_a_layer_the_engine_cannot_draw_is_refused_before_rendering(self):
+  d=self.render_project();d['scenes'][0]['layers'][0]['kind']='hologram'
+  self.assertTrue(any('hologram' in x for x in motion.check(d)[0]))
+ def test_a_picture_layer_must_name_an_asset_that_exists(self):
+  for ref in ['not-an-asset',None,7,[]]:
+   d=self.render_project()
+   layer=next(l for s in d['scenes'] for l in s['layers'] if l['kind'] in ('image','video'))
+   layer['asset']=ref
+   self.assertTrue(motion.check(d)[0],repr(ref))
+ def test_a_text_layer_with_nothing_to_say_is_refused(self):
+  for content in ['','   ',None,5]:
+   d=self.render_project()
+   layer=next(l for s in d['scenes'] for l in s['layers'] if l['kind']=='text')
+   layer['content']=content
+   self.assertTrue(motion.check(d)[0],repr(content))
+ def test_a_pixel_value_in_a_fraction_field_is_refused(self):
+  # 0.075 of the frame and 75 pixels look alike in a manifest and not on screen.
+  for value in [75,-0.1,1.5,'0.5',True,float('nan')]:
+   d=self.render_project()
+   layer=next(l for s in d['scenes'] for l in s['layers'] if l['kind']=='shape')
+   layer['w']=value
+   self.assertTrue(motion.check(d)[0],repr(value))
+ def test_a_layer_cannot_start_after_its_own_scene_ends(self):
+  d=self.render_project();scene=d['scenes'][0]
+  scene['layers'][-1]['at']=float(scene['end'])-float(scene['start'])+1
+  self.assertTrue(any('after its own scene' in x for x in motion.check(d)[0]))
+ def test_layers_must_be_a_list(self):
+  for value in [{},'text',3]:
+   d=self.render_project();d['scenes'][0]['layers']=value
+   self.assertTrue(motion.check(d)[0],repr(value))
+
+
+class MotionRenderTests(unittest.TestCase):
+ """The one-shot, end to end, measured out of the files it wrote."""
+ SLUG='chauffe-eau-prix-ecrit'
+ @classmethod
+ def setUpClass(cls):
+  if not FFMPEG:raise unittest.SkipTest('ffmpeg and ffprobe are required')
+  cls.box=tempfile.TemporaryDirectory();cls.root=Path(cls.box.name)
+  shutil.copytree(BUILD/'src/motion/scripts',cls.root/'scripts',
+                  ignore=shutil.ignore_patterns('__pycache__'))
+  (cls.root/'examples').mkdir()
+  shutil.copy2(RENDER_EXAMPLE,cls.root/'examples/motion-project.render.json')
+  made=subprocess.run([sys.executable,str(cls.root/'scripts/make_fixture_assets.py'),
+                       '--out',str(cls.root/'fixtures')],capture_output=True,text=True)
+  assert made.returncode==0,made.stderr
+  cls.report=cls.render(['--apply','--contact-sheet'])
+ @classmethod
+ def render(cls,extra):
+  run=subprocess.run([sys.executable,'scripts/render_motion.py',
+                      'examples/motion-project.render.json','--root','.']+extra,
+                     cwd=str(cls.root),capture_output=True,text=True)
+  assert run.returncode==0,(run.stdout or '')+(run.stderr or '')
+  return json.loads(run.stdout)
+ @classmethod
+ def tearDownClass(cls):
+  if hasattr(cls,'box'):cls.box.cleanup()
+ def manifest(self):
+  return json.loads((self.root/'examples/motion-project.render.json').read_text(encoding='utf-8'))
+ def test_the_fixture_is_a_real_ad_length(self):
+  scenes=self.manifest()['scenes']
+  total=max(float(s['end']) for s in scenes)
+  self.assertGreaterEqual(total,12.0);self.assertLessEqual(total,20.0)
+  self.assertGreaterEqual(len(scenes),4)
+ def test_three_real_files_at_the_three_declared_sizes(self):
+  want={'9:16':(1080,1920),'4:5':(1080,1350),'16:9':(1920,1080)}
+  self.assertEqual(self.report['verdict'],'pass',json.dumps(self.report['findings']))
+  seen={}
+  for export in self.report['exports']:
+   path=self.root/export['path']
+   self.assertTrue(path.is_file(),export['path'])
+   self.assertGreater(path.stat().st_size,120000,'%s is too small to be a real ad'%export['path'])
+   m,_f=inspector.measure(path)
+   seen[export['ratio']]=(m['width'],m['height'])
+   self.assertEqual(m['decode_errors'],0,export['path'])
+   self.assertAlmostEqual(m['duration_seconds'],16.0,delta=0.15)
+   self.assertEqual(m['audio_streams'],1)
+   self.assertEqual(m['freeze_regions'],0,'%s is a still, not motion'%export['path'])
+  self.assertEqual(seen,want)
+ def test_the_exports_are_not_the_same_picture_three_times(self):
+  """A crop of one master would put the same pixels in the same order. Compare the
+  frame each format shows at the same second."""
+  frames=[]
+  for ratio in ('9x16','4x5','16x9'):
+   out=self.root/('probe-'+ratio+'.png')
+   subprocess.run(['ffmpeg','-v','error','-ss','5','-i',
+                   str(self.root/('exports/%s/%s.mp4'%(ratio,self.SLUG))),
+                   '-frames:v','1','-y',str(out)],check=True,capture_output=True)
+   frames.append(hashlib.sha256(out.read_bytes()).hexdigest())
+  self.assertEqual(len(set(frames)),3)
+ def test_every_export_is_normalised_to_the_declared_loudness(self):
+  target=self.manifest()['loudness_target']
+  for export in self.report['exports']:
+   m,_f=inspector.measure(self.root/export['path'])
+   self.assertIsNotNone(m['loudness_lufs'],export['path'])
+   self.assertAlmostEqual(m['loudness_lufs'],float(target['value']),delta=1.5)
+   self.assertLessEqual(m['true_peak_dbfs'],float(target['true_peak'])+0.5)
+ def test_contact_sheets_and_control_frames_exist_to_be_looked_at(self):
+  for ratio in ('9x16','4x5','16x9'):
+   sheet=self.root/('exports/%s/%s-contact-sheet.png'%(ratio,self.SLUG))
+   self.assertTrue(sheet.is_file(),str(sheet))
+   self.assertGreater(sheet.stat().st_size,20000)
+   frames=sorted((self.root/('exports/%s/%s-frames'%(ratio,self.SLUG))).glob('*.png'))
+   self.assertGreaterEqual(len(frames),4)
+ def test_the_manifest_is_updated_from_the_files_and_not_from_the_plan(self):
+  m=self.manifest()
+  self.assertEqual(m['state'],'measured')
+  self.assertEqual(m['engine']['name'],'ffmpeg-python-reference')
+  self.assertFalse(m['engine']['javascript_required'])
+  self.assertEqual(len(m['exports']),3)
+  for export in m['exports']:
+   path=self.root/export['path']
+   self.assertTrue(path.is_file(),export['path'])
+   self.assertEqual(export['sha256'],renderer.digest_of(path))
+   measured=inspector.measure(path)[0]
+   self.assertEqual((export['measurements']['width'],export['measurements']['height']),
+                    (measured['width'],measured['height']))
+   self.assertEqual(export['measurements']['size_bytes'],path.stat().st_size)
+   self.assertEqual(export['state'],'measured')
+ def test_the_updated_manifest_still_validates_against_its_own_files(self):
+  run=subprocess.run([sys.executable,'scripts/check_motion_project.py',
+                      'examples/motion-project.render.json','--root','.'],
+                     cwd=str(self.root),capture_output=True,text=True)
+  self.assertEqual(run.returncode,0,run.stdout+run.stderr)
+  self.assertEqual(json.loads(run.stdout)['errors'],0)
+ def test_a_preview_renders_nothing_and_changes_nothing(self):
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  root=Path(box.name)
+  shutil.copytree(BUILD/'src/motion/scripts',root/'scripts',
+                  ignore=shutil.ignore_patterns('__pycache__'))
+  (root/'examples').mkdir()
+  shutil.copy2(RENDER_EXAMPLE,root/'examples/motion-project.render.json')
+  before=(root/'examples/motion-project.render.json').read_bytes()
+  subprocess.run([sys.executable,'scripts/render_motion.py',
+                  'examples/motion-project.render.json','--root','.'],
+                 cwd=str(root),capture_output=True,text=True)
+  self.assertFalse((root/'exports').exists())
+  self.assertEqual((root/'examples/motion-project.render.json').read_bytes(),before)
+ def test_a_truncated_clip_is_not_mistaken_for_a_finished_one(self):
+  clip=self.root/'.motion-work/9x16/scene-00.mp4'
+  self.assertTrue(clip.is_file())
+  frames=engine.scene_frames(3.2+0.35,30)
+  self.assertTrue(renderer.complete_clip(clip,frames))
+  self.assertFalse(renderer.complete_clip(clip,frames+1))
+  half=self.root/'half.mp4';half.write_bytes(clip.read_bytes()[:len(clip.read_bytes())//2])
+  self.assertFalse(renderer.complete_clip(half,frames))
+  self.assertFalse(renderer.complete_clip(self.root/'nothing-here.mp4',frames))
+ def test_resume_reuses_the_clips_that_survived_and_rebuilds_the_rest(self):
+  work=self.root/'.motion-work/9x16'
+  keep=work/'scene-01.mp4';broken=work/'scene-02.mp4'
+  before=keep.stat().st_mtime_ns
+  broken.write_bytes(broken.read_bytes()[:2048])
+  (work/'scene-03.mp4').unlink()
+  (self.root/('exports/9x16/%s.mp4'%self.SLUG)).unlink()
+  report=self.render(['--apply','--resume','--formats','9:16'])
+  self.assertEqual(report['verdict'],'pass')
+  self.assertEqual(keep.stat().st_mtime_ns,before,'a finished clip was rebuilt anyway')
+  self.assertTrue(renderer.complete_clip(broken,engine.scene_frames(3.2+0.3,30)))
+  m,_f=inspector.measure(self.root/('exports/9x16/%s.mp4'%self.SLUG))
+  self.assertAlmostEqual(m['duration_seconds'],16.0,delta=0.15)
+ def test_an_asset_outside_the_project_is_refused(self):
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  root=Path(box.name);(root/'examples').mkdir()
+  shutil.copytree(BUILD/'src/motion/scripts',root/'scripts',
+                  ignore=shutil.ignore_patterns('__pycache__'))
+  m=json.loads(RENDER_EXAMPLE.read_text(encoding='utf-8'))
+  m['assets'][0]['path']='../outside/secret.png'
+  (root/'examples/motion-project.render.json').write_text(json.dumps(m),encoding='utf-8')
+  run=subprocess.run([sys.executable,'scripts/render_motion.py',
+                      'examples/motion-project.render.json','--root','.','--apply'],
+                     cwd=str(root),capture_output=True,text=True)
+  self.assertNotEqual(run.returncode,0)
+  self.assertFalse((root/'exports').exists())
 
 if __name__=='__main__':unittest.main()

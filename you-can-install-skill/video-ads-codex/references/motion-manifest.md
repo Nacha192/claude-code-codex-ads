@@ -11,6 +11,12 @@ was composed or cropped. The manifest is what survives the conversation.
 **Validate it with `scripts/check_motion_project.py`.** A non-zero exit is a stop,
 not a note. A complete valid example ships at `examples/motion-project.example.json`.
 
+A second example, `examples/motion-project.render.json`, is a sixteen second ad that
+[the supplied engine](motion-engine.md) turns into three real MP4 files with one
+command. It is the same schema: the drawing instructions live in `scenes[].layers`
+and the brand tokens in `design`, both of which any renderer may read and which the
+validator checks whether or not you use this engine.
+
 ```
 python scripts/check_motion_project.py motion-project.json
 python scripts/check_motion_project.py motion-project.json --root .
@@ -65,7 +71,8 @@ world, and it is the one claim in this pack a script can actually check.
 | `creative_lock` | the thirteen fields of phase 2 | Any one of them empty |
 | `hooks_considered` | at least three, each scored on the seven criteria, exactly one selected with a `why` | Fewer than three, no reason, or a lock hook that is not the selected one |
 | `script` | the spoken text and the word count | |
-| `scenes` | the storyboard fields, per [the production contract](production-contract.md) | Overlaps, a scene ending before it starts, narration longer than its scene, a timeline outside the brief |
+| `scenes` | the storyboard fields, per [the production contract](production-contract.md), plus the optional `layers`, `background`, `camera` and `transition` the renderer draws from | Overlaps, a scene ending before it starts, narration longer than its scene, a timeline outside the brief, a layer kind nothing can draw, a picture layer naming an asset that does not exist, a text layer with nothing to say, a position given in pixels instead of a fraction, or a layer starting after its own scene has ended |
+| `design` | the brand tokens the renderer reads: `palette`, `type.scale`, `motion`, `grid` | Optional. Absent, the engine's stated defaults apply |
 | `voice` | archetype, source, provider, measured seconds, consent reference | Narration exists with no voice object, or a cloned voice with no consent |
 | `captions` | `derived_from`, style, cues with start, end, text | `derived_from` is not `final_take`, or a cue ending past the timeline |
 | `music`, `sfx` | what plays, and the rights for it | |

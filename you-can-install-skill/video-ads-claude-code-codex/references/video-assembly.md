@@ -21,6 +21,12 @@ Do these in this order. Every inversion costs a re-export.
 6. **Choose the first frame.**
 7. **Export per ratio from the edit.** Never by cropping an export.
 
+The supplied engine does steps 2 to 7 in one command, composing each ratio from its
+own frame so there is no master to crop from. See
+[the reference motion engine](motion-engine.md). Any other renderer that meets the
+same contract is equally valid; what is not valid is skipping the step and calling a
+storyboard a video.
+
 ---
 
 ## Captions

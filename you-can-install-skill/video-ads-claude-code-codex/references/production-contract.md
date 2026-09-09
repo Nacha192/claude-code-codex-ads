@@ -168,6 +168,18 @@ a format whose `composition` is empty, and the formats that are mandatory are th
 ones the brief asked for. There is no universal required ratio, and inventing one
 would be this pack imposing its taste as a platform requirement.
 
+The supplied engine composes every declared format from its own frame in one command:
+
+```bash
+python scripts/render_motion.py motion-project.json --root . --apply --contact-sheet
+```
+
+It also runs Phase 8 below, capped at the same three passes, and writes the measured
+result back into the manifest. [The reference motion engine](motion-engine.md) covers
+the flags, the layer vocabulary, the design tokens, resume after an interruption and
+the honest limits. Use another renderer whenever a better one is available; the
+contract is the same either way.
+
 ---
 
 ## Phase 8. The correction loop
