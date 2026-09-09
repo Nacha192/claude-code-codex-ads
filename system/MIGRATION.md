@@ -1,5 +1,35 @@
 # Migration from the initial distribution
 
+## Version 4.0.4: the history was never scanned
+
+`validate_release.py` reads the tree that is checked out. A clone carries every
+commit, so anything committed once and removed later is still published and was
+invisible to every rule in this repository.
+
+A full scan of all 73 commits, 739 blobs, found no credential of any kind, no
+Windows user path, and a single commit identity throughout. It found one real
+thing: the `LICENSE` in the two oldest commits carried a copyright line naming the
+author beside the published handle. A history rewrite before publication had
+cleaned three other files and left this one, and nothing was looking.
+
+That blob has been rewritten out of every commit. The delivered tree is unchanged,
+byte for byte; only the history metadata moved.
+
+`scripts/scan_history.py` now walks every blob of every commit for credential
+shapes and Windows user paths, checks every commit identity against the publishing
+one, and requires each `LICENSE` copyright line to name the published handle and
+nothing else. That last rule is shape-based on purpose: no credential pattern can
+catch a person's name, and writing the name into a scanner to look for it would
+republish the thing being removed. CI runs it with the full history checked out,
+because `actions/checkout` fetches a single commit by default and the check would
+otherwise pass by having nothing to read.
+
+**What this does not undo.** The repository had 160 clones from 59 unique cloners
+in the fourteen days before the fix. Everyone who cloned holds the original
+commits. A rewrite changes what GitHub serves from now on, it does not retrieve
+what was taken. GitHub also keeps unreachable objects addressable by their SHA
+until it collects them, which needs a request to support.
+
 ## Version 4.0.3: resolve both sides of a path, or neither
 
 Fixing the archive order moved the integration failure from Linux to macOS, where

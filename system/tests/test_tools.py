@@ -201,6 +201,15 @@ class ReleaseRuleTests(unittest.TestCase):
    through=releaser.reachable(alias/'video-ads-codex')
    self.assertTrue(direct,'the pack must reach something at all')
    self.assertEqual(through,direct,'a redirected ancestor must not change what is reachable')
+ def test_the_whole_history_carries_no_secret_and_one_identity(self):
+  """validate_release reads the tree that is checked out. A clone carries every
+  commit, so a file that was published once and removed later is still published,
+  and no rule was looking there. That is how a copyright line naming the author
+  survived a history rewrite which had cleaned three other files and not this one."""
+  if not (ROOT/'.git').exists():self.skipTest('not a git checkout')
+  r=subprocess.run([sys.executable,str(BUILD/'scripts/scan_history.py')],cwd=ROOT,
+                   capture_output=True,text=True)
+  self.assertEqual(r.returncode,0,'history scan found something: '+(r.stdout or '')+(r.stderr or ''))
  def test_a_clean_copy_of_the_release_passes(self):self.assertEqual(self.check(self.copy()),[])
  def test_source_card_in_the_shared_trunk_refused(self):
   tree=self.copy();(tree/'system/src/common/modules').mkdir(parents=True,exist_ok=True)

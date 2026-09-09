@@ -18,6 +18,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The history scan needs the history. checkout fetches one commit by
+          # default, which would make that check pass by having nothing to read.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -25,6 +29,10 @@ jobs:
       # already describe the packs a visitor downloads, before anything rebuilds.
       - name: Validate the committed release
         run: python system/scripts/validate_release.py
+      # validate_release reads the checked-out tree. A clone carries every commit,
+      # so a file published once and removed later is still published.
+      - name: Scan every commit, not only the tree
+        run: python system/scripts/scan_history.py
       # Without ffmpeg the seven measurement tests skip, and the half of quality
       # control this repository is actually about is never exercised in CI.
       - name: Install ffmpeg so the measurement tests really run
