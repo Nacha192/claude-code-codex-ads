@@ -28,10 +28,10 @@ Before splitting any role, run the blind pass in [working as two](references/tea
 1. Retrieve business and lessons through [second brain](references/second-brain.md); use [intake](references/intake.md) for the missing essentials only, including duration and the blocking register question.
 2. Use [research](references/research.md) and [studying video that already works](references/video-scraping.md) for the three pulls of thirty over three months. Split the pulls between the two sides, then merge evidence and contradictions before choosing angles. A library proves an ad ran, never that it worked.
 3. Use [source catalog](references/source-catalog.md) for the six top-ten selections and internal modules; [conversion](references/conversion.md) maps a method onto each real host.
-4. Build the argument with [retention](references/video-retention.md), [hooks](references/hooks.md) and [copywriting](references/copywriting.md), informed by the [creative retrospective](references/v11-lessons.md). One side authors, the peer questions evidence, audience fit and payoff. Resolve routine creative disagreements from the brief instead of escalating each one.
-5. Write the storyboard as a `storyboard` artifact with measured narration. Then [video models](references/video-models.md), [prompting](references/video-prompting.md), [voice](references/video-voice.md), [music](references/video-music.md), [assembly](references/video-assembly.md) and the [measurable checks](references/measurable-checks.md), which settle in a command what would otherwise be an argument between the two of you. [Thresholds](references/thresholds.md) holds the numbers; [compliance](references/compliance.md) holds the red line.
-6. Before NEW media generation, present provider, model, account, variants, duration, formats and ceiling, and obtain approval unless already covered. Designate one generator for a given scope so the same batch is not produced twice. Approval to create does not authorize campaign activation.
-7. Produce the file and cross-review the real export, not the plan: first frame, hook, cuts, captions against the final take, loudness and clipping, and every requested ratio. Record who inspected which version and with what tools. A consultant that was not given the file cannot attest to it.
+4. Build the argument with [retention](references/video-retention.md), [hooks](references/hooks.md) and [copywriting](references/copywriting.md), informed by the [creative retrospective](references/v11-lessons.md). Both sides score at least three hooks on the seven criteria before either sees the other's, per the blind pass. Lock the thirteen fields of the creative lock in the manifest.
+5. Follow [the production contract](references/production-contract.md) phase by phase and keep one `motion-project.json`, per [the manifest](references/motion-manifest.md). Choose a look with [art direction](references/art-direction.md) rather than applying a house style. Then [video models](references/video-models.md), [prompting](references/video-prompting.md), [voice](references/video-voice.md), [music](references/video-music.md), [assembly](references/video-assembly.md) and [real production](references/live-action.md) when filming beats generating. Every requested ratio gets its own composition, and the mandatory ratios are the ones in the brief.
+6. Before NEW media generation, present provider, model, account, variants, duration, formats and ceiling, and obtain approval unless already covered. Designate one generator for a given scope so the same batch is not produced twice. Approval to create does not authorize campaign activation. The engine actually detected goes in the manifest with `detected: true`; a pipeline that was assumed is refused.
+7. Run the correction loop on the real export, not the plan. `scripts/inspect_video.py` decodes each file and returns measurements and findings; [creative QA](references/creative-qa.md) is the separate human grid and **the side that did not build it runs that one**. Fix the source, re-render only the affected formats, cap at three passes. Record who inspected which version, with which tools, against which hash. A consultant that was not given the file cannot attest to it.
 8. Follow [campaign operations](references/campaign-operations.md) for authorized remote actions; the designated executor reconciles ambiguous writes from authoritative state. Use [experiments](references/memory-testing.md) and the second brain to connect outcomes to creative genealogy and uncertainty.
 
 ## Work mode and delivery
@@ -40,6 +40,22 @@ Read [models](references/models.md). Basic and advanced are modes, not model tie
 
 Deliver against the [output standard](references/output-standard.md): the file, captions and transcript, the script, the voice and settings manifest, rights notes, review status and useful next tests. Run the included [artifact checker](scripts/check_artifact.py) on every artifact that crosses the bridge and on any generation request; a non-zero exit stops the handoff. It refuses credential-shaped values in anything sent to the peer. With no interpreter, say so on the bridge: an unchecked artifact is not a reviewed one. Keep private business data out of the public skill, and close the bridge under its protocol only after real handoffs, reviews and acknowledgements are complete.
 
+
+## What makes this the team edition rather than a claim about it
+
+- **Both assistants are real.** A message file that stays empty is not a
+  collaboration, and an absent peer is never simulated or narrated.
+- **A real capability card from each side**, per [providers](references/providers.md).
+  Two sides with different tools is the whole point; assuming they match wastes it.
+- **Every artifact version names its author and its reviewer**, and the review
+  carries the `sha256` of the exact file that was read.
+- **A review dies when the file changes.** If the artifact is edited after the
+  review, that review no longer applies to anything and the new version is reviewed
+  again. Carrying it forward is how an unreviewed cut ships with a signature on it.
+- **The fallback is explicit.** If the second agent genuinely cannot be reached,
+  say so, fall back to the solo skill, and deliver. That is a legitimate outcome.
+  **It is never described as a cross-review.** One assistant that checked its own
+  work is one assistant that checked its own work, whatever the pack is called.
 
 ## One pass, and the pass that checks it
 

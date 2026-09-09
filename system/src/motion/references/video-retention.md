@@ -21,8 +21,9 @@ has a different fix.
 
 ### 0 to 0.5 seconds — the scroll-stop
 
-Before anything is understood, something must physically stop the thumb. Five
-things do it, and only five:
+Before anything is understood, something must physically stop the thumb. These
+five do it reliably enough to start from, and the list is not closed. If your
+material offers a sixth, use it and write down what it was.
 
 1. **Motion.** A fast movement, a whip-pan, something falling or breaking.
 2. **A face with direct eye contact**, or an unusual expression.
@@ -58,13 +59,43 @@ repeats second one.**
 Something must arrive by 0:03. A cut, new information, a second hook, visible
 progress. A logo, a slow pan, or "hey guys" is a scroll.
 
-After that, the rhythm that holds:
+### Rhythm follows the material, not a stopwatch
 
-- **A cut every 1 to 2 seconds** for the first ten seconds, in UGC and
-  rapid-fire. A six-second static frame is a scroll.
-- **A pattern interrupt roughly every 3 to 5 seconds**: a zoom, a text pop, a
-  sound effect, a B-roll insert, a speed ramp. Each one re-grabs a wandering
-  eye.
+There is no correct cutting rate. The rate that holds attention is decided by
+eight things, and a number copied from another ad ignores all of them:
+
+| What moves the rhythm | Faster when | Slower when |
+|---|---|---|
+| Information density | Each beat carries little | Each beat carries a lot to absorb |
+| The voice | Fast, energetic delivery | Measured, low delivery |
+| Register | Native, unpolished, direct-response | Documentary, premium, restrained |
+| Awareness level | Cold, nothing at stake yet | Warm, already listening |
+| Visual complexity | Simple frames read instantly | Dense frames need dwell time |
+| Duration | Short ads compress | Long ads need rest to survive |
+| Channel | Feeds that reward immediacy | Placements watched deliberately |
+| Fatigue already created | The last ten seconds were calm | The last ten seconds were relentless |
+
+**A cut is one attention reset among many**, and the cheapest to overuse. All of
+these do the same job:
+
+- A new composition.
+- A change of scale.
+- A break in the sound.
+- A proof arriving.
+- A change of tempo.
+- A reveal.
+- A new point of view on the same subject.
+- A deliberate silence.
+- A sudden simplification of the frame.
+
+Chopping every second is one style, suited to some material. Applied to a
+restrained documentary register it destroys the thing it was meant to protect.
+Choose the reset that belongs to the direction in
+[art direction](art-direction.md), and put the reason in the storyboard.
+
+As a starting point when nothing else is decided: something new arrives roughly
+every 3 to 5 seconds [heuristic]. Measure the real one against hold rate, not
+against this sentence.
 - **One open loop at a time**, closed before the next opens. Two unresolved
   questions read as confusion, not intrigue.
 - **The dead zone.** Every draft has one. Find it by watching and noticing where
@@ -116,9 +147,16 @@ recruit different viewers, hold them for different reasons, and end differently.
 
 - The proof is **recognition**, not demonstration. They should feel seen before
   they are offered anything.
-- Never show the form. The video sells the conversation, not the paperwork.
-- **The offer is information**, and it is free: the guide, the audit, the call.
-  Naming the price of the real service in a lead video kills the lead.
+- **Usually keep the form out of frame.** The video sells the conversation, not
+  the paperwork. The exception is a form so short it is itself the argument: a
+  two-field, ten-second form shown as proof of how little is being asked can
+  raise conversion rather than lower it. Decide it, do not inherit it.
+- **The offer is often information**, and free: the guide, the audit, the call.
+- **The price is a judgement call, not a prohibition.** In a considered category
+  where a wide range is the buyer's actual fear, publishing a fixed price is the
+  angle, and hiding it is what costs the lead. In a category where the number
+  arrives before the value is understood, it disqualifies early. Ask which one
+  this is, and record the answer as an assumption if nobody knows.
 - Length: **20 to 45 seconds**. It needs room to build recognition.
 - Ends on: one small, concrete next step, stated once.
 - Kills it: qualifying too hard too early. Every disqualifier in the first ten

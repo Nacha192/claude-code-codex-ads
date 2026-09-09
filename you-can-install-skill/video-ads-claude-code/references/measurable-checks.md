@@ -6,6 +6,21 @@ licensing, synchronization, or platform acceptance. Record the filename, checksu
 All commands were executed against a synthetic FFmpeg fixture. They use relative
 paths from the media directory. Replace `ad-test.mp4` with the final export.
 
+**`scripts/inspect_video.py` runs all of this in one pass** and returns JSON: the
+measurements, the findings with a severity each, and a verdict. Use it as the
+default and read the sections below when a result needs to be understood or a
+single check has to be run by hand.
+
+```
+python scripts/inspect_video.py out/ad-9x16.mp4 --expect-ratio 9:16 --expect-duration 20 --loudness -14 --json
+```
+
+Every expectation is an argument, so every threshold comes from the brief or the
+manifest. The script invents none of them. Passing no expectations still measures
+the file and still reports a broken decode, a black opening, a frozen frame, a
+clipping peak or a missing audio track, because those are defects whatever the
+brief said.
+
 ## If FFmpeg is unavailable
 
 Check both programs before reporting any result:
@@ -121,7 +136,11 @@ loudness `-24.1` LUFS [observed] and true peak `-19.9` dBFS [observed]. The disp
 target is an analysis reference, not this pack's target. No universal loudness
 target is asserted here. Select one from current placement documentation
 [platform], a broadcaster or client brief [ours], or accepted assets [observed].
-Record the requirement, allowed tolerance, measurement, and decision.
+Record the requirement, allowed tolerance, measurement, and decision, in
+`loudness_target` in [the manifest](motion-manifest.md). That field carries a
+`value`, a `unit` and a `source`, and the validator refuses it without the source,
+because a number with no origin becomes a house standard the moment somebody copies
+it into the next project.
 
 ## Clipping indicators
 

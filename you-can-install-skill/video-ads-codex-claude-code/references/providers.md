@@ -2,6 +2,39 @@
 
 Documentation snapshot: 2026-09-06. Verify live model availability, account, credits, rights and schemas before production. A skill contains instructions; it does not add a paid subscription or connector. Do not claim an unavailable tool exists.
 
+## Capabilities, not products
+
+The pipeline is chosen from what is on this machine, never from what a document
+hoped for. So the pack does not require an engine. It requires eight **capabilities**,
+each of which several different products can provide, and it detects which ones exist
+before deciding anything.
+
+**JavaScript is never mandatory.** Remotion is one adapter among several. If a Python
+compositor, a real editing application, an AI video tool or an FFmpeg filter graph
+can produce the result, that is a legitimate pipeline and the manifest records which
+one was used.
+
+| Capability | What it must do | Adapters that can provide it | When nothing provides it |
+|---|---|---|---|
+| **AI video generation** | Produce footage from a prompt or a reference | A connected video model, per the table below | Route to deterministic composition, or to real filming per [real production](live-action.md) |
+| **Deterministic motion composition** | Place, animate and time elements exactly | Remotion, an FFmpeg filter graph, a Python compositor, an editing application driven by hand | Deliver the storyboard and the exact prompts, and say no composition ran |
+| **Voice** | Speak the script, or record a real one | A connected speech tool, a recorded human take, the advertiser's own voice | Deliver the script with the voice direction, marked as not produced |
+| **Music and sound design** | A bed and effects that are licensed | A licensed library, provider-supplied audio, silence used deliberately | Deliver silent, and say the mix is pending |
+| **Captions** | Cues derived from the final take | A transcription tool, a manual pass against the take | Deliver the transcript and say cues were not timed |
+| **Rendering** | Turn the composition into a file | FFmpeg, the compositor's own renderer, the editor's export | Nothing was rendered. Say exactly that, and never call a plan a video |
+| **Video inspection** | Decode and measure the export | `scripts/inspect_video.py`, which needs ffprobe and ffmpeg | Say the checks did not run. Silence reads as a pass and it must not |
+| **Multi-format adaptation** | Compose each requested ratio on its own terms | The composition tool, per [assembly](video-assembly.md) | Deliver the ratios you could compose and name the ones you could not |
+
+**Detect, then decide, then record.** Write the result into `engine` in
+[the manifest](motion-manifest.md), with `detected: true` and one sentence on why that
+route was chosen. The validator refuses a manifest whose engine was assumed rather
+than found, because that is the field where a pipeline that never existed gets
+written down as if it had.
+
+Three honest outcomes, and all three are deliverable: full production, deterministic
+composition without generated footage, or research and specification with nothing
+rendered. The third is a real deliverable. Calling it a finished ad is not.
+
 | Provider / tool | Appropriate job | Check before use |
 |---|---|---|
 | OpenAI image generation / ChatGPT Images | Generate or edit illustrative/product-context stills | Use the installed image tool when available; API model names and UI labels differ. Official API docs currently show `gpt-image-2`; verify the exact available model rather than assuming "ChatGPT Image 2+" is a callable ID. |

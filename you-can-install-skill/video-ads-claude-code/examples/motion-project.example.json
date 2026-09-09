@@ -1,0 +1,304 @@
+{
+  "schema_v": "1.0.0",
+  "kind": "motion_project",
+  "state": "delivered",
+  "brief": {
+    "offer": "A fixed-price boiler service for flats, 149 EUR, booked online, done in one visit",
+    "audience": "Flat owners who have had one breakdown already and do not have a regular plumber",
+    "objective": "Booked appointments",
+    "market": "FR",
+    "ad_language": "fr-FR",
+    "cta_destination": "https://example.invalid/reserver",
+    "duration_seconds": [15, 25],
+    "formats": ["9:16", "4:5"],
+    "brand_constraints": "One typeface, no stock smiling faces, the van is always the real van",
+    "channel": "Meta feed and reels"
+  },
+  "assumptions": [
+    {
+      "field": "contribution_margin",
+      "value": "58 percent",
+      "because": "Not supplied, taken from the category the advertiser named",
+      "changes_if_wrong": "The 42 EUR target cost per booking moves with it, and the shortest edit stops being worth testing"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "operational_record",
+      "source": "Advertiser booking export, 2026-06-01 to 2026-08-31, 412 jobs",
+      "supports": "One visit closed the job in 391 of 412 recorded interventions"
+    },
+    {
+      "id": "E2",
+      "type": "published_price",
+      "source": "Advertiser price list, version of 2026-08-14",
+      "supports": "The price is 149 EUR including parts under 20 EUR"
+    }
+  ],
+  "claims": [
+    { "text": "Done in one visit in almost every case", "proof_ids": ["E1"] },
+    { "text": "149 EUR, fixed, small parts included", "proof_ids": ["E2"] }
+  ],
+  "creative_lock": {
+    "insight": "The fear is not the price, it is the second visit that turns 149 into an open bill",
+    "problem": "Nobody quotes a boiler service without a survey first",
+    "angle": "The quote is the price, and the visit is one visit",
+    "promise": "You know what you pay before anyone rings the bell",
+    "mechanism": "Fixed scope, published price list, parts under 20 EUR included",
+    "proof": "412 jobs over three months, 391 closed on the first visit",
+    "objection": "There will be a supplement once they are inside",
+    "cta": "Book a slot, see the price before confirming",
+    "register": "Serious and restrained, close to a tradesperson speaking, no music-video energy",
+    "emotion": "Relief from an unknown bill",
+    "hook": "149 euros. Ecrit avant qu'on sonne chez vous.",
+    "reason_to_keep_watching": "The viewer wants to find the catch, and the ad hands them the catch at 8 seconds",
+    "payoff": "The same number appears at the end, unchanged, next to the booking button"
+  },
+  "hooks_considered": [
+    {
+      "text": "149 euros. Ecrit avant qu'on sonne chez vous.",
+      "scores": { "specificity": 5, "speed_of_understanding": 5, "audience_fit": 4, "tension": 4, "continuity_with_payoff": 5, "credibility": 4, "first_frame_strength": 4 },
+      "selected": true,
+      "why": "The only one carrying the number in frame one, and the number is the whole argument. It also sets up the payoff literally rather than thematically."
+    },
+    {
+      "text": "Votre chaudiere ne va pas se reparer toute seule.",
+      "scores": { "specificity": 1, "speed_of_understanding": 4, "audience_fit": 2, "tension": 2, "continuity_with_payoff": 1, "credibility": 3, "first_frame_strength": 2 },
+      "selected": false,
+      "why": "Category-generic. Would fit any competitor with the name swapped, which is the definition of a weak hook."
+    },
+    {
+      "text": "Le devis, c'est le prix. Pas une fourchette.",
+      "scores": { "specificity": 4, "speed_of_understanding": 3, "audience_fit": 4, "tension": 3, "continuity_with_payoff": 4, "credibility": 4, "first_frame_strength": 2 },
+      "selected": false,
+      "why": "Strong argument, weak first frame: it needs a second of reading before anything is understood."
+    }
+  ],
+  "script": {
+    "spoken": "149 euros. Ecrit avant qu'on sonne chez vous. Pas une fourchette, pas un devis apres la visite. On entre, on fait l'entretien, on repart. Sur 412 interventions cet ete, 391 etaient finies en une visite. Les pieces sous 20 euros sont comprises. Le prix que vous voyez maintenant est celui que vous payez. Reservez un creneau, vous verrez le montant avant de confirmer.",
+    "words": 63,
+    "written_for": "spoken"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "start": 0,
+      "end": 3,
+      "role": "hook",
+      "narration": "149 euros. Ecrit avant qu'on sonne chez vous.",
+      "measured_voice_seconds": 2.6,
+      "on_screen": "149 EUR",
+      "composition": "The number occupies the upper third at full weight, the van door fills the lower two thirds slightly out of focus",
+      "subject": "The price, as an object",
+      "primary_motion": "The number lands from a 4 percent scale overshoot and settles in 6 frames",
+      "secondary_motion": "The van door drifts 3 percent left, parallax against the number",
+      "transition": "Hard cut on the last consonant",
+      "assets": ["a_van", "a_type"],
+      "sound": "One low impact on the landing, no music yet",
+      "reframing": "In 4:5 the number moves to the optical centre and the van becomes a horizontal band",
+      "legibility_risk": "The number must clear the reels caption overlay in the lower fifth",
+      "acceptance": "The number is readable at thumbnail size and no part of it enters the bottom fifth"
+    },
+    {
+      "id": "s2",
+      "start": 3,
+      "end": 8,
+      "role": "mechanism",
+      "narration": "Pas une fourchette, pas un devis apres la visite. On entre, on fait l'entretien, on repart.",
+      "measured_voice_seconds": 4.4,
+      "on_screen": "Un passage. Un montant.",
+      "composition": "Three-step horizontal band, each step entering as it is spoken",
+      "subject": "The sequence of the visit",
+      "primary_motion": "Steps enter left to right, each on its own stressed syllable",
+      "secondary_motion": "The completed steps desaturate so the current one holds the eye",
+      "transition": "The band collapses into the proof card",
+      "assets": ["a_type"],
+      "sound": "Music enters under the voice at the first step",
+      "reframing": "In 4:5 the three steps stack vertically rather than shrinking to fit",
+      "legibility_risk": "Step text must not fall below 4 percent of frame height",
+      "acceptance": "Each step is on screen for at least 0.9s and the third is complete before the cut"
+    },
+    {
+      "id": "s3",
+      "start": 8,
+      "end": 14,
+      "role": "proof and objection",
+      "narration": "Sur 412 interventions cet ete, 391 etaient finies en une visite. Les pieces sous 20 euros sont comprises.",
+      "measured_voice_seconds": 5.5,
+      "on_screen": "391 / 412 en une visite",
+      "composition": "The two numbers sit on a single baseline, the fraction drawn rather than typed",
+      "subject": "The record, not the promise",
+      "primary_motion": "The counter runs to 391 and stops hard, the denominator already in place",
+      "secondary_motion": "A thin rule extends under the fraction as the counter runs",
+      "transition": "Cut on the stop of the counter",
+      "assets": ["a_type"],
+      "sound": "The music drops out for the last half second of the count",
+      "reframing": "Identical in both ratios, the fraction is centred and the rule shortens",
+      "legibility_risk": "The counter must not animate so fast that the end value is the only readable one",
+      "acceptance": "The final fraction holds still for at least 1.2s"
+    },
+    {
+      "id": "s4",
+      "start": 14,
+      "end": 20,
+      "role": "payoff and CTA",
+      "narration": "Le prix que vous voyez maintenant est celui que vous payez. Reservez un creneau, vous verrez le montant avant de confirmer.",
+      "measured_voice_seconds": 5.6,
+      "on_screen": "149 EUR — Reserver un creneau",
+      "composition": "The opening frame returns unchanged with the button added beneath it",
+      "subject": "The same number as scene one",
+      "primary_motion": "None on the number, deliberately. Only the button rises into place",
+      "secondary_motion": "The van settles back to its scene-one position",
+      "transition": "End",
+      "assets": ["a_van", "a_type"],
+      "sound": "Music resolves and stops before the last frame",
+      "reframing": "In 4:5 the button sits to the right of the number rather than under it",
+      "legibility_risk": "The button must survive the platform CTA overlay",
+      "acceptance": "The number is pixel-identical to scene one and the last frame holds 1s"
+    }
+  ],
+  "voice": {
+    "archetype": "Tradesperson, mid-forties, unhurried, no sell in the delivery",
+    "source": "generated",
+    "provider": "the speech capability detected at runtime",
+    "voice_id": "recorded at generation time",
+    "measured_total_seconds": 18.1,
+    "consent_ref": null,
+    "rights": "Provider licence for commercial advertising use, recorded in the delivery"
+  },
+  "captions": {
+    "derived_from": "final_take",
+    "style": "Two to four words per cue, bottom third, above the safe zone",
+    "cues": [
+      { "start": 0.2, "end": 1.4, "text": "149 euros." },
+      { "start": 1.5, "end": 2.8, "text": "Ecrit avant qu'on sonne." },
+      { "start": 3.2, "end": 5.1, "text": "Pas une fourchette." },
+      { "start": 5.2, "end": 7.6, "text": "On entre, on fait, on repart." },
+      { "start": 8.3, "end": 11.2, "text": "391 sur 412 en une visite." },
+      { "start": 11.4, "end": 13.6, "text": "Pieces sous 20 euros comprises." },
+      { "start": 14.3, "end": 16.8, "text": "Le prix affiche est le prix paye." },
+      { "start": 17.0, "end": 19.6, "text": "Reservez un creneau." }
+    ]
+  },
+  "music": {
+    "track": "Licensed instrumental, no vocal, 92 bpm",
+    "rights": "Library licence, commercial advertising, worldwide, perpetual, receipt on file",
+    "ducking": "Music sits 12 dB under the voice while the voice is present, recovered over 300 ms"
+  },
+  "sfx": [
+    { "at": 0.0, "what": "Low impact under the number landing", "rights": "Library licence, receipt on file" },
+    { "at": 13.4, "what": "Counter stop", "rights": "Library licence, receipt on file" }
+  ],
+  "assets": [
+    {
+      "id": "a_van",
+      "path": "assets/van-door.mp4",
+      "rights": "Filmed by the advertiser, owned outright",
+      "identifiable_person": false
+    },
+    {
+      "id": "a_type",
+      "path": "assets/brand-typeface.woff2",
+      "rights": "Brand licence, desktop and embedded video use, on file",
+      "identifiable_person": false
+    }
+  ],
+  "loudness_target": {
+    "value": -14,
+    "unit": "LUFS",
+    "source": "Advertiser brief, matching their other placements on this channel. Not a platform guarantee; verify against current platform documentation before treating it as one."
+  },
+  "engine": {
+    "kind": "deterministic_composition",
+    "name": "ffmpeg",
+    "version": "8.1.1",
+    "detected": true,
+    "why": "No video generation capability was connected on this machine. The concept is typographic and compositional, so a deterministic pipeline produces it exactly rather than approximately."
+  },
+  "formats": [
+    {
+      "ratio": "9:16",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "composition": "Master composition. Number in the upper third, subject below, captions above the bottom fifth.",
+      "safe_zones": { "top": 0.08, "bottom": 0.2, "left": 0.05, "right": 0.05 }
+    },
+    {
+      "ratio": "4:5",
+      "width": 1080,
+      "height": 1350,
+      "fps": 30,
+      "composition": "Recomposed, not cropped. The number moves to the optical centre, the three steps stack, the button sits beside the price.",
+      "safe_zones": { "top": 0.06, "bottom": 0.12, "left": 0.05, "right": 0.05 }
+    }
+  ],
+  "render": {
+    "commands": [
+      "ffmpeg -f lavfi -i color=... -i assets/van-door.mp4 -filter_complex ... -c:v libx264 -pix_fmt yuv420p -r 30 -c:a aac -b:a 192k out/ad-9x16.mp4",
+      "ffmpeg -f lavfi -i color=... -i assets/van-door.mp4 -filter_complex ... -c:v libx264 -pix_fmt yuv420p -r 30 -c:a aac -b:a 192k out/ad-4x5.mp4"
+    ],
+    "note": "Recorded verbatim so the render is reproducible by someone who was not here. Truncated in this example."
+  },
+  "exports": [
+    {
+      "ratio": "9:16",
+      "path": "out/ad-9x16.mp4",
+      "sha256": "9f2c4a1b8e6d03579a4c2b1e8f7d6c5b4a39281706f5e4d3c2b1a09f8e7d6c5b",
+      "state": "delivered",
+      "measured": { "duration_seconds": 20.0, "width": 1080, "height": 1920, "fps": 30.0, "loudness_lufs": -13.8, "true_peak_dbfs": -1.4 }
+    },
+    {
+      "ratio": "4:5",
+      "path": "out/ad-4x5.mp4",
+      "sha256": "3d7e1f0a2b4c6d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60",
+      "state": "delivered",
+      "measured": { "duration_seconds": 20.0, "width": 1080, "height": 1350, "fps": 30.0, "loudness_lufs": -13.9, "true_peak_dbfs": -1.5 }
+    }
+  ],
+  "qa": {
+    "technical": {
+      "verdict": "pass",
+      "tool": "scripts/inspect_video.py, full decode of both exports",
+      "defects": [
+        {
+          "timecode": "00:00.00",
+          "observation": "First export opened on 0.4s of black",
+          "severity": "blocking",
+          "why_it_fails": "A black first frame is a scroll, whatever follows it",
+          "fix": "Removed the fade-in on scene one and re-rendered 9:16 only",
+          "target": "scenes[0].primary_motion, out/ad-9x16.mp4",
+          "status": "fixed"
+        }
+      ]
+    },
+    "creative": {
+      "verdict": "pass_with_noted_risk",
+      "reviewed_by": "The side that did not build the composition",
+      "defects": [
+        {
+          "timecode": "00:08.30",
+          "observation": "The counter reaches 391 before the spoken number arrives",
+          "severity": "medium",
+          "why_it_fails": "The proof lands twice, and the second landing is the weaker one",
+          "fix": "Delayed the counter by 5 frames so the number lands on the spoken word",
+          "target": "scenes[2].primary_motion",
+          "status": "fixed"
+        },
+        {
+          "timecode": "00:14.00",
+          "observation": "The payoff frame is deliberately still while the music is still moving",
+          "severity": "low",
+          "why_it_fails": "Not a defect, recorded so the next reviewer does not fix it by accident",
+          "fix": "None. Documented as intentional.",
+          "target": "scenes[3]",
+          "status": "accepted"
+        }
+      ]
+    }
+  },
+  "human_decisions_pending": [
+    "Confirm that the 149 EUR price list version of 2026-08-14 is still current on the day the campaign starts"
+  ]
+}

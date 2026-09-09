@@ -187,6 +187,46 @@ writing. Do not reconstruct what you think they said.
 
 ---
 
+## The audio pipeline, end to end
+
+Thirteen steps, and the manifest records the result of each one. Skipping a step is
+allowed; pretending it ran is not.
+
+| Step | What it produces |
+|---|---|
+| Voice archetype | Who is speaking, in one sentence, recorded in `voice.archetype` |
+| Pace, energy, accent, register | The direction given, not adjectives after the fact |
+| Generation or recording | A real take, from a detected capability or a human |
+| Duration measurement | The take against the script, per below |
+| Comparison with the final script | The words said equal the words written, or the script is updated |
+| Breath and pause placement | Where the read stops, deliberately |
+| Scene synchronisation | `measured_voice_seconds` per scene, from the file |
+| Level | The mix against the declared target |
+| True peak | Measured, with the ceiling declared |
+| Clipping | Checked, not assumed from the meter |
+| Unintended silence | Head and tail, and anywhere the take dropped |
+| Music ducking | The bed sits under the voice, with a recovery time |
+| Licence and consent | For the voice, the music, and every effect |
+
+`scripts/inspect_video.py` measures level, true peak, clipping risk and silence on
+the finished export in one pass. The rest is judgement and it is recorded, not
+inferred.
+
+## Captions come from the take, never from the script
+
+The script is what you meant to say. The take is what was said. Between them sit
+a rephrase, a dropped word and half a second of breath, and captions built from
+the script drift from the read within the first three cues.
+
+Derive cues from the final take, keep them to short groups, respect a readable
+pace, hold enough contrast, stay inside the safe zone for the ratio, and never let
+them cover the subject or the CTA. Check them at their own boundaries, not in the
+middle of a cue, because a caption that is one frame late is visible exactly at its
+edges.
+
+[The manifest](motion-manifest.md) refuses `captions.derived_from` set to anything
+but `final_take`, and refuses a cue that ends past the end of the timeline.
+
 ## Measuring the take
 
 Estimate the fit before generating, then replace the estimate with the measured

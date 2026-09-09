@@ -75,8 +75,23 @@ So: **reframe each ratio in the timeline**, moving the subject, not the crop
 tool on an export. A 9:16 built by centre-cropping a 16:9 loses the composition
 in every shot, and it is visible.
 
-`ratios.required_set` is 4:5 and 9:16. Add the others when the placement
-genuinely wants them.
+**Each ratio carries its own composition**, and the manifest refuses one that does
+not. Seven things are decided per ratio, not inherited:
+
+| Per ratio | Because |
+|---|---|
+| Composition | What sits where. A vertical is not a horizontal with the sides removed |
+| Typographic scale | A headline sized for 16:9 is unreadable at 9:16 and vice versa |
+| Subject placement | The optical centre moves with the frame |
+| Safe zones | Each surface puts its own interface in a different place |
+| Caption placement | Under the subject in one ratio, beside it in another |
+| CTA placement | It must survive the platform's own CTA overlay |
+| Its own visual check | An approved 9:16 is not approval of an unseen 4:5 |
+
+**The mandatory ratios are the ones in the brief.** `ratios.required_set` in
+`thresholds.md` is a common starting pair, not a law: a brand buying only Reels
+needs one, a brand running YouTube needs 16:9 that the pair does not include.
+Compose what was asked for, and say which ones you could not.
 
 ---
 

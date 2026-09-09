@@ -1,5 +1,64 @@
 # Migration from the initial distribution
 
+## Version 4.0.0: the video packs become a production system
+
+Nothing was removed and no existing file stopped working, but the four video packs
+changed character enough to earn a major number: they went from explaining how a good
+video ad is made to running the job and refusing to sign off on it.
+
+**The contract.** `production-contract.md` is the spine: eight phases from an
+imperfect input to inspected files. Normalise the input and sort what is missing into
+blocking, assumable and irrelevant. Ask the blocking items once, numbered, in a single
+message. Lock thirteen fields of the argument. Score at least three hooks on seven
+criteria and say why one won. Write a storyboard whose scenes carry fourteen fields
+each. Choose an art direction. Produce. Then the correction loop.
+
+**The manifest.** `motion-project.json` holds the whole job in one object, described
+in `motion-manifest.md`, validated by `scripts/check_motion_project.py`, with a
+complete worked example at `examples/motion-project.example.json`. Its `state` is one
+of eight in order and it is a claim about the world: from `rendered` on, the exports
+must exist and carry a hash, and with `--root` the files are opened and the hashes
+recomputed. From `inspected` on, both QA grids must carry a verdict.
+
+**The inspector.** `scripts/inspect_video.py` decodes each export in full and measures
+duration, dimensions, ratio, sample aspect, frame rate, frame count, codec, bitrate,
+audio tracks, sample rate, loudness, true peak, clipping risk, head and tail silence,
+decode errors, black frames and frozen frames. Every threshold arrives as an argument.
+With no expectation given it invents none, and that is a test.
+
+**Two QA grids instead of one.** `creative-qa.md` is eighteen questions a person
+answers by watching the file, including a full muted run and a full eyes-closed run.
+It is separate from the technical grid on purpose, because a technically valid export
+is not a good ad and treating the exit code as an opinion is how that gets forgotten.
+
+**Art direction became a chooser.** `art-direction.md` holds twelve directions with
+what each is good at, what it costs and how it fails, plus the frame-building rules
+that separate a made ad from a generated one. There is no house style, because a pack
+with a house style makes every client look like the pack.
+
+**Absolute rules became heuristics.** "Five and only five" scroll-stops is now five
+that work and an open list. "A cut every one to two seconds" is now a table of eight
+things that decide rhythm and nine attention resets of which a cut is one. "Never show
+the form" and "naming the price kills the lead" are now judgement calls with the case
+for each side, because both are true in some categories and expensive in others. The
+required ratio pair is a starting point; the mandatory ratios are the ones in the
+brief.
+
+**Engine independence.** `providers.md` gained a capability-and-adapter table. Eight
+capabilities, several possible adapters each, detection before choice. JavaScript is
+never mandatory, and the engine that was actually found is recorded in the manifest
+with `detected: true`, which the validator requires to be literally true.
+
+**Team integrity.** The two team video entrypoints now require a real capability card
+from each side, an author and a reviewer named per artifact version, the hash of the
+exact file that was reviewed, and a review that dies when the file changes after it.
+The fallback to the solo skill when the peer is genuinely unreachable is explicit, and
+it may never be described as a cross-review.
+
+If you are upgrading from 3.x, nothing you were doing breaks. The manifest is new
+work, not a migration: a project that never writes one still validates as it did, and
+the checks that ran before still run.
+
 ## Version 3.1.0: the first pass, the check on it, and filming
 
 Three references were added and nothing was removed, so nothing that worked in

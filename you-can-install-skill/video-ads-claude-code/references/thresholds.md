@@ -72,7 +72,7 @@ against. These are fixed here rather than left to the reader.
 
 | Key | Value | Tag | Notes |
 |---|---|---|---|
-| `ratios.required_set` | **4:5 and 9:16** | [heuristic] | Feed, and Reels/Stories. Two surfaces that genuinely want different frames. |
+| `ratios.required_set` | **4:5 and 9:16, as a starting pair** | [heuristic] | Feed, and Reels/Stories. Two surfaces that genuinely want different frames. |
 | `ratios.optional_set` | **1:1 and 1.91:1** | [heuristic] | Explore, Marketplace, right column, Audience Network, search results. Cheap to render if you already built the engine; skip them if you are hand-building each file. |
 | `ratios.px.4x5` | **1080 × 1350** | [platform] | |
 | `ratios.px.9x16` | **1080 × 1920** | [platform] | |

@@ -69,7 +69,37 @@ Shared by all eight:
 
 Only in the still packs: image and carousel layout, product-context composition, real export QA, and routes for OpenAI images, Gemini and Nano Banana, Higgsfield stills and Claude Design.
 
-Only in the video packs: retention structure, a protocol for studying video that already runs, storyboards the checker actually verifies, choosing and prompting a video model, voice including cloning the user's own with a consent record, music and sound design, assembly, and measurable checks with real ffmpeg commands.
+Only in the video packs: **a production system**, not a strategy document. An
+eight-phase contract from a rough idea to inspected files, one `motion-project.json`
+holding the whole job, an art-direction chooser across twelve directions instead of a
+house style, per-ratio compositions, a correction loop capped at three passes, real
+filming when that beats generating, and two scripts that decide rather than advise.
+
+```console
+python scripts/check_motion_project.py motion-project.json --root .
+python scripts/inspect_video.py out/ad-9x16.mp4 --expect-ratio 9:16 --expect-duration 20 --json
+```
+
+The first refuses a manifest that claims more than it can show: a state with no files,
+a claim with no source, a ratio the brief asked for that nobody composed, captions
+written from the script instead of the take, an engine that was assumed. The second
+decodes each export in full and measures duration, dimensions, ratio, sample aspect,
+frame rate, frame count, codec, bitrate, audio tracks, sample rate, loudness, true
+peak, clipping risk, head and tail silence, decode errors, black frames and frozen
+frames. Every threshold it enforces arrives as an argument, from the brief or the
+manifest; it invents none.
+
+Also in the video packs, and unchanged in substance: retention structure, a protocol
+for studying video that already runs, choosing and prompting a video model, voice
+including cloning the user's own with a consent record, music and sound design, and
+assembly.
+
+**The engine is not fixed.** JavaScript is never required. The packs detect eight
+capabilities and choose a pipeline from what is actually installed: a video model, a
+deterministic compositor such as Remotion or an FFmpeg filter graph, speech, music,
+captions, rendering, inspection and multi-format adaptation. When a capability is
+missing the pack says which one and delivers everything up to that wall. Nothing here
+calls a plan a video.
 
 Instructions are English. The assistant keeps the user's conversation language; ads use the target market's language. Public files contain reusable methods and synthetic templates, not private business data or client creatives.
 
@@ -80,6 +110,22 @@ A fresh GitHub search on **2026-09-06** produced a reviewed corpus of **73 SKILL
 Each source has a pinned revision, hash, date, provenance, caveat and original functional adaptations for both hosts. See [source inventory](system/research/sources.json), [discovery](system/research/discovery.json) and [attribution](system/THIRD_PARTY_NOTICES.md). These are reasoned task-fit selections, not an objective world ranking or proof of ad performance. Upstream tools and full unlicensed skill text are not bundled.
 
 Provider model names, durations and resolutions in the video packs are **dated observations of one connected catalogue**, not a promise about what any account exposes. Verify them in the catalogue you actually hold.
+
+## One shot, and what it does not mean
+
+The video packs are built to run from an imperfect input to finished files without an
+interview. One compact numbered message asking only what genuinely blocks, a stated
+assumption for everything else, then produce, measure, inspect, correct and deliver.
+
+One shot is not improvisation. It is the opposite: the questions are asked once
+because they were sorted first, and the assumptions are written down where the reader
+will see them rather than discovered later.
+
+Two grids close the run, and neither replaces the other. The technical grid is a
+script and it decides whether the file is sound. The creative grid is eighteen
+questions a person answers by watching the export, muted and then with eyes closed,
+and it decides whether the ad is worth money. A file can pass every automatic check in
+this repository and still be an ad nobody would watch.
 
 ## Approval and quality
 

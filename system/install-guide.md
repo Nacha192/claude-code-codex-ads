@@ -38,6 +38,49 @@ Download one of the eight `install-*.zip` archives at the repository root and ex
 
 This route installs the pack without needing Python, but the included checks still need it. On its first task in a project the skill verifies the interpreter, and if none is there it says what stops working and asks before installing anything. See `references/runtime.md` inside the pack.
 
+## Quickstart: one video ad, one pass
+
+After installing a video pack, in your own words:
+
+> Use `video-ads-codex`. Here is the idea: [a sentence, a link to an ad you liked, or
+> a half-written script]. Make the ad.
+
+What happens next, in order. It is worth knowing so you can tell whether it is being
+followed.
+
+1. **One message with numbered questions**, and only the ones that genuinely block:
+   the offer in exact terms, the audience, the objective, the market and language, the
+   duration, the formats, the CTA destination, the brand constraints, the proof behind
+   any claim, and the rights on anything you supplied. Everything else gets a stated
+   assumption rather than a question.
+2. **The argument is locked** and at least three hooks are scored, with the winner's
+   reason written down.
+3. **A storyboard**, timed from the real voice once it exists rather than from a word
+   count.
+4. **Production**, on whatever capability this machine actually has. If nothing can
+   generate video, you get the research, the script, the storyboard, the exact prompts
+   and a sentence saying nothing was rendered. That is a real deliverable and it will
+   not be dressed up as a finished ad.
+5. **The correction loop**: every export decoded and measured, both QA grids run,
+   defects fixed at the source, only the affected formats re-rendered, capped at three
+   passes.
+6. **Delivery**: the files, the script, the sources, `motion-project.json` and the QA
+   report.
+
+You can run the two checks yourself, from inside the installed pack:
+
+```console
+python scripts/check_motion_project.py motion-project.json --root .
+python scripts/inspect_video.py out/ad-9x16.mp4 --expect-ratio 9:16 --expect-duration 20 --json
+```
+
+The first needs Python only. The second needs `ffmpeg` and `ffprobe` on the PATH; if
+they are missing it exits 3 and says so, and that is not a pass.
+
+`examples/motion-project.example.json` in the video packs is a complete, valid
+manifest for a real-shaped job. Read it once before your first run and the format
+stops being abstract.
+
 ## What the skill still needs from you
 
 The pack contains the method. It does not contain a video model, a speech provider, a renderer or an ad account, and it does not pretend to.
