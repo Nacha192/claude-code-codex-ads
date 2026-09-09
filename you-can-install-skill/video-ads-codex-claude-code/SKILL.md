@@ -23,6 +23,8 @@ This is the whole reason the team edition exists, so use the three fallbacks exp
 
 ## Complete the video work
 
+Before splitting any role, run the blind pass in [working as two](references/team.md): both sides write the buyer's problem, the blocking obstacle and three concepts alone, put them on the bus at the same time, and only then read each other. Two assistants that never disagree cost twice as much as one and are worth less. The synthesis records what was agreed independently, what was not, and the cheapest test that settles it. Roles come after that, never before.
+
 1. Retrieve business and lessons through [second brain](references/second-brain.md); use [intake](references/intake.md) for the missing essentials only, including duration and the blocking register question.
 2. Use [research](references/research.md) and [studying video that already works](references/video-scraping.md) for the three pulls of thirty over three months. Split the pulls between the two sides, then merge evidence and contradictions before choosing angles. A library proves an ad ran, never that it worked.
 3. Use [source catalog](references/source-catalog.md) for the six top-ten selections and internal modules; [conversion](references/conversion.md) maps a method onto each real host.
@@ -37,3 +39,24 @@ This is the whole reason the team edition exists, so use the three fallbacks exp
 Read [models](references/models.md). Basic and advanced are modes, not model tiers: each side runs the mode the task needs on whichever model its host actually exposes. Announce the real model and mode you are running. No simulated model switching and no guaranteed quality multipliers.
 
 Deliver against the [output standard](references/output-standard.md): the file, captions and transcript, the script, the voice and settings manifest, rights notes, review status and useful next tests. Run the included [artifact checker](scripts/check_artifact.py) on every artifact that crosses the bridge and on any generation request; a non-zero exit stops the handoff. It refuses credential-shaped values in anything sent to the peer. With no interpreter, say so on the bridge: an unchecked artifact is not a reviewed one. Keep private business data out of the public skill, and close the bridge under its protocol only after real handoffs, reviews and acknowledgements are complete.
+
+
+## One pass, and the pass that checks it
+
+The first delivery is the deliverable, not a draft with a question attached.
+[One shot](references/one-shot.md) is the contract: ask everything blocking in a
+single message before starting, state every assumption where it will be read,
+ship every channel the format has, and never narrow the scope in silence.
+
+[Quality control](references/quality-control.md) is the pass that decides
+whether that is true rather than intended, and it is run on the exported
+artifact. A script exiting zero is not that pass. It read the manifest you
+wrote, not the pixels anyone will see.
+
+## Filming it, when that is the right answer
+
+A real person filming a real product is still the strongest video ad on most
+accounts, and it is the option most often skipped. [Real production](references/live-action.md)
+covers the identity release, the creator brief, the coverage that makes an edit
+possible at all, the four things that ruin footage, and the usage window after
+which the ad has to come down.

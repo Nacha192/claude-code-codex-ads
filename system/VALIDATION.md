@@ -1,6 +1,6 @@
 # Validation scope and observed results
 
-Release date: 2026-09-07, version 3.0.0. This validates the distributed methods and the local helper scripts. It is not an advertising-performance certification, and it does not claim any provider will produce a good ad.
+Release date: 2026-09-09, version 3.1.0. This validates the distributed methods and the local helper scripts. It is not an advertising-performance certification, and it does not claim any provider will produce a good ad.
 
 ## Local observed checks
 

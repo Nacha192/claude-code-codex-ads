@@ -26,7 +26,7 @@ These are checked by a script, and every one of them fails with a non-zero exit 
 | A scene time that is not a finite number is refused, `NaN` and booleans included | `check_artifact.py` | `test_nan_and_bool_times` |
 | A **declared** claim resting on a hypothesis is refused | `check_artifact.py` | `test_hypothesis_not_proof` |
 | A testimonial without a recorded verbatim quote is refused | `check_artifact.py` | `test_fake_testimonial` |
-| Declared prohibited terms are matched on the rendered copy | `check_artifact.py` | `test_red_line_on_rendered_copy` |
+| Declared prohibited terms are matched on the copy fields of the artifact you hand it, which must be written from the render rather than from the plan. It never opens the image or the video | `check_artifact.py` | `test_red_line_on_rendered_copy` |
 | Copy over the declared character limits is refused | `check_artifact.py` | `test_placement_length_limits` |
 | Declared limits that are not an object are refused rather than silently replaced by the defaults, which would enforce a looser rule than the campaign asked for | `check_artifact.py` | `test_malformed_limits_refused` |
 | An unknown artifact kind is refused rather than half-checked | `check_artifact.py` | `test_unknown_kind_refused` |
@@ -64,6 +64,10 @@ The skill text requires these. A model can deviate from them, and no script here
 - **Detecting a video or speech capability instead of assuming one.** Nothing in this repository can stop an assistant from naming a model it has never seen.
 - **Cloning only the voice of the person asking.** The consent record is a file the pack writes; no script can tell whose voice is in an audio sample.
 - **Honouring a withdrawal of that consent**, including deleting the clone at the provider.
+- **Inspecting the exported media.** `quality-control.md` requires opening the file and reading what is actually on it. No script here can tell whether that happened, and a manifest written from the plan instead of from the render passes every check while describing an asset nobody looked at.
+- **Doing the blind pass before reading the peer.** In the team editions, both sides are required to write their diagnosis and concepts alone and exchange them simultaneously. Nothing can tell whether one side read the other's first, and that is exactly the shortcut that turns two opinions into one opinion checked twice.
+- **Delivering in one pass.** `one-shot.md` requires asking everything blocking at once, stating assumptions where they are read, and shipping every channel the format has. Nothing enforces it.
+- **Holding a written identity release before filming a person**, and pulling the ad when its usage window ends. `live-action.md` says how; only a human closes that loop.
 - Not presenting a script, a silent draft or a prompt as a finished ad.
 - Not inventing offers, prices, reviews, scarcity or results.
 - Writing ads in the target market's language rather than translating into it.

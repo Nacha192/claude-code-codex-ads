@@ -94,8 +94,17 @@ output is the mistake described above, not a shortcut.
 
 It also warns, every time, that the list only catches the terms you declared: a
 paraphrase carrying the same forbidden meaning passes. That warning is not
-noise to be silenced. Wire the check into the render step so a violating
-creative cannot reach the export folder, and read the warning.
+noise to be silenced.
+
+**And be exact about what running it proves.** The checker reads the manifest
+you wrote, never the exported image or video. A prohibited word burned into a
+generated frame and absent from your manifest exits zero. So the manifest is
+built from the render, not from the plan: export first, read what is actually
+on the asset, write that into the copy fields, then check. Wiring it into the
+render step catches a violating manifest, which is worth doing and is not the
+same thing as catching a violating creative. The media inspection in
+[quality control](quality-control.md) is the step that does that, and no exit
+code replaces it.
 
 ---
 

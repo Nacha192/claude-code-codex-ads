@@ -113,6 +113,15 @@ against. These are fixed here rather than left to the reader.
 These are the buying-side numbers. A creative skill that ignores them produces
 ads nobody can learn from.
 
+**They are defaults, and they expire the moment you know better.**
+`memory-testing.md` forbids universal sample thresholds, and it is right: a
+floor that ignores the baseline conversion rate, the smallest effect worth
+acting on and the conversion lag is a number pretending to be a design. Use the
+rows below when nothing better is available, say you used them, and replace
+them with a calculation from the actual baseline as soon as the account gives
+you one. A calculated floor overrides this table; the tag on each row is
+`[heuristic]` for that exact reason.
+
 | Key | Value | Tag | Notes |
 |---|---|---|---|
 | `test.min_runtime` | **14 days** | [heuristic] | Minimum elapsed time before reading a creative test. State the window as dates, not as a duration. |

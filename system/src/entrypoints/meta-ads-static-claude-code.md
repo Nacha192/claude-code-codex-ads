@@ -32,3 +32,16 @@ Follow [models](references/models.md). Basic is a compact workflow; advanced dev
 Use [campaign operations](references/campaign-operations.md) for authorized account changes, exact budget/schedule and ambiguous-write reconciliation. Preparing creative does not authorize activation. Use [memory and experiments](references/memory-testing.md) and the second brain to record what was actually learned, including failures and uncertainty.
 
 Deliver against the [output standard](references/output-standard.md): the requested assets and copy, relevant sources, actual QA status, and a next test when useful. Distinguish draft, generated, reviewed, approved, uploaded and live. Run the included [artifact checker](scripts/check_artifact.py) on the brief, the creative set and any generation request before delivering or generating; a non-zero exit is a stop, not a note. It performs offline structural checks and refuses credential-shaped values, but it does not certify truth, policy or creative quality. With no interpreter available, say the checks did not run; never let that read as a pass.
+
+
+## One pass, and the pass that checks it
+
+The first delivery is the deliverable, not a draft with a question attached.
+[One shot](references/one-shot.md) is the contract: ask everything blocking in a
+single message before starting, state every assumption where it will be read,
+ship every channel the format has, and never narrow the scope in silence.
+
+[Quality control](references/quality-control.md) is the pass that decides
+whether that is true rather than intended, and it is run on the exported
+artifact. A script exiting zero is not that pass. It read the manifest you
+wrote, not the pixels anyone will see.

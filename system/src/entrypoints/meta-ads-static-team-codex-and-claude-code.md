@@ -19,6 +19,8 @@ Designate one executor for each campaign/account scope. If neither has authorize
 
 ## Complete the advertising work
 
+Before splitting any role, run the blind pass in [working as two](references/team.md): both sides write the buyer's problem, the blocking obstacle and three concepts alone, put them on the bus at the same time, and only then read each other. Two assistants that never disagree cost twice as much as one and are worth less. The synthesis records what was agreed independently, what was not, and the cheapest test that settles it. Roles come after that, never before.
+
 1. Retrieve business and relevant lessons through [second brain](references/second-brain.md); use [intake](references/intake.md) to ask only missing consequential essentials: offer, niche/buyer, geography, language and the task's constraints.
 2. Use [research](references/research.md) for a sourced Meta scan with explicit queries, date window, sampling and coverage. Split buyer research and competitor creative analysis where useful. Merge evidence and contradictions before choosing angles.
 3. Use [source catalog](references/source-catalog.md) for the six fresh top-ten selections and internal modules. [Conversion](references/conversion.md) maps methods to each actual host. These are included methods, not additional skill installations.
@@ -33,3 +35,16 @@ Designate one executor for each campaign/account scope. If neither has authorize
 Read [models](references/models.md). Basic and advanced are modes, not model tiers: each side runs the mode the task needs on whichever model its host actually exposes. Announce the real model and mode you are running. No simulated model switching, consciousness claims or guaranteed quality multipliers. Advanced means stronger hypotheses, prototypes and critique, not excessive chatter.
 
 Deliver against the [output standard](references/output-standard.md): requested assets and copy, relevant source evidence, actual review status, campaign status if changed and useful next tests. Run the included [artifact checker](scripts/check_artifact.py) on every artifact that crosses the bridge and on any generation request; a non-zero exit stops the handoff. It checks structure and recorded authorization only, and it refuses credential-shaped values in anything sent to the peer. With no interpreter available, say so on the bridge; an unchecked artifact is not a reviewed one. Keep private business data out of the public skill. Close the real bridge under its protocol only after actual handoffs/reviews and acknowledgements are complete.
+
+
+## One pass, and the pass that checks it
+
+The first delivery is the deliverable, not a draft with a question attached.
+[One shot](references/one-shot.md) is the contract: ask everything blocking in a
+single message before starting, state every assumption where it will be read,
+ship every channel the format has, and never narrow the scope in silence.
+
+[Quality control](references/quality-control.md) is the pass that decides
+whether that is true rather than intended, and it is run on the exported
+artifact. A script exiting zero is not that pass. It read the manifest you
+wrote, not the pixels anyone will see.

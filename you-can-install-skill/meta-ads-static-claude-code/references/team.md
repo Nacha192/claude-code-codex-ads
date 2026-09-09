@@ -22,15 +22,57 @@ Example handoff:
 
 This is a template, not a real approval or hash. Fill it from observed state.
 
+## The blind pass, before any role is assigned
+
+The default failure of two assistants working together is not conflict, it is
+agreement. One writes the diagnosis, the other reviews it, and the review is
+already anchored on the first one's framing. You get one opinion, checked. Two
+assistants that never disagree cost twice as much as one and are worth less,
+because the second one's independence was spent reading the first one's answer.
+
+So the first exchange is not a handoff. Both sides do the same work, alone,
+before seeing anything from the other.
+
+**Each side writes, without consulting the peer:**
+
+1. The buyer's problem in one sentence, in the buyer's words.
+2. The single obstacle that stops the purchase.
+3. Three concepts, each with its angle, its mechanism and the proof it needs.
+4. What it expects to be wrong about.
+
+**Then both are put on the bus at the same time**, and only then are they read.
+Sending yours after reading theirs is not a blind pass, and it is the one rule
+here that is easy to break by accident. If the bus does not support it, exchange
+the hashes first and the contents second.
+
+**Then the synthesis is written, once, by whoever holds the integrator role**,
+and it is a document, not a conversation:
+
+| Section | What goes in it |
+|---|---|
+| Agreed | What both reached independently. This is the strongest thing you have, because nobody talked the other into it. |
+| Disagreed | Both positions stated in their own terms, not summarised by the opponent. |
+| Counter-case | For each disagreement, the case that would make the other side right. Written by the side that disagrees with it. |
+| Missing evidence | What neither side knows, and which of the two positions it would settle. |
+| Discriminating test | The cheapest experiment whose result changes the decision, with the outcome that kills each position. |
+
+An unresolved disagreement is a normal output. Record it and run the test. What
+is not acceptable is an unnoticed disagreement, or a disagreement dissolved by
+whoever wrote last.
+
+**Do the blind pass again** whenever the brief changes materially: a new offer,
+a new market, a register reversal. Do not do it for a variant of work already
+agreed on, where it is pure cost.
+
 ## Work loop
 
-1. Agree on the brief, facts and output contract before parallel edits. Use the bridge workboard and claims.
+1. Run the blind pass above, then agree on the brief, facts and output contract before parallel edits. Use the bridge workboard and claims. Roles are assigned after the synthesis, not before, so that neither side's independent view was shaped by the role it was handed.
 2. Owners produce independent artifacts. Send decisions/evidence, not hidden reasoning or filler chatter. Read and acknowledge actual messages at boundaries.
 3. Reviewer identifies exact version, observable issue, evidence and repair. Strategic disagreements are resolved by evidence or a reversible experiment, not vote count.
 4. Integrator applies accepted repairs and reruns affected checks. If reviewed files change materially, review the new version.
 5. Executor follows campaign-operations for authorized external writes, and reports verified remote state. Tool access may be handed off; permission may not be bypassed.
 
-Three fallbacks make the team worth more than either half. Use them explicitly, and say which one you are using.
+Three fallbacks make the team worth more than either half. Use them explicitly, and say which one you are using. They are what to do when the two sides differ in capability, understanding or context; the blind pass above is what to do when they do not, and it is the more common case.
 
 **Capability.** If a peer lacks a tool the other holds, hand off the approved brief, the exact inputs, the account/provider scope and the remaining ceiling. The receiving agent verifies tool and account state before calling. Do not re-generate an already completed job because an acknowledgement was lost. This is the common case here: one side may have a video provider and the other none.
 

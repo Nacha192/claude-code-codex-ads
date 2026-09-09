@@ -1,5 +1,38 @@
 # Migration from the initial distribution
 
+## Version 3.1.0: the first pass, the check on it, and filming
+
+Three references were added and nothing was removed, so nothing that worked in
+3.0.0 stops working.
+
+- `one-shot.md`, in all eight packs. The first delivery is the deliverable: ask
+  everything blocking in one message before starting, state assumptions where
+  they are read, ship every channel the format has, never narrow scope in
+  silence.
+- `quality-control.md`, in all eight packs. The inspection pass on the exported
+  artifact, per format, with a three-word verdict vocabulary, and an exact
+  statement of what the checker does and does not read.
+- `live-action.md`, in the four video packs. Filming it for real: identity
+  release, creator brief, mandatory coverage, reshoot criteria, usage window.
+
+The four team editions changed shape. `team.md` gained a **blind pass** that runs
+before any role is assigned: both sides write the buyer's problem, the blocking
+obstacle and three concepts alone, exchange them simultaneously, and only then
+read each other. The synthesis records what was agreed independently, what was
+not, the counter-case for each disagreement written by the side that disagrees
+with it, and the cheapest test that settles it. Until now the second side
+reviewed the first side's artifact, which meant it reasoned from the first
+side's framing and the pair produced one opinion checked twice. Roles are now
+assigned after the synthesis rather than before.
+
+Three corrections went with them. `compliance.md` no longer implies that wiring
+the checker into the render step stops a violating creative from being exported;
+it stops a violating *manifest*, and the difference is now stated. The buying
+numbers in `thresholds.md` are declared defaults that a calculation from the
+real baseline overrides, which is what `memory-testing.md` asked for all along.
+And a public ad library may now support a test hypothesis, never a performance
+verdict, in one rule instead of two that disagreed.
+
 ## Version 3.0.0: one repository, eight packs, and the video half arrives
 
 The repository is `skill-claude-code-codex-ads`, renamed on 2026-09-07 when the two halves became one. GitHub redirects both earlier names, `claude-code-codex-ads` and `claude-code-codex-ads-static`, but update your remotes anyway.

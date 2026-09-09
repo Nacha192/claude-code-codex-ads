@@ -27,7 +27,7 @@ Documentation snapshot: 2026-09-06. Verify live model availability, account, cre
 | OpenAI speech | Directed synthetic narration when the host exposes speech generation | Verify the supported speech model, available voices, output format and current AI-voice disclosure requirements. Do not invent custom voice availability. |
 | Superwhisper | Spoken briefs, notes and transcription | A dictation and transcription route, not the engine for final narration. The two are constantly confused and they are not the same product. |
 | Remotion and FFmpeg | Editable motion, captions, compositing and final renders | Check installed versions, fonts, media codecs, render commands and commercial licensing. Render locally only within the approved creation scope. |
-| Human recording or licensed footage | Authentic demonstrations and actual testimony | Consent, usage rights, release scope, source quality and edit approval. Still the strongest option for a service ad, and the most often skipped. |
+| Human recording or licensed footage | Authentic demonstrations and actual testimony | Consent, usage rights, release scope, source quality and edit approval. Still the strongest option for a service ad, and the most often skipped. How to actually do it is in [real production](live-action.md). |
 
 Voice cloning has its own file, [voice](video-voice.md), because consent and storage are decided there rather than in a capability table.
 

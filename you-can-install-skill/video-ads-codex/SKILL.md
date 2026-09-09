@@ -42,3 +42,24 @@ Follow [models](references/models.md). Basic is a compact evidence-based workflo
 Use [campaign operations](references/campaign-operations.md) for authorized account changes. Preparing creative does not authorize activation. Use [memory and experiments](references/memory-testing.md) and the second brain to record what was actually learned, failures included.
 
 Deliver what exists, following the [output standard](references/output-standard.md): the file when there is one, captions and transcript, the script, the voice and settings manifest, the rights notes and the QA evidence. When a capability was missing, name the missing deliverable rather than quietly shipping less. Distinguish draft, generated, rendered, reviewed, approved, uploaded and live. Run the included [artifact checker](scripts/check_artifact.py) on the brief, the storyboard, the creative set and any generation request before delivering or generating; a non-zero exit is a stop, not a note. It checks structure and recorded authorization and refuses credential-shaped values; it does not certify truth, policy or quality. With no interpreter, say the checks did not run, and never let that read as a pass.
+
+
+## One pass, and the pass that checks it
+
+The first delivery is the deliverable, not a draft with a question attached.
+[One shot](references/one-shot.md) is the contract: ask everything blocking in a
+single message before starting, state every assumption where it will be read,
+ship every channel the format has, and never narrow the scope in silence.
+
+[Quality control](references/quality-control.md) is the pass that decides
+whether that is true rather than intended, and it is run on the exported
+artifact. A script exiting zero is not that pass. It read the manifest you
+wrote, not the pixels anyone will see.
+
+## Filming it, when that is the right answer
+
+A real person filming a real product is still the strongest video ad on most
+accounts, and it is the option most often skipped. [Real production](references/live-action.md)
+covers the identity release, the creator brief, the coverage that makes an edit
+possible at all, the four things that ruin footage, and the usage window after
+which the ad has to come down.

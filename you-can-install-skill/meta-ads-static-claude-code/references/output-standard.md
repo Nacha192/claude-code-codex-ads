@@ -123,7 +123,11 @@ disagree with it about a third of the time."
 - **Never present a translated hook as a written one.** See `lang.write_native`.
 - **Never fill a gap with a plausible value.** `needs_data` costs one line and
   saves a wrong decision.
-- **Never carry a recommendation on evidence that cannot support one.** Where
-  the only input is a public ad library, the output is the structure, with no
-  ranking and no "worth testing" attached. A recommendation is a performance
-  claim wearing a verb.
+- **Never carry a recommendation on evidence that cannot support one.** A
+  public ad library proves an ad ran and roughly how long. It can support a
+  **test hypothesis**, grounded in an observation, an absence or a saturation,
+  and it can never support a **performance verdict** or a ranking. The
+  difference is the sentence that follows it: a hypothesis names the experiment
+  that would settle it and what result would kill it; a recommendation names
+  neither. `research.md` builds the hypothesis, this rule forbids the verdict,
+  and "worth testing" with no experiment attached is a verdict.
