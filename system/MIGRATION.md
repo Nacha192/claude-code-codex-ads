@@ -1,5 +1,42 @@
 # Migration from the initial distribution
 
+## Version 4.3.0: two limits that were written down instead of fixed
+
+The 4.1.0 notes listed line breaking as estimated and the render as not reproducible.
+Both were real, both were stated honestly, and both were fixable. Writing a limit down
+is not the same as accepting it.
+
+**Line widths are read from the font.** The engine parses the `head`, `hhea`, `hmtx`
+and `cmap` tables of the face that will actually draw the text, so a line breaks where
+it reaches the column rather than where an assumed average character says it should.
+Kerning is deliberately not applied, because `drawtext` does not apply it either;
+matching the renderer matters more here than matching a typesetter.
+
+The estimate it replaces was worse than "approximate". Checked against the pixels
+`drawtext` puts on screen, the new measurement lands between 0.4% and 4.8% wide, and
+never narrow. The old one read **96% too wide** on ten capital I and **41% too narrow**
+on ten m, which is a line running most of the way out of the frame with nothing
+measuring it. The test does that comparison rather than trusting the parser, so it
+also holds on whatever face a Linux runner happens to have.
+
+**Two renders of an unchanged manifest now produce identical bytes.** Neither cause
+was visible in any output:
+
+- `gradients` defaults to `seed=-1`, a new random gradient on every run. Seeds now come
+  from the scene id, so scenes still differ from each other while each one repeats.
+- `sidechaincompress` reads two streams whose framing varies between runs, so the
+  ducking diverged and the audio re-encoded differently every time. Both sides are cut
+  to identical frames first.
+
+The video encoder was never the problem. Every scene clip, the assembly and the burned
+captions were already byte-identical; it was the ducking underneath them. A hash
+written into a manifest is now a fact about the project rather than about one
+afternoon.
+
+**CI installs ffmpeg on macOS as well as Linux.** The engine's job is to produce the
+same three files on a machine that is not the author's, and a check that only ever ran
+on one operating system was not testing that.
+
 ## Version 4.2.0: the manifest declared a reserve the engine never read
 
 Every format has always carried `safe_zones`, the slice of the frame the platform

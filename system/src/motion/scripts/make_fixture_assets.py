@@ -25,10 +25,12 @@ def ff(args, label):
 
 def build(out):
     out.mkdir(parents=True, exist_ok=True)
+    # Every seed is pinned. `gradients` defaults to a random one, so without this the
+    # fixture is a different film on every run and nothing downstream can be hashed.
     ff(['-f', 'lavfi', '-i', 'gradients=s=1200x1200:c0=0x1B2A38:c1=0xF5A623:'
-        'x0=200:y0=200:x1=1000:y1=1000:d=1', '-frames:v', '1',
+        'x0=200:y0=200:x1=1000:y1=1000:d=1:seed=1201', '-frames:v', '1',
         '-y', str(out / 'product-still.png')], 'product still')
-    ff(['-f', 'lavfi', '-i', 'gradients=s=1400x1400:c0=0x101820:c1=0x2A4A6A:d=6:r=25:speed=0.06',
+    ff(['-f', 'lavfi', '-i', 'gradients=s=1400x1400:c0=0x101820:c1=0x2A4A6A:d=6:r=25:speed=0.06:seed=1402',
         '-t', '6', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20',
         '-pix_fmt', 'yuv420p', '-y', str(out / 'texture-loop.mp4')], 'texture loop')
     # Speech-band bursts with gaps, so the ducking sidechain has something to key on

@@ -19,7 +19,7 @@ target.
 Every measurement it claims comes back out of `inspect_video.py`, never out of this
 file. The engine renders; something else checks. That separation is the whole point.
 """
-import json, math, os, re, shutil, subprocess, sys
+import hashlib, json, math, os, re, shutil, subprocess, sys
 from pathlib import Path
 
 BS = chr(92)
@@ -29,7 +29,7 @@ TIMEOUT = 1800
 REQUIRED_FILTERS = ['color', 'gradients', 'drawtext', 'drawbox', 'overlay', 'zoompan',
                     'scale', 'crop', 'format', 'fps', 'xfade', 'subtitles', 'tile',
                     'amix', 'sidechaincompress', 'loudnorm', 'afade', 'adelay',
-                    'anullsrc', 'atrim', 'asplit', 'concat', 'tpad']
+                    'anullsrc', 'atrim', 'asplit', 'concat', 'tpad', 'asetnsamples']
 # Ordered by preference. The first family whose file is found wins, so the look is
 # stable on a machine that has the brand face and degrades to a known fallback.
 FONT_PREFERENCE = ['Inter', 'Poppins', 'Montserrat', 'Helvetica', 'Arial',
@@ -321,16 +321,34 @@ def camera_zoom(kind, amount, frames):
 
 # ------------------------------------------------------------------- scene drawing
 
+def stable_seed(key):
+    """A repeatable seed from a name, so a rerun is a rerun and not a new draw.
+
+    Python's own hash is salted per process, so it is exactly the wrong tool here:
+    it would give the same scene a different gradient every time the script starts.
+    """
+    digest = hashlib.sha256(str(key).encode('utf-8')).digest()
+    return int.from_bytes(digest[:4], 'big')
+
+
 def scene_inputs(scene, assets, seconds, fps, layout):
     """ffmpeg inputs for this scene, and the filter chain fragments that place them."""
     args, chains, last = [], [], None
     background = scene.get('background') or {}
     w, h = layout['width'], layout['height']
     if background.get('kind') == 'gradient':
+        # `gradients` defaults to seed=-1, which is a new random gradient on every
+        # run. Two renders of the same manifest then differ in every byte, and a
+        # hash in the manifest stops meaning anything. The seed comes from the scene
+        # so scenes still differ from each other while each one is repeatable, and
+        # the manifest can pin its own if a particular gradient is the one wanted.
+        seed = background.get('seed')
+        if not isinstance(seed, int) or isinstance(seed, bool):
+            seed = stable_seed(scene.get('id', 'scene'))
         args += ['-f', 'lavfi', '-i',
-                 'gradients=s=%dx%d:c0=%s:c1=%s:d=%.3f:r=%d:speed=0.02'
+                 'gradients=s=%dx%d:c0=%s:c1=%s:d=%.3f:r=%d:speed=0.02:seed=%d'
                  % (w, h, background.get('from', '0x101820'),
-                    background.get('to', '0x2A4A6A'), seconds, fps)]
+                    background.get('to', '0x2A4A6A'), seconds, fps, seed)]
     else:
         args += ['-f', 'lavfi', '-i', 'color=c=%s:s=%dx%d:d=%.3f:r=%d'
                  % (background.get('colour', '0x101820'), w, h, seconds, fps)]
@@ -376,20 +394,173 @@ def media_layer(index, layer, layout, seconds, fps, chains, last, assets):
     return out
 
 
-def wrap_text(content, max_px, size):
+# ------------------------------------------------------------------ font metrics
+
+# Line breaking used to divide the column by an assumed average character width. It
+# is the sort of approximation that looks harmless and is not: the assumption was
+# tuned on one machine's Arial, and DejaVu on a Linux runner is wider, so the same
+# manifest wrapped at a different word and the layout was measured against a width
+# nothing on screen had. The advance widths are in the font file. They are read.
+#
+# Kerning is deliberately not applied, because `drawtext` does not apply it either.
+# Matching the renderer matters more here than matching a typesetter.
+FONT_METRICS = {}
+
+
+def _u16(data, at):
+    return int.from_bytes(data[at:at + 2], 'big')
+
+
+def _u32(data, at):
+    return int.from_bytes(data[at:at + 4], 'big')
+
+
+def _tables(data, index=0):
+    """Table directory of a TTF, OTF, or one face of a collection."""
+    base = 0
+    if data[:4] == b'ttcf':
+        count = _u32(data, 8)
+        index = min(index, max(0, count - 1))
+        base = _u32(data, 12 + 4 * index)
+    out = {}
+    for i in range(_u16(data, base + 4)):
+        record = base + 12 + 16 * i
+        out[data[record:record + 4]] = (_u32(data, record + 8), _u32(data, record + 12))
+    return out
+
+
+def _cmap(data, offset):
+    """Codepoint to glyph id, from the most complete Unicode subtable present."""
+    rank = {(3, 10): 5, (0, 4): 5, (0, 6): 5, (3, 1): 4, (0, 3): 4,
+            (0, 2): 3, (0, 1): 3, (0, 0): 3}
+    best = None
+    for i in range(_u16(data, offset + 2)):
+        record = offset + 4 + 8 * i
+        key = (_u16(data, record), _u16(data, record + 2))
+        score = rank.get(key, 1)
+        if best is None or score > best[0]:
+            best = (score, offset + _u32(data, record + 4))
+    if best is None:
+        return {}
+    sub = best[1]
+    kind = _u16(data, sub)
+    table = {}
+    if kind == 4:
+        segments = _u16(data, sub + 6) // 2
+        ends = sub + 14
+        starts = ends + 2 * segments + 2
+        deltas = starts + 2 * segments
+        ranges = deltas + 2 * segments
+        for s in range(segments):
+            end = _u16(data, ends + 2 * s)
+            start = _u16(data, starts + 2 * s)
+            delta = _u16(data, deltas + 2 * s)
+            range_offset = _u16(data, ranges + 2 * s)
+            if start > end or end == 0xFFFF and start == 0xFFFF:
+                continue
+            for cp in range(start, min(end, 0xFFFE) + 1):
+                if range_offset == 0:
+                    gid = (cp + delta) & 0xFFFF
+                else:
+                    at = ranges + 2 * s + range_offset + 2 * (cp - start)
+                    if at + 2 > len(data):
+                        continue
+                    gid = _u16(data, at)
+                    if gid:
+                        gid = (gid + delta) & 0xFFFF
+                if gid:
+                    table.setdefault(cp, gid)
+    elif kind == 12:
+        for g in range(_u32(data, sub + 12)):
+            group = sub + 16 + 12 * g
+            start, end = _u32(data, group), _u32(data, group + 4)
+            first = _u32(data, group + 8)
+            if end - start > 0x10000:
+                end = start + 0x10000
+            for cp in range(start, end + 1):
+                table.setdefault(cp, first + cp - start)
+    elif kind == 6:
+        first, count = _u16(data, sub + 6), _u16(data, sub + 8)
+        for n in range(count):
+            table.setdefault(first + n, _u16(data, sub + 10 + 2 * n))
+    return table
+
+
+def font_metrics(path):
+    """Units per em, advance widths by glyph, and the character map. Cached.
+
+    Returns None when the file is not a font this can read, so the caller falls back
+    rather than raising: an unusual face is a reason to estimate, not to stop.
+    """
+    key = str(path)
+    if key in FONT_METRICS:
+        return FONT_METRICS[key]
+    metrics = None
+    try:
+        data = Path(path).read_bytes()
+        tables = _tables(data)
+        head, hhea, hmtx, cmap = (tables.get(t) for t in (b'head', b'hhea', b'hmtx', b'cmap'))
+        if head and hhea and hmtx and cmap:
+            units = _u16(data, head[0] + 18)
+            count = _u16(data, hhea[0] + 34)
+            if units > 0 and count > 0:
+                advances = [_u16(data, hmtx[0] + 4 * i)
+                            for i in range(min(count, hmtx[1] // 4))]
+                if advances:
+                    metrics = {'units': units, 'advances': advances,
+                               'last': advances[-1], 'cmap': _cmap(data, cmap[0])}
+    except (OSError, ValueError, IndexError, KeyError):
+        metrics = None
+    FONT_METRICS[key] = metrics
+    return metrics
+
+
+def measure_text(content, size, font):
+    """Width in pixels of one line, at this size, in this face.
+
+    None when the face cannot be read, which is the signal to estimate instead.
+    """
+    metrics = font_metrics(font) if font else None
+    if not metrics:
+        return None
+    advances, cmap, units = metrics['advances'], metrics['cmap'], metrics['units']
+    total = 0
+    for ch in str(content):
+        gid = cmap.get(ord(ch))
+        if gid is None:
+            gid = cmap.get(ord('?'), 0)
+        total += advances[gid] if gid < len(advances) else metrics['last']
+    return total * float(size) / units
+
+
+ESTIMATED_EM = 0.52
+
+
+def wrap_text(content, max_px, size, font=None):
     """Break a line to the column width, because drawtext will not.
 
     ffmpeg draws exactly what it is given and lets it run off the frame, which is
     how a subtitle-length sentence ends up with its last two words outside the
-    picture. The advance width is estimated rather than measured: a bold humanist
-    sans averages close to 0.52 em across mixed-case French, and the estimate only
-    has to be conservative enough to keep the line inside the column.
+    picture.
+
+    The width comes out of the font file when the face can be read, so a line breaks
+    where it actually reaches the column. Falling back to an average character width
+    is what this used to do always, and it was wrong in a way that only showed on
+    someone else's machine: the average was tuned on one Arial, DejaVu on a Linux
+    runner is wider, so the same manifest broke at a different word and the layout
+    was measured against a width nothing on screen ever had.
     """
-    budget = max(8, int(max_px / max(1.0, size * 0.52)))
+    metrics = font_metrics(font) if font else None
     lines, current = [], ''
+
+    def fits(candidate):
+        if metrics:
+            return measure_text(candidate, size, font) <= max_px
+        return len(candidate) <= max(8, int(max_px / max(1.0, size * ESTIMATED_EM)))
+
     for word in str(content).split():
         candidate = (current + ' ' + word).strip()
-        if len(candidate) <= budget or not current:
+        if fits(candidate) or not current:
             current = candidate
         else:
             lines.append(current)
@@ -416,7 +587,7 @@ def stack_items(scene, layout, sizes, design):
                 continue
             role = layer.get('role', 'body')
             size = int(layer.get('size_px') or sizes.get(role, sizes['body']))
-            wrapped = wrap_text(content, layout['text_width'], size)
+            wrapped = wrap_text(content, layout['text_width'], size, layout.get('font'))
             lines = wrapped.count('\n') + 1
             # 1.25 em per line is what drawtext actually advances at the
             # `line_spacing` set in text_chain. Change one without the other and this
@@ -438,13 +609,16 @@ def stack_items(scene, layout, sizes, design):
 MIN_TYPE_FIT = 0.55
 
 
-def fit_layout(layout, design, scenes):
+def fit_layout(layout, design, scenes, font=None):
     """Shrink the type until the tallest scene fits its column, once for the film.
 
     Per-scene fitting would give the same role a different size in every scene, which
     is not a type scale any more. So the tightest scene sets the scale and the rest
     follow it, exactly as a designer would size a set of frames together.
     """
+    layout = dict(layout)
+    if font:
+        layout['font'] = font
     room = max(1, layout['copy_bottom'] - layout['text_top'])
     scale, sizes = 1.0, dict(layout['sizes'])
     worst = 0
@@ -494,7 +668,7 @@ def text_chain(layer, layout, design, font, work, key, seconds, chains, last, pl
     if not content:
         return last
     if not place:
-        content = wrap_text(content, layout['text_width'], size)
+        content = wrap_text(content, layout['text_width'], size, font)
     path = text_file(work, key, content)
     at = float(layer.get('at', 0.0))
     enter_for = float(layer.get('enter_seconds', design['motion']['enter_seconds']))
@@ -772,8 +946,14 @@ def build_audio(manifest, assets, seconds, work, out_path, loudness=None, measur
                       % (index, seconds, gain, max(0.0, seconds - 0.6)))
         index += 1
         if voice_label:
-            chains.append('[%s]asplit=2[vout][vkey]' % voice_label)
-            chains.append('[musicraw][vkey]sidechaincompress=threshold=0.03:ratio=12:'
+            # Both sides of the sidechain are cut into identical frames first. The
+            # compressor's state depends on the frames it is handed, and two separate
+            # inputs are not handed to it the same way twice: the same manifest then
+            # encoded to different bytes on every run, which quietly makes the hash
+            # recorded in the manifest a hash of one particular afternoon.
+            chains.append('[%s]asetnsamples=n=1024:p=0,asplit=2[vout][vkey]' % voice_label)
+            chains.append('[musicraw]asetnsamples=n=1024:p=0[musicfr]')
+            chains.append('[musicfr][vkey]sidechaincompress=threshold=0.03:ratio=12:'
                           'attack=15:release=350:makeup=1[music]')
             mix = ['vout', 'music']
         else:

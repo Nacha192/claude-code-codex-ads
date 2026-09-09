@@ -811,6 +811,85 @@ class MotionEngineTests(unittest.TestCase):
   self.assertIsNone(motion.rgb('not a colour'))
   self.assertEqual(motion.rgb('#F5A623'),(245,166,35))
 
+ def ink_width(self,text,size,font):
+  """What drawtext actually puts on screen, measured off the pixels."""
+  W,H=2600,300
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  f=Path(box.name)/'t.txt';f.write_text(text,encoding='utf-8')
+  p=subprocess.run(['ffmpeg','-hide_banner','-v','error','-f','lavfi',
+   '-i','color=c=black:s=%dx%d'%(W,H),'-vf',
+   "drawtext=fontfile='%s':textfile='%s':expansion=none:fontcolor=white:fontsize=%d:x=60:y=60"
+   %(engine.filter_path(font),engine.filter_path(f),size),
+   '-frames:v','1','-pix_fmt','gray','-f','rawvideo','-'],capture_output=True)
+  raw=p.stdout
+  if len(raw)<W*H:return None
+  lo,hi=W,-1
+  for y in range(H):
+   row=raw[y*W:(y+1)*W]
+   for x in range(W):
+    if row[x]>40:
+     if x<lo:lo=x
+     if x>hi:hi=x
+  return (hi-lo+1) if hi>=0 else None
+ @unittest.skipUnless(FFMPEG,'ffmpeg is required')
+ def test_the_measured_width_is_the_width_that_gets_drawn(self):
+  """The parser is checked against the renderer, not against itself.
+
+  The old estimate assumed an average character. On ten capital I it was 96% too
+  wide and on ten m it was 41% too narrow, so a line of wide glyphs ran most of the
+  way out of the frame while nothing measured anything."""
+  font=engine.detect()['font_file']
+  self.assertIsNotNone(font)
+  for size,text in [(64,'Reserver un creneau'),(120,'149 EUR'),
+                    (44,'Perimetre publie, pieces sous 20 EUR incluses'),
+                    (56,'IIIIIIIIII'),(56,'mmmmmmmmmm')]:
+   drawn=self.ink_width(text,size,font)
+   self.assertIsNotNone(drawn,text)
+   computed=engine.measure_text(text,size,font)
+   self.assertIsNotNone(computed,text)
+   # Advance width includes the side bearings the ink does not, so it reads a little
+   # wide. Wide is the safe direction for wrapping; narrow is what runs off the frame.
+   self.assertGreaterEqual(computed,drawn*0.98,'%r measured narrower than it draws'%text)
+   self.assertLessEqual(computed,drawn*1.15,'%r measured far wider than it draws'%text)
+ def test_the_font_file_is_read_rather_than_assumed(self):
+  font=engine.detect()['font_file']
+  m=engine.font_metrics(font)
+  self.assertIsNotNone(m)
+  self.assertGreater(m['units'],0)
+  self.assertTrue(m['advances'])
+  self.assertIn(ord('A'),m['cmap'])
+  self.assertGreater(engine.measure_text('mmmm',60,font),engine.measure_text('iiii',60,font))
+ def test_an_unreadable_face_falls_back_instead_of_raising(self):
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  fake=Path(box.name)/'not-a-font.ttf';fake.write_bytes(b'this is not a font at all')
+  self.assertIsNone(engine.font_metrics(fake))
+  self.assertIsNone(engine.measure_text('abc',40,fake))
+  self.assertIsNone(engine.measure_text('abc',40,None))
+  # The wrap still returns every word, using the average-width fallback.
+  wrapped=engine.wrap_text('un deux trois quatre cinq six sept huit',300,40,fake)
+  self.assertEqual(wrapped.replace(chr(10),' ').split(),
+                   'un deux trois quatre cinq six sept huit'.split())
+ def test_no_wrapped_line_exceeds_the_column_it_was_wrapped_to(self):
+  font=engine.detect()['font_file']
+  for text in ['Perimetre publie, pieces sous 20 EUR incluses',
+               'mmmmmmmmmm mmmmmmmmmm mmmmmmmmmm','anticonstitutionnellement']:
+   for width,size in [(900,48),(660,37),(400,60)]:
+    wrapped=engine.wrap_text(text,width,size,font)
+    self.assertEqual(wrapped.replace(chr(10),' ').split(),text.split())
+    for line in wrapped.split(chr(10)):
+     if len(line.split())>1:
+      self.assertLessEqual(engine.measure_text(line,size,font),width,repr(line))
+ def test_a_gradient_is_the_same_gradient_on_the_next_run(self):
+  """`gradients` defaults to a random seed, so two renders of one manifest differed
+  in every byte and the hash written into the manifest meant nothing."""
+  self.assertEqual(engine.stable_seed('s1'),engine.stable_seed('s1'))
+  self.assertNotEqual(engine.stable_seed('s1'),engine.stable_seed('s2'))
+  d=self.design();m=self.manifest()
+  lay=engine.layout_for(self.fmt('9:16'),d)
+  scene=next(s for s in m['scenes'] if (s.get('background') or {}).get('kind')=='gradient')
+  args,_c,_l=engine.scene_inputs(scene,{},3.0,30,lay)
+  self.assertTrue(any('seed=' in str(a) for a in args),args)
+
 
 class MotionRenderTests(unittest.TestCase):
  """The one-shot, end to end, measured out of the files it wrote."""
@@ -940,6 +1019,35 @@ class MotionRenderTests(unittest.TestCase):
   self.assertTrue(renderer.complete_clip(broken,engine.scene_frames(3.2+0.3,30)))
   m,_f=inspector.measure(self.root/('exports/9x16/%s.mp4'%self.SLUG))
   self.assertAlmostEqual(m['duration_seconds'],16.0,delta=0.15)
+ def test_rendering_the_same_manifest_twice_produces_the_same_bytes(self):
+  """A hash in the manifest is worth nothing if the next render changes every byte.
+
+  Two things made this false and neither was visible in any output. `gradients`
+  defaults to a random seed, so every run drew a different background. And
+  `sidechaincompress` reads two inputs whose framing varies between runs, so the
+  ducking diverged and the audio encoded differently every time."""
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  runs=[]
+  for n in ('first','second'):
+   root=Path(box.name)/n
+   (root/'examples').mkdir(parents=True)
+   shutil.copytree(BUILD/'src/motion/scripts',root/'scripts',
+                   ignore=shutil.ignore_patterns('__pycache__'))
+   shutil.copy2(BUILD/'src/common/scripts/check_artifact.py',root/'scripts')
+   shutil.copy2(RENDER_EXAMPLE,root/'examples/motion-project.render.json')
+   made=subprocess.run([sys.executable,str(root/'scripts/make_fixture_assets.py'),
+                        '--out',str(root/'fixtures')],capture_output=True,text=True)
+   self.assertEqual(made.returncode,0,made.stderr)
+   run=subprocess.run([sys.executable,'scripts/render_motion.py',
+                       'examples/motion-project.render.json','--root','.','--apply',
+                       '--formats','9:16'],cwd=str(root),capture_output=True,text=True)
+   self.assertEqual(run.returncode,0,(run.stdout or '')+(run.stderr or ''))
+   runs.append(root)
+  for rel in ['fixtures/texture-loop.mp4','fixtures/product-still.png',
+              '.motion-work/9x16/audio.m4a',
+              'exports/9x16/%s.mp4'%self.SLUG]:
+   digests={renderer.digest_of(r/rel) for r in runs}
+   self.assertEqual(len(digests),1,'%s differs between two identical renders'%rel)
  def test_an_asset_outside_the_project_is_refused(self):
   box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
   root=Path(box.name);(root/'examples').mkdir()

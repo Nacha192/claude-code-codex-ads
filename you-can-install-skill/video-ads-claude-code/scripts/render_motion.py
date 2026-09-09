@@ -132,14 +132,16 @@ def complete_clip(clip, want_frames):
 
 def render_format(manifest, fmt, design, assets, root, work, resume, measured_loudness):
     """Everything for one ratio: scenes, assembly, captions, audio, mux."""
-    # Fit before drawing. The type scale is settled once for the whole film so a
-    # role keeps one size across the scenes, and so a column that cannot hold its
-    # copy is a refusal rather than a pile of overlapping lines.
-    layout = engine.fit_layout(engine.layout_for(fmt, design), design, manifest['scenes'])
     caps = engine.detect()
     font = (design.get('type') or {}).get('family_file') or caps['font_file']
     if not font or not Path(str(font)).is_file():
         font = caps['font_file']
+    # Fit before drawing, and fit against the face that will actually draw it. The
+    # type scale is settled once for the whole film so a role keeps one size across
+    # the scenes, and a column that cannot hold its copy is a refusal rather than a
+    # pile of overlapping lines.
+    layout = engine.fit_layout(engine.layout_for(fmt, design), design,
+                               manifest['scenes'], font)
     seconds = timeline_seconds(manifest)
     scenes = manifest['scenes']
     work.mkdir(parents=True, exist_ok=True)
@@ -285,7 +287,7 @@ def main():
     if not a.apply:
         for fmt in wanted:
             layout = engine.fit_layout(engine.layout_for(fmt, design), design,
-                                       manifest['scenes'])
+                                       manifest['scenes'], engine.detect()['font_file'])
             report['formats'].append({'ratio': fmt['ratio'], 'action': 'would-render',
                                       'width': fmt['width'], 'height': fmt['height'],
                                       'composition': layout['shape'],

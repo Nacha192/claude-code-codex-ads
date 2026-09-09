@@ -257,6 +257,24 @@ someone looking at it says the ad is worth money.
 
 ---
 
+## The same manifest gives the same bytes
+
+Two renders of an unchanged project produce identical files, and the hash written
+into the manifest is therefore a fact about the project rather than about one
+afternoon. Two things had to be fixed for that to be true, and neither was visible in
+any output:
+
+- **`gradients` defaults to `seed=-1`**, a new random gradient on every run. Seeds are
+  now derived from the scene id, so scenes still differ from each other while each one
+  repeats, and a manifest can pin its own.
+- **`sidechaincompress` reads two streams whose framing varies between runs.** The
+  compressor's state follows the frames it is handed, so the ducking diverged and the
+  audio encoded differently every time. Both sides are now cut to identical frames
+  first.
+
+The video encoder was never the problem. Every scene clip, the assembly and the burned
+captions were already byte-identical; it was the ducking underneath them.
+
 ## Resume
 
 `--resume` reuses the scene clips already on disk. Two rules make that safe:
@@ -316,10 +334,17 @@ Honest limits, stated once here rather than discovered late.
 - **It does not speak.** A voice comes from a speech tool or a person. The shipped
   fixture uses a synthetic tone named `voice-standin` precisely so nothing can mistake
   it for narration.
-- **Line breaking is estimated, not measured.** Advance widths are approximated from
-  the type size, conservatively. A face with unusual metrics will wrap earlier than
-  it needs to.
+- **Line breaking is measured, not estimated**, and this is the one place the engine
+  reads a file format itself: advance widths and the character map come out of the
+  `head`, `hhea`, `hmtx` and `cmap` tables of the actual face. Kerning is not applied,
+  deliberately, because `drawtext` does not apply it either. A face this cannot parse
+  falls back to an average-width estimate rather than failing, and that estimate is
+  poor: on ten capital I it reads 96% too wide, on ten m it reads 41% too narrow.
 - **No 3D, no particle systems, no shader effects.** Those need a different engine,
   and the adapter contract is how you reach one.
 - **Rendering costs minutes, not seconds**, and it scales with format count and
   duration. `--resume` exists for that reason.
+- **What it does not decide is whether the ad is any good.** The validator now
+  measures contrast, caption reading rate and whether the first second carries
+  anything readable, because those are arithmetic. Everything past that is
+  [creative QA](creative-qa.md), run by a person looking at the contact sheet.
