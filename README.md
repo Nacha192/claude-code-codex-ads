@@ -44,7 +44,7 @@ Inside `system/src/`, `common/` is what every pack receives, `static/` and `moti
 
 ## Install
 
-Follow [install-guide.md](system/install-guide.md), or download one ZIP and extract its folder into your skill directory. Existing users should read the [migration notes](system/MIGRATION.md), because this release renames the repository and adds the four video packs.
+Follow [install-guide.md](system/install-guide.md), or download one ZIP and extract its folder into your skill directory. Existing users should read the [migration notes](system/MIGRATION.md), which record what changed in each release and, for every defect found, what it was and how it was caught.
 
 ```sh
 python system/install.py --runtime codex --scope static --apply
@@ -73,7 +73,37 @@ Only in the video packs: **a production system**, not a strategy document. An
 eight-phase contract from a rough idea to inspected files, one `motion-project.json`
 holding the whole job, an art-direction chooser across twelve directions instead of a
 house style, per-ratio compositions, a correction loop capped at three passes, real
-filming when that beats generating, and two scripts that decide rather than advise.
+filming when that beats generating, and scripts that decide rather than advise.
+
+### A reference engine is supplied, and it runs
+
+```console
+python scripts/make_fixture_assets.py --out fixtures
+python scripts/render_motion.py examples/motion-project.render.json --root . --apply --contact-sheet
+```
+
+Those two commands ship inside every video pack and they are the ones this repository
+is tested with. The second turns a manifest into finished files: one composition per
+ratio, a contact sheet and control frames beside each export, and the manifest updated
+from what was actually written rather than from what was planned. Python and FFmpeg
+only. **No JavaScript, no Node, no account, no network.**
+
+The shipped sixteen second fixture renders 1080x1920, 1080x1350 and 1920x1080, 480
+frames each at 30 fps, measured at -14.0 LUFS by the decoder rather than claimed by the
+renderer. The three are three compositions and not one crop: the portrait puts the
+picture across the top two fifths with the copy beneath, the landscape is two columns
+with the copy in the left one, and each ratio can override the safe zones the grid
+gives it. Rendering the same manifest twice produces the same bytes. An interrupted run
+resumes by counting the frames of the clips it already has, so a half written one is
+rebuilt and a finished one is not.
+
+Before drawing anything it checks what the machine can actually do and refuses by name
+rather than shipping something broken. Homebrew's ffmpeg on macOS carries libx264 and
+aac and no libfreetype, so `drawtext` does not exist: the run stops with exit 3 naming
+the missing filters instead of delivering an ad at the right duration with none of the
+words in it.
+
+Then the two scripts that judge:
 
 ```console
 python scripts/check_motion_project.py motion-project.json --root .
@@ -82,7 +112,15 @@ python scripts/inspect_video.py out/ad-9x16.mp4 --expect-ratio 9:16 --expect-dur
 
 The first refuses a manifest that claims more than it can show: a state with no files,
 a claim with no source, a ratio the brief asked for that nobody composed, captions
-written from the script instead of the take, an engine that was assumed. The second
+written from the script instead of the take, an engine that was assumed. It also reads the parts
+nothing used to look at, and it separates what is wrong from what is risky. Text whose
+colour and ground the manifest both names is measured against WCAG: under 3:1 it is an
+error, under 4.5:1 a warning, and over a photograph nothing is claimed at all because
+nothing can be measured. A caption held under 0.6 seconds is an error, since it is gone
+before it is read. A caption over 42 characters or over 22 characters a second is a
+warning. A safe zone that is not a fraction of the frame is an error; one tighter than
+the floor for its ratio is a warning, and the floor is per ratio: 9:16 keeps 14% clear
+at the top and 20% at the bottom, 16:9 keeps 5% at each. The second
 decodes each export in full and measures duration, dimensions, ratio, sample aspect,
 frame rate, frame count, codec, bitrate, audio tracks, sample rate, loudness, true
 peak, clipping risk, head and tail silence, decode errors, black frames and frozen
@@ -94,7 +132,9 @@ for studying video that already runs, choosing and prompting a video model, voic
 including cloning the user's own with a consent record, music and sound design, and
 assembly.
 
-**The engine is not fixed.** JavaScript is never required. The packs detect eight
+**The supplied engine is the floor, not the ceiling.** The manifest names the engine it
+was rendered with, so a better renderer replaces the reference one without touching the
+rest of the job. JavaScript is never required. The packs detect eight
 capabilities and choose a pipeline from what is actually installed: a video model, a
 deterministic compositor such as Remotion or an FFmpeg filter graph, speech, music,
 captions, rendering, inspection and multi-format adaptation. When a capability is
@@ -142,5 +182,12 @@ python system/scripts/build.py
 python -m unittest discover -s system/tests -v
 python system/scripts/validate_release.py
 ```
+
+The suite is 158 tests and the three platforms do not run the same thing, which is
+stated rather than averaged into one green tick. Linux CI runs all 158 with a complete
+ffmpeg, and that is where the end to end render, the byte reproducibility and the
+interrupted resume are actually exercised. macOS collects 146 and skips 3, each
+printing `this ffmpeg cannot draw: missing filters: drawtext, subtitles`. Windows skips
+2 for a symlink privilege the account does not hold. A skip says why it skipped.
 
 [SAFETY.md](system/SAFETY.md) separates the rules a script actually enforces, each with the test that covers it, from the ones that depend on a model behaving well, and from the ones nothing here can enforce. The middle list is longer for video, because video touches consent and identity, and it is written out rather than glossed over. See [VALIDATION.md](system/VALIDATION.md) for the checks that were actually run, the cross-review scope and the known limits. Offline checks cannot prove source truth, aesthetic quality or provider access, and no live campaign or paid generation happens in the tests.
