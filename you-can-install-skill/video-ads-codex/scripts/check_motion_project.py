@@ -250,7 +250,7 @@ def check_safe_zones(ratio, zones, errors, warnings):
 LAYER_KINDS = {'image', 'video', 'text', 'shape'}
 # Fractions of the frame, so a layout survives being composed at three sizes. A value
 # outside this range is a pixel count somebody wrote in the wrong field.
-FRACTION = ['x', 'y', 'w', 'h', 'opacity', 'parallax', 'camera_amount', 'gap']
+FRACTION = ['x', 'y', 'w', 'h', 'opacity', 'parallax', 'camera_amount', 'gap', 'blur']
 
 
 def check_layers(scene, index, errors, asset_ids):

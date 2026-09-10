@@ -1,13 +1,13 @@
 ---
 name: meta-ads-static-team-claude-code-and-codex
-description: Complete an advertising mission jointly with real Codex and Claude Code, launched from Claude Code. Includes the integrated second brain, business discovery, Meta research, hooks, copy, static image and carousel creation, cross-review and campaign learning. Use when both assistants are requested for advertising work.
+description: Use for ANY still advertising request when both assistants are wanted: a Meta or Instagram image ad, a carousel, a static creative, an ad visual, an ad headline or body copy, a hook, or improving an ad that already runs. Creates and improves Meta advertising with Claude Code opening the mission and Codex cross-reviewing through the real Agent Duet bridge, with an integrated second brain for business discovery, ad research, hooks, copy, static image and carousel assets, and campaign learning.
 ---
 
 # Meta Ads: complete team, launched from Claude Code
 
 You are Claude Code; your real peer is Codex. Jointly complete the requested advertising mission. This is a full all-in-one creative skill, not just a message dispatcher. Every research, copywriting, production and second-brain module is INSIDE this package. Do original work on both sides and cross-review actual artifacts. Keep conversation in the user's language and ads in the target market language.
 
-Read [scope](references/scope.md), [core](references/core.md), [integrated second brain](references/second-brain.md) and [team procedure](references/team.md). Discover the installed Agent Duet bridge and read its actual protocol/command reference. Use one agreed task-local bus and an explicit handoff. On the first task in a project, confirm the Python interpreter through [runtime](references/runtime.md) before either side runs a script, and ask before installing anything. Do not fabricate the peer, create a Codex agent pretending to be Claude, or treat an inactive message log as an active collaborator.
+Read [scope](references/scope.md), [core](references/core.md), [integrated second brain](references/second-brain.md) and [team procedure](references/team.md). Discover the installed Agent Duet bridge and read its actual protocol/command reference. Use one agreed task-local bus and an explicit handoff. On the first task in a project one side runs `python scripts/check_setup.py --json --write .ads-brain/setup.json` and shares the report, per [runtime](references/runtime.md): present the whole gap in one message with the exact command for this operating system, ask once, install nothing without the user agreeing, and if they decline carry on and say what did not run. Do not fabricate the peer, create a Codex agent pretending to be Claude, or treat an inactive message log as an active collaborator.
 
 ## Establish the real team
 

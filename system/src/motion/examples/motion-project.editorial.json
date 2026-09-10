@@ -1,0 +1,362 @@
+{
+  "schema_v": "1.0.0",
+  "kind": "motion_project",
+  "state": "planned",
+  "slug": "ressemelage-quatorze-jours",
+  "brief": {
+    "offer": "Ressemelage cousu de chaussures de ville, 89 euros, rendu en 14 jours, envoi prepaye dans les deux sens",
+    "audience": "Cadres qui possedent deux ou trois paires cousues usees et n'ont pas de cordonnier attitre",
+    "objective": "Envois de paires a l'atelier",
+    "market": "FR",
+    "ad_language": "fr-FR",
+    "cta_destination": "https://example.invalid/envoyer",
+    "duration_seconds": 15,
+    "formats": ["9:16", "4:5", "16:9"],
+    "brand_constraints": "Fond clair, une seule famille typographique, un seul accent colore, aucun visage",
+    "channel": "Meta feed et reels"
+  },
+  "assumptions": [
+    {
+      "field": "direction artistique",
+      "value": "Editoriale claire : fond papier, encre sombre, un accent bordeaux, camera immobile",
+      "because": "La marque interdit le fond sombre et demande la lisibilite d'une page imprimee plutot que l'energie",
+      "changes_if_wrong": "La palette et l'echelle typographique changent dans le bloc design, les scenes ne bougent pas"
+    },
+    {
+      "field": "voix",
+      "value": "Fichier de substitution synthetique, genere localement",
+      "because": "Cet exemple doit se rendre sur une machine nue, sans fournisseur de synthese vocale branche",
+      "changes_if_wrong": "Une vraie prise remplace le fichier et les sous-titres sont refaits depuis elle"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "user_stated",
+      "source": "Brief annonceur du 20 aout 2026, grille tarifaire et conditions d'expedition jointes",
+      "supports": "Le ressemelage cousu est a 89 euros et l'envoi est prepaye dans les deux sens"
+    },
+    {
+      "id": "E2",
+      "type": "measurement",
+      "source": "Export atelier des paires rendues, janvier a aout 2026",
+      "supports": "1 208 paires sur 1 240 rendues en 14 jours ou moins"
+    }
+  ],
+  "claims": [
+    { "text": "Le ressemelage cousu est a 89 euros, envoi prepaye compris", "proof_ids": ["E1"] },
+    { "text": "1 208 paires sur 1 240 rendues en 14 jours ou moins", "proof_ids": ["E2"] }
+  ],
+  "creative_lock": {
+    "insight": "On ne jette pas une paire cousue parce qu'elle est finie, on la jette parce qu'on ne sait pas ou l'envoyer",
+    "problem": "Le cordonnier de quartier a ferme et personne ne sait combien coute un ressemelage",
+    "angle": "La semelle est une piece d'usure, pas la fin de la chaussure",
+    "promise": "Vous savez le prix et la date avant d'emballer",
+    "mechanism": "Ressemelage cousu, prix unique, envoi prepaye dans les deux sens",
+    "proof": "1 208 paires sur 1 240 rendues en 14 jours ou moins",
+    "objection": "Ca va couter plus cher que des chaussures neuves",
+    "cta": "Envoyez vos chaussures, l'etiquette est fournie",
+    "register": "Editorial et sobre, proche d'une notice, aucune exclamation",
+    "emotion": "Le soulagement de ne pas avoir a racheter",
+    "hook": "Vos semelles sont mortes. Vos chaussures, non.",
+    "reason_to_keep_watching": "Le spectateur veut savoir combien, et le chiffre arrive au deuxieme plan",
+    "payoff": "Le meme chiffre revient a la fin, a cote du bouton"
+  },
+  "hooks_considered": [
+    {
+      "text": "Vos semelles sont mortes. Vos chaussures, non.",
+      "scores": {
+        "specificity": 8,
+        "speed_of_understanding": 9,
+        "audience_fit": 9,
+        "tension": 8,
+        "continuity_with_payoff": 8,
+        "credibility": 8,
+        "first_frame_strength": 9
+      },
+      "selected": true,
+      "why": "Deux propositions courtes qui se contredisent, lisibles a taille de vignette sur fond clair"
+    },
+    {
+      "text": "Combien coute un ressemelage aujourd'hui ?",
+      "scores": {
+        "specificity": 3,
+        "speed_of_understanding": 7,
+        "audience_fit": 6,
+        "tension": 4,
+        "continuity_with_payoff": 4,
+        "credibility": 5,
+        "first_frame_strength": 3
+      },
+      "selected": false,
+      "why": "Une question que n'importe quel atelier pourrait poser, et le premier plan ne montre rien"
+    },
+    {
+      "text": "Ne rachetez pas, ressemelez.",
+      "scores": {
+        "specificity": 5,
+        "speed_of_understanding": 8,
+        "audience_fit": 7,
+        "tension": 5,
+        "continuity_with_payoff": 6,
+        "credibility": 6,
+        "first_frame_strength": 5
+      },
+      "selected": false,
+      "why": "Un ordre sans preuve, et l'objection du prix arrive avant l'argument"
+    }
+  ],
+  "script": {
+    "spoken": "Vos semelles sont mortes. Vos chaussures, non. Ressemelage cousu, quatre-vingt-neuf euros, transport compris dans les deux sens. Sur mille deux cent quarante paires cette annee, mille deux cent huit sont reparties en quatorze jours ou moins. L'etiquette d'envoi est fournie. Envoyez vos chaussures.",
+    "words": 48,
+    "written_for": "spoken"
+  },
+  "design": {
+    "palette": {
+      "ink": "0x1B1B1B",
+      "paper": "0xF4F0E8",
+      "accent": "0x6E1A24",
+      "muted": "0x554F47",
+      "support": "0xCFC4B4"
+    },
+    "type": {
+      "family_preference": ["Inter", "Helvetica", "Arial", "DejaVu Sans"],
+      "scale": { "display": 0.055, "title": 0.036, "body": 0.024, "caption": 0.028 },
+      "leading": 1.15
+    },
+    "motion": { "enter_seconds": 0.28, "ease": "ease_out", "camera_amount": 0.04 },
+    "grid": { "margin": 0.09, "safe_top": 0.12, "safe_bottom": 0.18 }
+  },
+  "scenes": [
+    {
+      "id": "e1",
+      "start": 0,
+      "end": 3.0,
+      "role": "hook",
+      "narration": "Vos semelles sont mortes. Vos chaussures, non.",
+      "measured_voice_seconds": 2.5,
+      "on_screen": "Deux lignes qui se contredisent, la seconde en accent",
+      "composition": "Plan arriere clair et flou sur tout le cadre, panneau net pose dans la region media, texte dessous",
+      "subject": "La contradiction, lisible en une seconde",
+      "primary_motion": "La seconde ligne arrive apres la premiere",
+      "secondary_motion": "Le panneau net derive lentement sur le plan flou",
+      "transition": "cut",
+      "assets": ["e-plate", "e-object"],
+      "sound": "Nappe seule",
+      "reframing": "En 16:9 les deux lignes tiennent la colonne gauche",
+      "legibility_risk": "Encre sombre sur papier clair, aucun risque de contraste",
+      "acceptance": "Les deux lignes sont lues avant la coupe",
+      "background": { "kind": "solid", "colour": "0xF4F0E8" },
+      "layers": [
+        { "kind": "video", "asset": "e-plate", "x": 0, "y": 0, "w": 1, "h": 1, "camera": "none", "blur": 0.011 },
+        { "kind": "image", "asset": "e-object", "camera": "none", "parallax": 0.012 },
+        { "kind": "text", "role": "display", "content": "Vos semelles sont mortes.", "at": 0.1, "enter": "rise", "colour": "ink" },
+        { "kind": "text", "role": "display", "content": "Vos chaussures, non.", "at": 0.7, "enter": "rise", "colour": "accent" }
+      ]
+    },
+    {
+      "id": "e2",
+      "start": 3.0,
+      "end": 6.2,
+      "role": "mechanism",
+      "narration": "Ressemelage cousu, quatre-vingt-neuf euros, transport compris dans les deux sens.",
+      "measured_voice_seconds": 2.8,
+      "on_screen": "Le prix, puis ce qu'il couvre",
+      "composition": "Le chiffre au-dessus, la regle en dessous, le panneau net toujours dans la region media",
+      "subject": "Le prix unique",
+      "primary_motion": "Le chiffre se pose",
+      "secondary_motion": "Poussee tres lente sur le panneau",
+      "transition": "wipe",
+      "transition_seconds": 0.3,
+      "assets": ["e-plate", "e-object"],
+      "sound": "Frappe d'accent sur la pose du chiffre",
+      "reframing": "En 4:5 l'echelle du chiffre baisse pour tenir sur une ligne",
+      "legibility_risk": "Aucun, le texte ne passe jamais sur le panneau",
+      "acceptance": "Le chiffre est lu avant la regle",
+      "background": { "kind": "solid", "colour": "0xF4F0E8" },
+      "layers": [
+        { "kind": "video", "asset": "e-plate", "x": 0, "y": 0, "w": 1, "h": 1, "camera": "none", "blur": 0.011 },
+        { "kind": "image", "asset": "e-object", "camera": "push", "camera_amount": 0.04 },
+        { "kind": "text", "role": "display", "content": "89 EUR", "at": 0.1, "enter": "rise", "colour": "ink" },
+        { "kind": "shape", "role": "rule", "colour": "accent", "at": 0.45 },
+        { "kind": "text", "role": "body", "content": "Ressemelage cousu, transport compris dans les deux sens.", "at": 0.8, "enter": "fade", "colour": "muted" }
+      ]
+    },
+    {
+      "id": "e3",
+      "start": 6.2,
+      "end": 9.4,
+      "role": "proof",
+      "narration": "Sur mille deux cent quarante paires cette annee, mille deux cent huit sont reparties en quatorze jours ou moins.",
+      "measured_voice_seconds": 2.9,
+      "on_screen": "Le delai, puis le compte exact",
+      "composition": "Le delai en display, le compte en corps sous la regle",
+      "subject": "Le delai tenu, chiffre",
+      "primary_motion": "Le delai arrive, la regle se pose ensuite",
+      "secondary_motion": "Le panneau derive dans l'autre sens",
+      "transition": "wipe",
+      "transition_seconds": 0.3,
+      "assets": ["e-plate", "e-object"],
+      "sound": "Frappe d'accent sur la regle",
+      "reframing": "En 16:9 le compte passe sur deux lignes dans la colonne gauche",
+      "legibility_risk": "Aucun, encre et accent sur papier",
+      "acceptance": "Le compte est lu en entier",
+      "background": { "kind": "solid", "colour": "0xF4F0E8" },
+      "layers": [
+        { "kind": "video", "asset": "e-plate", "x": 0, "y": 0, "w": 1, "h": 1, "camera": "none", "blur": 0.013 },
+        { "kind": "image", "asset": "e-object", "camera": "none", "parallax": 0.016 },
+        { "kind": "text", "role": "display", "content": "14 jours", "at": 0.1, "enter": "rise", "colour": "ink" },
+        { "kind": "shape", "role": "rule", "colour": "accent", "at": 0.5 },
+        { "kind": "text", "role": "body", "content": "1 208 paires sur 1 240 rendues en 14 jours ou moins.", "at": 0.85, "enter": "fade", "colour": "muted" }
+      ]
+    },
+    {
+      "id": "e4",
+      "start": 9.4,
+      "end": 12.2,
+      "role": "objection",
+      "narration": "L'etiquette d'envoi est fournie.",
+      "measured_voice_seconds": 2.4,
+      "on_screen": "L'objection du transport, repondue",
+      "composition": "Deux lignes courtes, la seconde en accent, le panneau net a peine visible derriere",
+      "subject": "Ce que le client ne paie pas",
+      "primary_motion": "Les deux lignes arrivent decalees",
+      "secondary_motion": "Le plan arriere se resserre",
+      "transition": "dissolve",
+      "transition_seconds": 0.35,
+      "assets": ["e-plate", "e-object"],
+      "sound": "Nappe seule",
+      "reframing": "En 4:5 les deux lignes restent sur deux lignes",
+      "legibility_risk": "Aucun",
+      "acceptance": "La reponse a l'objection est lue avant l'appel",
+      "background": { "kind": "solid", "colour": "0xF4F0E8" },
+      "layers": [
+        { "kind": "video", "asset": "e-plate", "x": 0, "y": 0, "w": 1, "h": 1, "camera": "none", "blur": 0.016 },
+        { "kind": "image", "asset": "e-object", "camera": "none", "parallax": 0.008 },
+        { "kind": "text", "role": "title", "content": "L'etiquette d'envoi", "at": 0.1, "enter": "slide", "colour": "ink" },
+        { "kind": "text", "role": "title", "content": "est fournie.", "at": 0.5, "enter": "slide", "colour": "accent" }
+      ]
+    },
+    {
+      "id": "e5",
+      "start": 12.2,
+      "end": 15.0,
+      "role": "cta",
+      "narration": "Envoyez vos chaussures.",
+      "measured_voice_seconds": 2.4,
+      "on_screen": "Le chiffre revient, l'appel dessous",
+      "composition": "Le prix et l'appel, panneau net centre dans la region media",
+      "subject": "L'action",
+      "primary_motion": "L'appel arrive apres le chiffre",
+      "secondary_motion": "Poussee tres lente",
+      "transition": "cut",
+      "assets": ["e-plate", "e-object"],
+      "sound": "Frappe d'accent sur l'appel",
+      "reframing": "En 16:9 l'appel reste sous le chiffre dans la colonne gauche",
+      "legibility_risk": "Aucun",
+      "acceptance": "Le chiffre et l'appel sont lus ensemble",
+      "background": { "kind": "solid", "colour": "0xF4F0E8" },
+      "layers": [
+        { "kind": "video", "asset": "e-plate", "x": 0, "y": 0, "w": 1, "h": 1, "camera": "none", "blur": 0.011 },
+        { "kind": "image", "asset": "e-object", "camera": "push", "camera_amount": 0.03 },
+        { "kind": "text", "role": "display", "content": "89 EUR", "at": 0.1, "enter": "rise", "colour": "ink" },
+        { "kind": "shape", "role": "rule", "colour": "accent", "at": 0.4 },
+        { "kind": "text", "role": "title", "content": "Envoyer mes chaussures", "at": 0.7, "enter": "rise", "colour": "accent" },
+        { "kind": "text", "role": "body", "content": "Le prix et la date s'affichent avant de confirmer.", "at": 1.2, "enter": "fade", "colour": "muted" }
+      ]
+    }
+  ],
+  "voice": {
+    "archetype": "Voix posee, debit lent, aucune emphase commerciale",
+    "source": "fixture_synthetic_standin",
+    "provider": "aucun, fichier genere localement par make_fixture_assets.py",
+    "file": "fixtures/voice-standin.wav",
+    "measured_total_seconds": 13.0,
+    "rights": "Synthetique, genere localement, aucun tiers concerne",
+    "note": "Fichier de substitution pour que l'exemple se rende sur une machine nue. Ce n'est pas une prise de voix et rien ici ne doit le presenter comme telle."
+  },
+  "captions": {
+    "derived_from": "final_take",
+    "style": "Deux a quatre mots par bloc, tiers bas, au-dessus de la zone d'interface",
+    "colour": "ink",
+    "outline": "paper",
+    "cues": [
+      { "start": 0.2, "end": 1.5, "text": "vos semelles sont mortes" },
+      { "start": 1.6, "end": 2.9, "text": "vos chaussures, non" },
+      { "start": 3.2, "end": 4.6, "text": "ressemelage cousu" },
+      { "start": 4.7, "end": 6.1, "text": "89 euros, transport inclus" },
+      { "start": 6.4, "end": 7.8, "text": "14 jours" },
+      { "start": 7.9, "end": 9.3, "text": "tenus 1 208 fois sur 1 240" },
+      { "start": 9.6, "end": 11.0, "text": "l'etiquette est fournie" },
+      { "start": 11.1, "end": 12.6, "text": "vous ne payez pas le transport" },
+      { "start": 12.8, "end": 14.9, "text": "envoyer mes chaussures" }
+    ]
+  },
+  "music": {
+    "track": "Nappe synthetique generee localement pour l'exemple",
+    "file": "fixtures/music-bed.wav",
+    "gain_db": -21,
+    "rights": "Synthetique, genere localement, aucune licence tierce",
+    "ducking": "Compresseur en chaine laterale pilote par la voix, la nappe remonte dans les silences"
+  },
+  "sfx": [
+    { "at": 3.45, "what": "Frappe d'accent sur la pose du chiffre", "file": "fixtures/accent-hit.wav", "gain_db": -15, "rights": "Synthetique, genere localement" },
+    { "at": 6.7, "what": "Frappe d'accent sur la regle", "file": "fixtures/accent-hit.wav", "gain_db": -16, "rights": "Synthetique, genere localement" },
+    { "at": 12.9, "what": "Frappe d'accent sur l'appel", "file": "fixtures/accent-hit.wav", "gain_db": -15, "rights": "Synthetique, genere localement" }
+  ],
+  "assets": [
+    { "id": "e-plate", "path": "fixtures/plate-linen.mp4", "rights": "Synthetique, genere localement par make_fixture_assets.py", "identifiable_person": false },
+    { "id": "e-object", "path": "fixtures/object-still.png", "rights": "Synthetique, genere localement par make_fixture_assets.py", "identifiable_person": false }
+  ],
+  "loudness_target": {
+    "value": -14,
+    "unit": "LUFS",
+    "true_peak": -1.5,
+    "lra": 11,
+    "source": "Cible declaree par l'annonceur pour ce placement, alignee sur ses autres diffusions"
+  },
+  "engine": {
+    "kind": "deterministic_composition",
+    "name": "ffmpeg-python-reference",
+    "version": "detecte a l'execution",
+    "detected": true,
+    "why": "Moteur de reference du pack : Python et FFmpeg, deja exiges, sans JavaScript ni dependance a installer"
+  },
+  "formats": [
+    {
+      "ratio": "9:16",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "composition": "Vertical plein cadre : plan arriere flou sur toute la surface, panneau net dans la region media haute, bloc typographique pose au tiers bas",
+      "safe_zones": { "top": 0.14, "bottom": 0.2, "left": 0.09, "right": 0.09 }
+    },
+    {
+      "ratio": "4:5",
+      "width": 1080,
+      "height": 1350,
+      "fps": 30,
+      "composition": "Feed vertical court : le panneau net occupe la moitie haute, le bloc typographique remonte et l'echelle d'affichage baisse pour tenir sans casse",
+      "safe_zones": { "top": 0.08, "bottom": 0.12, "left": 0.09, "right": 0.09 }
+    },
+    {
+      "ratio": "16:9",
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "composition": "Deux colonnes : la typographie tient la colonne gauche sur toute la hauteur, le panneau net occupe la colonne droite sur le plan arriere flou. Ce n'est pas le vertical recadre",
+      "safe_zones": { "top": 0.06, "bottom": 0.08, "left": 0.05, "right": 0.05 }
+    }
+  ],
+  "render": {
+    "commands": [
+      "python scripts/make_fixture_assets.py --out fixtures",
+      "python scripts/render_motion.py examples/motion-project.editorial.json --root . --apply --contact-sheet"
+    ],
+    "note": "Le meme moteur et le meme schema que motion-project.render.json. Ce qui change est le bloc design, la profondeur et les transitions. Si le look etait dans le code plutot que dans le manifeste, les deux sortiraient identiques."
+  },
+  "human_decisions_pending": [
+    "Remplacer le fichier de voix de substitution par une vraie prise, puis refaire les sous-titres depuis cette prise",
+    "Confirmer que la grille tarifaire du 20 aout 2026 est toujours celle qui s'applique"
+  ]
+}

@@ -1,5 +1,67 @@
 # Migration from the initial distribution
 
+## Version 4.4.0: a second art direction, and the two defects only an eye could find
+
+The engine had one shipped example and one look. A design system nobody has ever
+pointed somewhere else is an assumption, so a second one was written: light ground,
+dark ink, one cold accent, tighter leading, a static camera, a softened plane behind a
+sharp one. Same engine, same schema, same command. Rendering it found two defects that
+every automatic check in this repository had passed over.
+
+**Wrapped copy was written over by the block beneath it.** The layout measured a text
+block at 1.25 em per line. `drawtext` leads multi-line text at the font's own maximum
+glyph height plus `line_spacing`, which measures 2.50 em here, so a two-line block was
+twice the height it had been measured at. It was in the first example too, where the
+wrapped line happened to be the last in its stack and collided with nothing.
+
+It is not a constant to correct for: it comes out of the font binary and the ffmpeg
+build, so it differs per machine. Each line is now drawn on its own at a y the engine
+computes, and `type.leading` is a brand token like every other number in the design
+block. The test that covers it measures the drawn advance off the pixels at three
+different leadings, because a layout cannot know a font's glyph box by reasoning about
+it.
+
+**The captions ignored the palette.** White fill, hard-coded navy outline, whatever the
+brand said. On a dark direction nobody noticed. On a light one it is white type over
+cream, saved only by its outline. `captions.colour` and `captions.outline` read palette
+tokens now and default to what the old constants were.
+
+Depth arrives at the same time, in the one form ffmpeg does well: `blur` on a layer
+softens that plane before the camera moves through it, as a fraction of the frame
+height so one manifest reads the same at every size. It is a fixed focus, because
+`gblur` takes a number and not an expression, and a rack focus is therefore not
+available and not pretended at. Masks and real depth are still not here. FFmpeg has
+`alphamerge`, so they are not impossible; they are simply the work a compositor built
+for it does better, and the adapter contract is how you reach one.
+
+Both defects were found by rendering a film and looking at it. Neither would have been
+found by reading the code, and none of the 161 tests could see either one.
+
+### The first run now checks the whole machine, not only Python
+
+`runtime.md` used to verify one thing: is there an interpreter. Everything else was
+discovered when it failed, which for a renderer means halfway through a job with the
+brief written and nothing produced. `scripts/check_setup.py` ships in all eight packs
+and reports three states and never a fourth: **present**, **missing** with the exact
+command for this operating system, and **cannot be checked from a script**.
+
+That third state is the one that matters. A script sees a binary on PATH. It does not
+see whether an account has credits, a connector is authorised, or a site is logged in,
+so those are listed by name for the assistant to check in the session rather than
+guessed at. A pack that answers a question it cannot answer is how a capability gets
+promised and not delivered.
+
+It installs nothing, and a test reads its own source to make sure: one `subprocess`
+call, the ffmpeg version probe, and no package manager anywhere. The rule around it is
+the one that was already there for Python, now applied to everything: present the whole
+gap in one message, ask once, install only on a yes, and on a no record it and do the
+job anyway while saying plainly what did not run.
+
+The eight `description` fields were rewritten at the same time. They described what a
+pack does, which is not what decides whether it gets picked up; they now open with the
+requests they are for, so a video ad, a Reel, a TikTok script, a carousel or an ad
+headline reaches the right pack instead of being improvised without it.
+
 ## Version 4.3.2: `--root` was not the only thing deciding where files are
 
 An outside review ran the one shot from a directory that was not the project, with

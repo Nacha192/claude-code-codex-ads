@@ -29,7 +29,7 @@ TIMEOUT = 1800
 REQUIRED_FILTERS = ['color', 'gradients', 'drawtext', 'drawbox', 'overlay', 'zoompan',
                     'scale', 'crop', 'format', 'fps', 'xfade', 'subtitles', 'tile',
                     'amix', 'sidechaincompress', 'loudnorm', 'afade', 'adelay',
-                    'anullsrc', 'atrim', 'asplit', 'concat', 'tpad', 'asetnsamples']
+                    'anullsrc', 'atrim', 'asplit', 'concat', 'tpad', 'asetnsamples', 'gblur']
 # Ordered by preference. The first family whose file is found wins, so the look is
 # stable on a machine that has the brand face and degrades to a known fallback.
 FONT_PREFERENCE = ['Inter', 'Poppins', 'Montserrat', 'Helvetica', 'Arial',
@@ -378,6 +378,17 @@ def media_layer(index, layer, layout, seconds, fps, chains, last, assets):
     label = 'm%d' % index
     chain = ('[%d:v]scale=%d:%d:force_original_aspect_ratio=increase,'
              'crop=%d:%d,setsar=1' % (index, sw, sh, sw, sh))
+    # Depth, cheaply and honestly: a plane behind the subject is softened so the eye
+    # is told where to look. Sigma is a fraction of the frame height, not a pixel
+    # count, so one manifest reads the same at 1080 and at 1920 instead of being
+    # re-tuned per ratio. It is applied before the camera move, because a lens blurs
+    # the plane and the camera then travels through it, not the other way round.
+    #
+    # This is a fixed focus. `gblur` takes a number, not an expression, so a rack
+    # focus that pulls during the shot is not available here and is not pretended at.
+    softness = float(layer.get('blur', 0.0) or 0.0)
+    if softness > 0:
+        chain += ',gblur=sigma=%.2f' % max(0.1, min(120.0, softness * layout['height']))
     if kind in ('push', 'pull'):
         chain += (",zoompan=z='%s':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
                   "d=%d:s=%dx%d:fps=%d" % (expr(camera_zoom(kind, amount, frames)),
@@ -589,12 +600,13 @@ def stack_items(scene, layout, sizes, design):
             size = int(layer.get('size_px') or sizes.get(role, sizes['body']))
             wrapped = wrap_text(content, layout['text_width'], size, layout.get('font'))
             lines = wrapped.count('\n') + 1
-            # 1.25 em per line is what drawtext actually advances at the
-            # `line_spacing` set in text_chain. Change one without the other and this
-            # stops being a measurement: multi-line copy then eats the block below it.
+            # The same leading the drawing uses. It used to be a hard 1.25 here and
+            # whatever the font's glyph box happened to be over there, which measured
+            # 2.50 em: a wrapped block was written over by the one under it.
             items.append({'index': n, 'kind': 'text', 'size': size, 'content': wrapped,
                           'lead': int(size * float(layer.get('gap', 0.35))),
-                          'height': int(size * 1.25 * lines), 'trail': 0})
+                          'height': int(size * leading_of(design) * lines),
+                          'trail': 0})
         elif kind == 'shape':
             if 'y' in layer:
                 continue
@@ -659,8 +671,36 @@ def place_stack(scene, layout, design):
     return placed
 
 
+LEADING = 1.25
+
+
+def leading_of(design):
+    """Line height as a brand token, not as a property of the font binary.
+
+    `drawtext` advances multi-line text by the font's own maximum glyph height plus
+    `line_spacing`. Measured on this machine that is 2.50 em where the layout had
+    assumed 1.25, so a wrapped block was twice the height it had been measured at and
+    the copy underneath was written over. It is not a constant to correct either: it
+    comes out of the font file and the ffmpeg build, so it differs per machine.
+
+    Every line is drawn on its own now, at a y this engine computes. The leading is a
+    number the manifest sets, the measurement is right by construction, and a brand
+    that wants tight display type and airy body copy can say so.
+    """
+    value = (design.get('type') or {}).get('leading')
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
+        return LEADING
+    return value if 0.8 <= value <= 3.0 else LEADING
+
+
 def text_chain(layer, layout, design, font, work, key, seconds, chains, last, place=None):
-    """One typographic layer: real type scale, real entrance, real position."""
+    """One typographic layer: real type scale, real entrance, real position.
+
+    One `drawtext` per line rather than one per block. Multi-line drawtext leads at
+    the font's maximum glyph height, which no layout here can know in advance.
+    """
     role = layer.get('role', 'body')
     size = int(place['size'] if place else
                (layer.get('size_px') or layout['sizes'].get(role, layout['sizes']['body'])))
@@ -669,7 +709,6 @@ def text_chain(layer, layout, design, font, work, key, seconds, chains, last, pl
         return last
     if not place:
         content = wrap_text(content, layout['text_width'], size, font)
-    path = text_file(work, key, content)
     at = float(layer.get('at', 0.0))
     enter_for = float(layer.get('enter_seconds', design['motion']['enter_seconds']))
     ease = layer.get('ease', design['motion']['ease'])
@@ -679,30 +718,31 @@ def text_chain(layer, layout, design, font, work, key, seconds, chains, last, pl
     # A measured position, or the deliberate one-off the manifest asked for.
     y_px = place['y'] if place else int(float(layer['y']) * layout['height'])
     enter = layer.get('enter', 'rise')
-    if enter == 'rise':
-        rise = int(layout['height'] * 0.045)
-        y_option = "y='%s'" % expr(interpolate(y_px + rise, y_px, at, enter_for, ease))
-        alpha = expr(eased(at, enter_for, 'linear'))
-    elif enter == 'slide':
-        slide = int(layout['width'] * 0.10)
-        x_option = None
-        y_option = 'y=%d' % y_px
-        alpha = expr(eased(at, enter_for, 'linear'))
+    alpha = expr(eased(at, enter_for, 'linear'))
+    step = int(size * leading_of(design))
+    for n, line in enumerate(content.splitlines()):
+        if not line.strip():
+            continue
+        top = y_px + n * step
+        out = '%s_%d' % (key, n)
+        path = text_file(work, out, line)
+        if enter == 'rise':
+            rise = int(layout['height'] * 0.045)
+            x_option = 'x=%d' % x_px
+            y_option = "y='%s'" % expr(interpolate(top + rise, top, at, enter_for, ease))
+        elif enter == 'slide':
+            slide = int(layout['width'] * 0.10)
+            x_option = "x='%s'" % expr(interpolate(x_px - slide, x_px, at, enter_for, ease))
+            y_option = 'y=%d' % top
+        else:
+            x_option = 'x=%d' % x_px
+            y_option = 'y=%d' % top
         chains.append("[%s]drawtext=fontfile='%s':textfile='%s':expansion=none:"
-                      "fontcolor=%s:fontsize=%d:line_spacing=%d:x='%s':%s:alpha='%s'[%s]"
+                      "fontcolor=%s:fontsize=%d:%s:%s:alpha='%s'[%s]"
                       % (last, filter_path(font), filter_path(path), fill, size,
-                         int(size * 0.10),
-                         expr(interpolate(x_px - slide, x_px, at, enter_for, ease)),
-                         y_option, alpha, key))
-        return key
-    else:
-        y_option = 'y=%d' % y_px
-        alpha = expr(eased(at, enter_for, 'linear'))
-    chains.append("[%s]drawtext=fontfile='%s':textfile='%s':expansion=none:"
-                  "fontcolor=%s:fontsize=%d:line_spacing=%d:x=%d:%s:alpha='%s'[%s]"
-                  % (last, filter_path(font), filter_path(path), fill, size,
-                     int(size * 0.10), x_px, y_option, alpha, key))
-    return key
+                         x_option, y_option, alpha, out))
+        last = out
+    return last
 
 
 def shape_chain(layer, layout, design, key, chains, last, place=None):
@@ -880,7 +920,22 @@ def ass_time(seconds):
     return '%d:%02d:%05.2f' % (h, m, s)
 
 
-def write_ass(captions, layout, design, font_name, path):
+def ass_colour(design, name, default):
+    """A palette name to the &HAABBGGRR an ASS style wants.
+
+    The captions were the one part of the film that ignored the brand: white fill and
+    a hard-coded navy outline, whatever the palette said. On a light art direction
+    that is white type over cream, saved only by its outline.
+    """
+    value = colour(design, name, default)
+    try:
+        n = int(str(value).replace('0x', ''), 16)
+    except ValueError:
+        n = int(str(default).replace('0x', ''), 16)
+    return '&H00%02X%02X%02X' % (n & 0xFF, (n >> 8) & 0xFF, (n >> 16) & 0xFF)
+
+
+def write_ass(captions, layout, design, font_name, path, style=None):
     """Captions as a subtitle file, styled per format.
 
     Burned from the manifest's cues, which the validator already requires to come
@@ -888,6 +943,9 @@ def write_ass(captions, layout, design, font_name, path):
     safe area, so nothing lands under the platform's interface.
     """
     size = layout['sizes'].get('caption', 34)
+    style = style or {}
+    fill = ass_colour(design, style.get('colour', 'paper'), '0xFFFFFF')
+    edge = ass_colour(design, style.get('outline', 'ink'), '0x101820')
     margin_v = layout['safe_bottom']
     margin_l = layout['margin']
     margin_r = layout.get('margin_right', layout['margin'])
@@ -895,9 +953,9 @@ def write_ass(captions, layout, design, font_name, path):
             'PlayResX: %d\nPlayResY: %d\nScaledBorderAndShadow: yes\n\n'
             '[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, '
             'BackColour, Bold, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV\n'
-            'Style: Cap,%s,%d,&H00FFFFFF,&H00101820,&H80000000,-1,1,3,0,2,%d,%d,%d\n\n'
+            'Style: Cap,%s,%d,%s,%s,&H80000000,-1,1,3,0,2,%d,%d,%d\n\n'
             '[Events]\nFormat: Layer, Start, End, Style, Text\n'
-            % (layout['width'], layout['height'], font_name, size,
+            % (layout['width'], layout['height'], font_name, size, fill, edge,
                margin_l, margin_r, margin_v))
     rows = []
     for cue in captions or []:

@@ -185,7 +185,7 @@ def render_format(manifest, fmt, design, assets, root, work, resume, measured_lo
     captions = manifest.get('captions') or {}
     if captions.get('cues'):
         ass = engine.write_ass(captions['cues'], layout, design,
-                               Path(str(font)).stem, work / 'captions.ass')
+                               Path(str(font)).stem, work / 'captions.ass', captions)
         joined = engine.burn_captions(joined, ass, work / 'captioned.mp4', fmt)
     loud = manifest.get('loudness_target') or {}
     audio = engine.build_audio(manifest, assets, seconds, work, work / 'audio.m4a',

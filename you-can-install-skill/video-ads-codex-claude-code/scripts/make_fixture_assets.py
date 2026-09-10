@@ -46,6 +46,27 @@ def build(out):
     ff(['-f', 'lavfi', '-i', 'sine=frequency=1200:duration=0.25',
         '-af', 'afade=t=out:st=0.05:d=0.2,volume=0.6', '-ar', '48000', '-ac', '2',
         '-y', str(out / 'accent-hit.wav')], 'accent hit')
+
+    # The second art direction. One engine, one manifest schema, a palette and a type
+    # scale that are the opposite of the first: light ground, dark ink, a cold accent,
+    # a static camera. If the look were in the code rather than in the design block,
+    # these two would come out looking like each other, which is the whole point of
+    # shipping a second one.
+    ff(['-f', 'lavfi', '-i', 'gradients=s=1600x1600:c0=0xEDE7DC:c1=0xCFC4B4:'
+        'x0=100:y0=1500:x1=1500:y1=100:d=8:r=25:speed=0.03:seed=2101',
+        '-t', '8', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20',
+        '-pix_fmt', 'yuv420p', '-y', str(out / 'plate-linen.mp4')], 'linen plate')
+    # Hard geometry, not a gradient. A blur is only visible against something that has
+    # edges, so the plane meant to stay sharp is given edges to keep.
+    boxes = ','.join(
+        'drawbox=x=%d:y=%d:w=%d:h=%d:color=%s:t=fill' % b for b in (
+            (80, 90, 900, 26, '0x6E1A24'), (80, 150, 520, 26, '0x1B1B1B'),
+            (80, 300, 1040, 8, '0x1B1B1B'), (80, 380, 300, 300, '0x6E1A24'),
+            (430, 380, 690, 300, '0x1B1B1B'), (80, 740, 1040, 8, '0x1B1B1B'),
+            (80, 800, 700, 26, '0x1B1B1B'), (80, 860, 420, 26, '0x6E1A24')))
+    ff(['-f', 'lavfi', '-i', 'color=c=0xF4F0E8:s=1200x1000',
+        '-vf', boxes, '-frames:v', '1', '-y', str(out / 'object-still.png')],
+       'object still')
     return sorted(p.name for p in out.iterdir() if p.is_file())
 
 

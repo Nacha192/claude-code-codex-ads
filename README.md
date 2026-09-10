@@ -53,6 +53,13 @@ python system/install.py --runtime claude --scope motion --apply
 
 Without `--apply` it previews and writes nothing. Omit `--scope` to install both halves for that runtime.
 
+On the first task in a project, each pack runs `python scripts/check_setup.py`. It
+reports what is present, what is missing with the exact command for this operating
+system, and what no script can see at all, such as a connected image tool or an account
+with credits. It installs nothing: the assistant presents the whole gap in one message,
+asks once, installs only if you agree, and if you decline it records that and does the
+job anyway while saying plainly what did not run.
+
 The included checks are Python scripts and need Python 3.10 or newer. A pack installed from a ZIP verifies this on its first task in a project and asks before installing anything; without an interpreter it keeps working for research and copy and says plainly that the checks did not run. Optional capabilities are listed in [you-can-install-tools.md](system/you-can-install-tools.md). Provider subscriptions, credits and authenticated access are not included.
 
 ## What is inside
@@ -93,7 +100,12 @@ frames each at 30 fps, measured at -14.0 LUFS by the decoder rather than claimed
 renderer. The three are three compositions and not one crop: the portrait puts the
 picture across the top two fifths with the copy beneath, the landscape is two columns
 with the copy in the left one, and each ratio can override the safe zones the grid
-gives it. Rendering the same manifest twice produces the same bytes. An interrupted run
+gives it. **There are two shipped examples and they do not look alike**: a dark, warm,
+camera-driven direction, and a light editorial one with dark ink, one cold accent,
+tighter leading, a static camera and a softened plane behind a sharp one. Same engine,
+same schema, same command, and a test compares a frame from each because a design
+system nobody has pointed anywhere else is an assumption. Rendering the same manifest
+twice produces the same bytes. An interrupted run
 resumes by counting the frames of the clips it already has, so a half written one is
 rebuilt and a finished one is not.
 
@@ -183,10 +195,10 @@ python -m unittest discover -s system/tests -v
 python system/scripts/validate_release.py
 ```
 
-The suite is 161 tests and the three platforms do not run the same thing, which is
-stated rather than averaged into one green tick. Linux CI runs all 161 with a complete
+The suite is 173 tests and the three platforms do not run the same thing, which is
+stated rather than averaged into one green tick. Linux CI runs all 173 with a complete
 ffmpeg, and that is where the end to end render, the byte reproducibility and the
-interrupted resume are actually exercised. macOS collects 149 and skips 3, each
+interrupted resume are actually exercised. macOS collects 160 and skips 4, each
 printing `this ffmpeg cannot draw: missing filters: drawtext, subtitles`. Windows skips
 2 for a symlink privilege the account does not hold. A skip says why it skipped.
 

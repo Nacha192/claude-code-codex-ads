@@ -1,13 +1,13 @@
 ---
 name: video-ads-codex
-description: Create and improve video advertising as solo Codex, with an integrated second brain for business discovery, retention research on video that already runs, hooks, scripts, storyboards, voice, music, generation prompting, assembly and campaign learning. Use for one-assistant video ad work; use the team edition when both Codex and Claude Code are requested.
+description: Use for ANY video advertising request: a video ad, a Reel, a TikTok, Shorts or YouTube ad, a UGC script, an ad hook, a storyboard, a motion or animated ad, re-cutting an ad that already runs, or turning a product into a film. Creates and improves video advertising as solo Codex, from brief to inspected MP4 files at every requested ratio, with an integrated second brain for business discovery, retention research on video that already runs, hooks, scripts, storyboards, voice, music, generation prompting, assembly and campaign learning. One-assistant edition; use the team edition when both Codex and Claude Code are requested.
 ---
 
 # Video ads: Codex solo, all in one
 
 Own the requested video outcome from the brief to an inspected file, or to the exact point where a missing capability stops it, named rather than worked around. Every method below is an internal part of THIS skill, including the second brain. Do not auto-launch Claude Code or present a simulated peer review. Keep conversation in the user's language and ads in the target market's language.
 
-Read [scope](references/scope.md), [core](references/core.md) and [second brain](references/second-brain.md) first. Read other modules only for the current request. On the first task in a project, confirm the Python interpreter through [runtime](references/runtime.md): the included scripts need one, and proposing to install it is a question for the user, never a silent action.
+Read [scope](references/scope.md), [core](references/core.md) and [second brain](references/second-brain.md) first. Read other modules only for the current request. On the first task in a project run `python scripts/check_setup.py --json --write .ads-brain/setup.json` and follow [runtime](references/runtime.md). It installs nothing: it reports what is present, what is missing with the exact command for this operating system, and what no script can see at all, such as a connected tool or an account with credits. Present the whole gap in one message, ask once, install only if the user agrees, and if they decline record it and do the job anyway, saying plainly what did not run. A skipped check is not a passed check.
 
 ## First, find out what you can actually do
 

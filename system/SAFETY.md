@@ -110,6 +110,13 @@ measures something.
 | An asset path that leaves the project stops the render before anything is encoded | `test_an_asset_outside_the_project_is_refused` |
 | A sound path that leaves the project does the same. `voice.file`, `music.file` and `sfx[].file` skipped this check until 4.3.2, so a manifest could name a file anywhere on the machine and have it read into an ad | `test_a_sound_file_that_climbs_out_of_the_project_is_refused` |
 | Every declared file is resolved against `--root` and not against the working directory, so the one shot produces the same result from any directory | `test_the_one_shot_runs_from_a_directory_that_is_not_the_project` |
+| The leading the layout measures is the leading that gets drawn, measured off the pixels rather than assumed from a constant | `test_the_leading_the_layout_measures_is_the_leading_that_gets_drawn` |
+| Captions take their colours from the brand palette instead of a hard-coded white on navy | `test_the_captions_take_their_colours_from_the_palette` |
+| A second art direction renders as a visibly different film from the same engine and the same schema | `test_a_second_art_direction_is_a_different_film_from_the_same_engine` |
+| The first-run setup check installs nothing by itself; it prints the command and stops | `test_it_installs_nothing_on_its_own` |
+| It names what no script can see, such as an account or a connector, instead of guessing | `test_what_no_script_can_see_is_listed_rather_than_guessed` |
+| A build that encodes but cannot draw text is reported as missing, with the command that fixes it, and does not block the copy work | `test_a_machine_that_cannot_draw_is_reported_with_the_command_that_fixes_it` |
+| Every pack ships the setup check and every entrypoint tells the assistant to run it | `test_every_pack_ships_it_and_every_entrypoint_says_to_run_it` |
 | A render that fails partway reports it and says nothing was delivered, rather than printing a traceback under an exit status nobody chose | `test_a_render_that_fails_reports_instead_of_printing_a_traceback` |
 | A layer nothing can draw, a picture naming an asset that does not exist, text with nothing to say, a pixel count in a field that holds a fraction, or a layer starting after its own scene has ended | `test_a_layer_the_engine_cannot_draw_is_refused_before_rendering`, `test_a_picture_layer_must_name_an_asset_that_exists`, `test_a_text_layer_with_nothing_to_say_is_refused`, `test_a_pixel_value_in_a_fraction_field_is_refused`, `test_a_layer_cannot_start_after_its_own_scene_ends`, `test_layers_must_be_a_list`, `test_the_shipped_render_example_validates_on_its_own` |
 

@@ -153,8 +153,8 @@ produces the overlap.
 
 | Layer | Fields |
 |---|---|
-| `image` | `asset`, `fit`, `parallax`, and the scene camera applies to it |
-| `video` | `asset`, `fit`, `parallax`, trimmed to the scene |
+| `image` | `asset`, `fit`, `parallax`, `blur`, and the scene camera applies to it |
+| `video` | `asset`, `fit`, `parallax`, `blur`, trimmed to the scene |
 | `text` | `role` (`display`, `title`, `body`), `content`, `at`, `enter` (`rise`, `slide`, `fade`), `enter_seconds`, `ease`, `colour`, `gap`, and `size_px` or `x`/`y` for a deliberate one-off |
 | `shape` | `w`, `h`, `colour`, `opacity`, `grow`, `at` |
 
@@ -207,7 +207,8 @@ engine reads from it. Nothing is hard-coded to a look.
   "palette": {"ink": "0x101820", "paper": "0xF5F0E8", "accent": "0xF5A623",
               "muted": "0x8A97A3", "support": "0x2A4A6A"},
   "type": {"family_preference": ["Inter", "Poppins"],
-           "scale": {"display": 0.075, "title": 0.050, "body": 0.030, "caption": 0.034}},
+           "scale": {"display": 0.075, "title": 0.050, "body": 0.030, "caption": 0.034},
+           "leading": 1.25},
   "motion": {"enter_seconds": 0.45, "ease": "ease_out", "camera_amount": 0.10},
   "grid": {"margin": 0.075, "safe_top": 0.10, "safe_bottom": 0.16}
 }
@@ -215,7 +216,25 @@ engine reads from it. Nothing is hard-coded to a look.
 
 Layers name a palette token, not a hex value, so a brand change is one block. A token
 that does not exist falls back to a stated default rather than rendering an invisible
-line.
+line. Captions read the palette too, through `captions.colour` and `captions.outline`,
+which default to `paper` on `ink`. They were the one part of the film that did not,
+and a light art direction is where that shows.
+
+**`leading` is line height, and it is a number this engine controls.** Each line of a
+wrapped block is drawn on its own at a position the layout computes. It is not how it
+used to work: multi-line text was handed to `drawtext`, which leads at the font's own
+maximum glyph height plus `line_spacing`. That measured 2.50 em where the layout had
+assumed 1.25, so a wrapped block was twice the height it had been measured at and the
+copy under it was written over. It is not a constant to correct for either, since it
+comes out of the font binary and the ffmpeg build.
+
+**There are two shipped examples, and that is the point.**
+`examples/motion-project.render.json` is a dark, warm, camera-driven direction.
+`examples/motion-project.editorial.json` is its opposite: light ground, dark ink, one
+cold accent, tighter leading, a static camera, a softened plane behind a sharp one.
+Same engine, same schema, same command. A design system nobody has pointed anywhere
+else is an assumption, so this one is pointed somewhere else and a test compares the
+two films to make sure they did not come out looking alike.
 
 ---
 
@@ -351,8 +370,15 @@ Honest limits, stated once here rather than discovered late.
   deliberately, because `drawtext` does not apply it either. A face this cannot parse
   falls back to an average-width estimate rather than failing, and that estimate is
   poor: on ten capital I it reads 96% too wide, on ten m it reads 41% too narrow.
-- **No 3D, no particle systems, no shader effects.** Those need a different engine,
-  and the adapter contract is how you reach one.
+- **Depth is a blur, and nothing more.** `blur` on a layer softens that plane before
+  the camera moves through it, as a fraction of the frame height so one manifest
+  reads the same at 1080 and at 1920. It is a fixed focus: `gblur` takes a number,
+  not an expression, so a rack focus that pulls during the shot is not available
+  here and is not pretended at. There is no depth map and no bokeh.
+- **No masks, no 3D, no particle systems, no shader effects.** FFmpeg has
+  `alphamerge`, so a matte is not impossible; this engine simply does not expose
+  one, and the honest place for that work is a compositor built for it. The
+  adapter contract is how you reach one.
 - **Rendering costs minutes, not seconds**, and it scales with format count and
   duration. `--resume` exists for that reason.
 - **What it does not decide is whether the ad is any good.** The validator now

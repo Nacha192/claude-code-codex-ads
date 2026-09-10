@@ -574,6 +574,98 @@ class BuildDeterminismTests(unittest.TestCase):
   self.assertEqual(bad,[],'cache or temporary files in the published packs')
 
 
+class SetupCheckTests(unittest.TestCase):
+ """The first-run check: what this machine can do, before the job rather than during."""
+ def pack(self,name):
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  root=Path(box.name)
+  shutil.copytree(ROOT/'you-can-install-skill'/name/'scripts',root/'scripts',
+                  ignore=shutil.ignore_patterns('__pycache__'))
+  return root
+ def run_check(self,root,extra=None):
+  r=subprocess.run([sys.executable,'scripts/check_setup.py','--json']+(extra or []),
+                   cwd=str(root),capture_output=True,text=True)
+  return r,json.loads(r.stdout)
+ def test_a_still_pack_is_not_asked_for_a_renderer_it_does_not_use(self):
+  root=self.pack('meta-ads-static-codex')
+  r,data=self.run_check(root)
+  self.assertEqual(r.returncode,0,r.stdout+r.stderr)
+  self.assertEqual(data['render']['status'],'not_needed')
+  self.assertEqual(data['verdict'],'ready')
+ def test_a_video_pack_reports_the_renderer_it_actually_found(self):
+  root=self.pack('video-ads-codex')
+  _r,data=self.run_check(root)
+  self.assertIn(data['render']['status'],('ok','missing'))
+  if data['render']['status']=='ok':
+   self.assertTrue(data['render']['ffmpeg'])
+   self.assertTrue(data['render']['freetype'])
+   self.assertEqual(data['render']['missing_filters'],[])
+   self.assertEqual(data['verdict'],'ready')
+  else:
+   self.assertTrue(data['render'].get('why'),'it called it missing and did not say why')
+   self.assertIn('ffmpeg',data['install'],'it named a gap and no way to close it')
+ def test_what_no_script_can_see_is_listed_rather_than_guessed(self):
+  """A script sees a binary on PATH. It does not see whether an account has credits
+  or a connector is authorised, and inventing an answer there is how a pack promises
+  a capability it does not have."""
+  root=self.pack('video-ads-codex')
+  _r,data=self.run_check(root)
+  names={item['name'] for item in data['cannot_be_checked_from_a_script']}
+  for expected in ('Image generation','Speech provider','Video model',
+                   'Meta Ad Library','Meta Marketing API or MCP'):
+   self.assertIn(expected,names)
+  for item in data['cannot_be_checked_from_a_script']:
+   self.assertTrue(item['why'].strip());self.assertTrue(item['how'].strip())
+ def test_it_installs_nothing_on_its_own(self):
+  """It prints the command. Installing software changes the user's machine and a
+  skill has no standing authorization to do that."""
+  source=(BUILD/'src/common/scripts/check_setup.py').read_text(encoding='utf-8')
+  for forbidden in ('subprocess.run([\'winget','subprocess.run([\'brew',
+                    'subprocess.run([\'apt','os.system(','check_call('):
+   self.assertNotIn(forbidden,source,'it runs an installer itself: '+forbidden)
+  calls=[l for l in source.splitlines() if 'subprocess.run' in l]
+  self.assertEqual(len(calls),1,'the only shell it runs is the ffmpeg version probe')
+  self.assertIn('-version',source)
+ def test_a_machine_that_cannot_draw_is_reported_with_the_command_that_fixes_it(self):
+  """The macOS case: libx264 and aac present, libfreetype absent, so every encode
+  succeeds and no character can be put on screen."""
+  root=self.pack('video-ads-codex')
+  spec=importlib.util.spec_from_file_location('setup_probe',root/'scripts/check_setup.py')
+  mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+  crippled={'ffmpeg':'/opt/homebrew/bin/ffmpeg','ffprobe':'/opt/homebrew/bin/ffprobe',
+            'freetype':False,'missing_filters':['drawtext','subtitles'],'fonts':370,
+            'font_file':'/System/Library/Fonts/Helvetica.ttc','usable':False,
+            'encoders':{'libx264':True,'aac':True},
+            'reason':'missing filters: drawtext, subtitles; ffmpeg built without '
+                     'libfreetype, so no text can be drawn'}
+  fake=type('M',(),{'detect':staticmethod(lambda:crippled)})
+  with unittest.mock.patch.object(mod,'engine_module',return_value=fake):
+   data=mod.report()
+  self.assertEqual(data['render']['status'],'missing')
+  self.assertIn('libfreetype',data['render']['why'])
+  self.assertIn('ffmpeg',data['missing'])
+  self.assertIn('ffmpeg',data['install'])
+  self.assertTrue(data['install']['ffmpeg']['command'])
+  self.assertIn('libfreetype',data['install']['ffmpeg']['note'])
+  self.assertEqual(data['verdict'],'partial',
+                   'a missing renderer is not a blocked project: the copy still gets written')
+  text=mod.human(data)
+  self.assertIn('MISSING',text)
+  self.assertIn('Ask before running',text)
+ def test_the_report_can_be_written_where_the_next_session_will_find_it(self):
+  root=self.pack('video-ads-codex')
+  r,_d=self.run_check(root,['--write','.ads-brain/setup.json'])
+  written=root/'.ads-brain/setup.json'
+  self.assertTrue(written.is_file(),r.stdout+r.stderr)
+  self.assertEqual(json.loads(written.read_text(encoding='utf-8'))['schema_v'],'1.0.0')
+ def test_every_pack_ships_it_and_every_entrypoint_says_to_run_it(self):
+  for name in sorted(p.name for p in (ROOT/'you-can-install-skill').iterdir() if p.is_dir()):
+   script=ROOT/'you-can-install-skill'/name/'scripts/check_setup.py'
+   self.assertTrue(script.is_file(),name+' ships no setup check')
+   entry=(ROOT/'you-can-install-skill'/name/'SKILL.md').read_text(encoding='utf-8')
+   self.assertIn('scripts/check_setup.py',entry,name+' never tells anyone to run it')
+
+
 class MotionEngineTests(unittest.TestCase):
  """The engine's decisions, checked without rendering anything: what it would draw."""
  def manifest(self):return json.loads(RENDER_EXAMPLE.read_text(encoding='utf-8'))
@@ -583,6 +675,85 @@ class MotionEngineTests(unittest.TestCase):
  def layouts(self):
   d=self.design();m=self.manifest()
   return {f['ratio']:engine.fit_layout(engine.layout_for(f,d),d,m['scenes']) for f in m['formats']}
+ @unittest.skipUnless(RENDERABLE,'this ffmpeg cannot draw: '+WHY_NOT)
+ def test_the_leading_the_layout_measures_is_the_leading_that_gets_drawn(self):
+  """Measured off the pixels, because the layout cannot know the font's glyph box.
+
+  `drawtext` leads multi-line text at the font's own maximum glyph height plus
+  `line_spacing`. That measured 2.50 em here where the layout had assumed 1.25, so a
+  wrapped block was twice the height it had been measured at and the copy underneath
+  was written over. Every line is drawn on its own now, at a y the engine computes."""
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  work=Path(box.name);font=engine.detect()['font_file']
+  W,H=1400,1100
+  for leading in (1.15,1.25,1.6):
+   design=copy.deepcopy(self.design());design['type']['leading']=leading
+   layout=engine.fit_layout(engine.layout_for(self.fmt('9:16'),design),
+                            design,self.manifest()['scenes'],font)
+   layout=dict(layout,width=W,height=H,text_x=40,text_width=W-80)
+   size=90
+   chains=[];last='bg'
+   engine.text_chain({'kind':'text','role':'body','content':'Ag Ag Ag Ag Ag Ag Ag Ag Ag Ag Ag Ag',
+                      'at':0,'enter':'fade','colour':'0xFFFFFF','size_px':size,'y':0.08},
+                     layout,design,font,work,'t%d'%int(leading*100),1.0,chains,last)
+   graph=';'.join(['[0:v]format=rgba,fps=25[bg]']+chains)
+   out=chains[-1].rsplit('[',1)[1].rstrip(']')
+   p=subprocess.run(['ffmpeg','-hide_banner','-v','error','-f','lavfi','-i',
+                     'color=c=black:s=%dx%d:d=1:r=25'%(W,H),'-filter_complex',graph,
+                     '-map','[%s]'%out,'-frames:v','25','-pix_fmt','gray','-f','rawvideo','-'],
+                    capture_output=True)
+   # The last frame, not the first: every entrance animates alpha from zero, so the
+   # frame at t=0 is a correct layout drawn completely transparent.
+   raw=p.stdout[-W*H:]
+   self.assertGreaterEqual(len(raw),W*H,(p.stderr or b'').decode('utf-8','replace')[-400:])
+   bands=[];start=None
+   for y in range(H):
+    lit=max(raw[y*W:(y+1)*W])>40
+    if lit and start is None:start=y
+    if not lit and start is not None:bands.append(start);start=None
+   self.assertGreaterEqual(len(bands),2,'the copy did not wrap at leading %.2f'%leading)
+   drawn=bands[1]-bands[0]
+   want=int(size*leading)
+   self.assertAlmostEqual(drawn,want,delta=4,
+                          msg='leading %.2f drew %d px where the layout measured %d'
+                              %(leading,drawn,want))
+ def test_a_leading_the_manifest_did_not_set_falls_back_rather_than_crashing(self):
+  self.assertEqual(engine.leading_of({}),engine.LEADING)
+  self.assertEqual(engine.leading_of({'type':{}}),engine.LEADING)
+  self.assertEqual(engine.leading_of({'type':{'leading':'gros'}}),engine.LEADING)
+  self.assertEqual(engine.leading_of({'type':{'leading':40}}),engine.LEADING)
+  self.assertEqual(engine.leading_of({'type':{'leading':1.4}}),1.4)
+ def test_the_captions_take_their_colours_from_the_palette(self):
+  """They were the one part of the film that ignored the brand: a white fill and a
+  hard-coded navy outline, whatever the palette said."""
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  design={'palette':{'ink':'0x1B1B1B','paper':'0xF4F0E8','accent':'0x6E1A24'},
+          'type':{'scale':{'caption':0.03}},'motion':{},'grid':{}}
+  layout={'width':1080,'height':1920,'sizes':{'caption':40},'safe_bottom':300,
+          'margin':90,'margin_right':90}
+  path=Path(box.name)/'c.ass'
+  engine.write_ass([{'start':0,'end':1,'text':'ok'}],layout,design,'Inter',path,
+                   {'colour':'ink','outline':'paper'})
+  style=[l for l in path.read_text(encoding='utf-8').splitlines() if l.startswith('Style:')][0]
+  self.assertIn('&H001B1B1B',style)   # ink, as BGR
+  self.assertIn('&H00E8F0F4',style)   # paper, as BGR
+  engine.write_ass([{'start':0,'end':1,'text':'ok'}],layout,design,'Inter',path)
+  style=[l for l in path.read_text(encoding='utf-8').splitlines() if l.startswith('Style:')][0]
+  self.assertIn('&H00E8F0F4',style,'the default fill should still be the paper colour')
+ def test_a_softened_plane_says_so_in_the_filter_graph(self):
+  """Depth, such as it is: a plane behind the subject is blurred so the eye is told
+  where to look. Sigma is a fraction of the frame height, not a pixel count, so one
+  manifest reads the same at 1080 and at 1920."""
+  layout=engine.fit_layout(engine.layout_for(self.fmt('9:16'),self.design()),
+                           self.design(),self.manifest()['scenes'])
+  chains=[]
+  engine.media_layer(1,{'kind':'video','asset':'a','blur':0.01},layout,3.0,30,chains,'bg',{})
+  self.assertTrue(any('gblur=sigma=' in c for c in chains),chains)
+  sigma=float([c for c in chains if 'gblur' in c][0].split('gblur=sigma=')[1].split(',')[0].split('[')[0])
+  self.assertAlmostEqual(sigma,0.01*layout['height'],delta=0.5)
+  sharp=[]
+  engine.media_layer(1,{'kind':'video','asset':'a'},layout,3.0,30,sharp,'bg',{})
+  self.assertFalse(any('gblur' in c for c in sharp),'it blurred a plane nobody asked to blur')
  def test_the_reference_engine_never_requires_javascript(self):
   """The pack may not smuggle in a toolchain nobody agreed to install."""
   caps=engine.detect()
@@ -1014,6 +1185,65 @@ class MotionRenderTests(unittest.TestCase):
   self.assertIn(run.returncode,(2,4),(run.stdout or '')+(run.stderr or ''))
   self.assertNotIn('Traceback',run.stderr)
   self.assertIn('absent-bed.wav',run.stdout)
+ def test_a_second_art_direction_is_a_different_film_from_the_same_engine(self):
+  """The look has to live in the manifest, not in the code.
+
+  A design system nobody has ever pointed somewhere else is an assumption. This one
+  renders the shipped editorial example: light ground, dark ink, one cold accent,
+  tighter leading, a static camera, and a softened plane behind a sharp one. Same
+  engine, same schema, same command."""
+  # Its own project directory. Rendering it into the shared one would overwrite
+  # `.motion-work/9x16` and the resume state, and the tests that run after would then
+  # be measuring this film instead of theirs.
+  box=tempfile.TemporaryDirectory();self.addCleanup(box.cleanup)
+  root=Path(box.name);(root/'examples').mkdir()
+  shutil.copytree(BUILD/'src/motion/scripts',root/'scripts',
+                  ignore=shutil.ignore_patterns('__pycache__'))
+  shutil.copy2(BUILD/'src/motion/examples/motion-project.editorial.json',
+               root/'examples/motion-project.editorial.json')
+  made=subprocess.run([sys.executable,str(root/'scripts/make_fixture_assets.py'),
+                       '--out',str(root/'fixtures')],capture_output=True,text=True)
+  self.assertEqual(made.returncode,0,made.stderr)
+  # All three ratios, not one. The manifest declares three compositions, and a
+  # manifest that composes three and exports one is refused by its own validator,
+  # correctly. It also makes this the second proof that the three are compositions.
+  run=subprocess.run([sys.executable,'scripts/render_motion.py',
+                      'examples/motion-project.editorial.json','--root','.','--apply'],
+                     cwd=str(root),capture_output=True,text=True)
+  self.assertEqual(run.returncode,0,(run.stdout or '')+(run.stderr or ''))
+  other=json.loads(run.stdout)
+  self.assertEqual(other['verdict'],'pass',json.dumps(other['findings']))
+  self.assertEqual({e['ratio'] for e in other['exports']},{'9:16','4:5','16:9'})
+  self.assertEqual({e['size'] for e in other['exports']},
+                   {'1080x1920','1080x1350','1920x1080'})
+  out=root/next(e['path'] for e in other['exports'] if e['ratio']=='9:16')
+  self.assertTrue(out.is_file())
+  m,_f=inspector.measure(out)
+  self.assertEqual((m['width'],m['height']),(1080,1920))
+  self.assertEqual(m['decode_errors'],0)
+  self.assertEqual(m['audio_streams'],1)
+  self.assertEqual(m['freeze_regions'],0)
+  # The two films do not look alike. Compared on the mean grey of one frame, because
+  # a light art direction and a dark one cannot land in the same place.
+  def grey(path,at):
+   probe=root/('grey-%s.png'%hashlib.sha256((str(path)+at).encode()).hexdigest()[:8])
+   subprocess.run(['ffmpeg','-v','error','-ss',at,'-i',str(path),'-frames:v','1',
+                   '-vf','scale=8:8','-pix_fmt','gray','-y',str(probe)],
+                  check=True,capture_output=True)
+   raw=subprocess.run(['ffmpeg','-v','error','-i',str(probe),'-pix_fmt','gray',
+                       '-f','rawvideo','-'],capture_output=True).stdout
+   return sum(raw)/max(1,len(raw))
+  light=grey(out,'5')
+  dark=grey(self.root/('exports/9x16/%s.mp4'%self.SLUG),'5')
+  self.assertGreater(light-dark,60,
+                     'the editorial direction rendered as dark as the first one, so the '
+                     'palette is not reaching the film: %.1f vs %.1f'%(light,dark))
+  # And the manifest it just rewrote still describes the files it actually wrote.
+  check=subprocess.run([sys.executable,'scripts/check_motion_project.py',
+                        'examples/motion-project.editorial.json','--root','.'],
+                       cwd=str(root),capture_output=True,text=True)
+  self.assertEqual(check.returncode,0,check.stdout+check.stderr)
+  self.assertEqual(json.loads(check.stdout),{'errors':0,'warnings':0})
  def test_the_fixture_is_a_real_ad_length(self):
   scenes=self.manifest()['scenes']
   total=max(float(s['end']) for s in scenes)
