@@ -198,7 +198,7 @@ python system/scripts/validate_release.py
 The suite is 173 tests and the three platforms do not run the same thing, which is
 stated rather than averaged into one green tick. Linux CI runs all 173 with a complete
 ffmpeg, and that is where the end to end render, the byte reproducibility and the
-interrupted resume are actually exercised. macOS collects 160 and skips 4, each
+interrupted resume are actually exercised. macOS collects 157 and skips 4, each
 printing `this ffmpeg cannot draw: missing filters: drawtext, subtitles`. Windows skips
 2 for a symlink privilege the account does not hold. A skip says why it skipped.
 
