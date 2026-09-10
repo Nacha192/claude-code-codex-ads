@@ -42,6 +42,9 @@ frames, and updates the manifest from the files that now exist.
 | `1` | Rendered and findings are still open. They are in the report and in the manifest |
 | `2` | The manifest is invalid, or the arguments are. Nothing rendered |
 | `3` | This machine cannot render, and the reason names the missing part |
+| `4` | The render failed partway. The reason is stated and nothing is claimed as delivered |
+
+**`--root` is the only thing that decides where files are.** Every path in the manifest is resolved against it before ffmpeg is called, and refused if it climbs out of the project. That is true of the pictures and of `voice.file`, `music.file` and `sfx[].file`, which is worth saying because it was not always true of the last three: they used to reach ffmpeg as written and get resolved against the working directory of the process instead, so running from anywhere but the project root died on the audio with `--root` set correctly and every file present. Run it from wherever you like.
 
 **Without `--apply` it renders nothing and changes nothing.** A preview that quietly
 renders is how a paid provider gets called by accident.

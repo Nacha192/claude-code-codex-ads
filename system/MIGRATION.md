@@ -1,5 +1,34 @@
 # Migration from the initial distribution
 
+## Version 4.3.2: `--root` was not the only thing deciding where files are
+
+An outside review ran the one shot from a directory that was not the project, with
+`--root` pointing at it correctly and every file present, and it died: `audio track
+failed, No such file or directory`. The report was right and the cause was exactly
+where it said.
+
+`resolve_assets` walked `assets[]` and nothing else. `voice.file`, `music.file` and
+`sfx[].file` reached ffmpeg as the relative strings the manifest had written, and
+ffmpeg resolves those against the working directory of the process. Every render in
+this repository had run with the working directory already set to the project, which
+is the one arrangement that hides it. Fourteen render tests, a shipped ZIP test, two
+CI runners, and not one of them could see it.
+
+The second half is worse than the inconvenience. Those three fields skipped the escape
+check the pictures get, so a manifest could name a sound file anywhere on the machine
+and have it read into an ad. The hole was found and closed for `assets[]` in 4.0.1 and
+left open on the audio, because nobody went back and asked which other fields hold a
+path.
+
+Both are fixed by resolving every declared file through one function: id or path,
+picture or sound, checked for escape, checked for existence, resolved against `--root`.
+Three tests now cover it, and the first of them runs the whole one shot from a
+temporary directory that has nothing to do with the project.
+
+A render that fails now reports instead of printing a traceback. Exit code `4` means
+the render failed partway, and the report says `rendered: false` rather than leaving
+an exit status nobody chose and a stack trace on the terminal.
+
 ## Version 4.3.1: ffmpeg being installed is not ffmpeg being able to draw
 
 Installing ffmpeg on the macOS runner, so the render tests would finally run on two

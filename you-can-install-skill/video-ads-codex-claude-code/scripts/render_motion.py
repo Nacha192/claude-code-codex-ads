@@ -54,28 +54,52 @@ def plan_fingerprint(manifest, fmt, design):
     return hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode()).hexdigest()
 
 
+def resolve_one(label, path, root, out):
+    """One declared file to a real path, refusing anything that leaves the project."""
+    if not (isinstance(path, str) and path.strip()):
+        return None
+    why = checker.escaping(path)
+    if why:
+        raise engine.EngineError('%s has a path %s' % (label, why))
+    full = (Path(root) / path).resolve()
+    try:
+        full.relative_to(Path(root).resolve())
+    except ValueError:
+        raise engine.EngineError('%s resolves outside the project' % label)
+    if not full.is_file():
+        raise engine.EngineError('%s names a file that is not there: %s' % (label, path))
+    out[path] = full
+    return full
+
+
 def resolve_assets(manifest, root):
-    """Asset id to a real file, refusing any path that leaves the project."""
+    """Every declared file to a real path, refusing any that leaves the project.
+
+    The audio belongs here as much as the pictures do, and it did not used to. Only
+    `assets[]` was resolved, so `voice.file`, `music.file` and `sfx[].file` reached
+    ffmpeg as the relative strings the manifest had written, and ffmpeg resolves
+    those against the working directory of the process. Rendering from anywhere but
+    the project root then died on the audio with `--root` set correctly and every
+    file present. Worse, those three skipped the escape check the pictures get, so a
+    manifest could name a sound file anywhere on the machine and have it read.
+
+    No test could see it: every one of them ran with the working directory already
+    set to the project.
+    """
     out = {}
     for asset in manifest.get('assets') or []:
         if not isinstance(asset, dict):
             continue
-        path = asset.get('path')
-        if not (isinstance(path, str) and path.strip()):
-            continue
-        why = checker.escaping(path)
-        if why:
-            raise engine.EngineError('asset %s has a path %s' % (asset.get('id'), why))
-        full = (Path(root) / path).resolve()
-        try:
-            full.relative_to(Path(root).resolve())
-        except ValueError:
-            raise engine.EngineError('asset %s resolves outside the project' % asset.get('id'))
-        if not full.is_file():
-            raise engine.EngineError('asset %s names a file that is not there: %s'
-                                     % (asset.get('id'), path))
-        out[asset.get('id')] = full
-        out[path] = full
+        full = resolve_one('asset %s' % asset.get('id'), asset.get('path'), root, out)
+        if full is not None:
+            out[asset.get('id')] = full
+    for field in ('voice', 'music'):
+        block = manifest.get(field)
+        if isinstance(block, dict):
+            resolve_one('%s.file' % field, block.get('file'), root, out)
+    for i, effect in enumerate(manifest.get('sfx') or []):
+        if isinstance(effect, dict):
+            resolve_one('sfx[%d].file' % i, effect.get('file'), root, out)
     return out
 
 
@@ -227,7 +251,7 @@ def apply_corrections(manifest, plan, work):
     return applied
 
 
-def main():
+def run():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('manifest')
     p.add_argument('--root', default='.', help='Directory the manifest paths are relative to')
@@ -411,6 +435,21 @@ def main():
     report['verdict'] = technical['verdict']
     print(json.dumps(report, indent=2))
     return 1 if all_findings else 0
+
+
+def main():
+    """`run` with the one thing it cannot promise: that every file opens.
+
+    A render that dies halfway used to leave a Python traceback on the terminal and
+    an exit status nobody had chosen. A traceback is not a report. The failure is
+    stated, `rendered` says plainly that nothing was delivered, and the code is one
+    the caller can act on.
+    """
+    try:
+        return run()
+    except engine.EngineError as e:
+        print(json.dumps({'error': str(e), 'rendered': False}, indent=2))
+        return 4
 
 
 if __name__ == '__main__':

@@ -964,6 +964,56 @@ class MotionRenderTests(unittest.TestCase):
   if hasattr(cls,'box'):cls.box.cleanup()
  def manifest(self):
   return json.loads((self.root/'examples/motion-project.render.json').read_text(encoding='utf-8'))
+ def test_the_one_shot_runs_from_a_directory_that_is_not_the_project(self):
+  """`--root` has to be the only thing that decides where files are.
+
+  It was not. `resolve_assets` walked `assets[]` and nothing else, so `voice.file`,
+  `music.file` and `sfx[].file` reached ffmpeg as the relative strings the manifest
+  wrote, and ffmpeg resolves those against the working directory of the process. The
+  run died on the audio with `--root` correct and every file present. No test here
+  could see it: all of them ran with the working directory already set to the
+  project, which is the one arrangement that hides it."""
+  elsewhere=tempfile.TemporaryDirectory();self.addCleanup(elsewhere.cleanup)
+  out=self.root/('exports/9x16/%s.mp4'%self.SLUG)
+  before=out.stat().st_size if out.is_file() else 0
+  run=subprocess.run([sys.executable,str(self.root/'scripts/render_motion.py'),
+                      str(self.root/'examples/motion-project.render.json'),
+                      '--root',str(self.root),'--apply','--formats','9:16'],
+                     cwd=elsewhere.name,capture_output=True,text=True)
+  self.assertEqual(run.returncode,0,(run.stdout or '')+(run.stderr or ''))
+  self.assertNotIn('Traceback',run.stderr,'a traceback is not a report')
+  self.assertTrue(out.is_file())
+  self.assertGreater(out.stat().st_size,120000)
+  m,_f=inspector.measure(out)
+  self.assertEqual(m['audio_streams'],1,'it rendered, but without the audio')
+  self.assertEqual(m['decode_errors'],0)
+  self.assertEqual(before and m['width'],before and 1080)
+ def test_a_sound_file_that_climbs_out_of_the_project_is_refused(self):
+  """The pictures were checked for this and the three sound fields were not, so a
+  manifest could name a file anywhere on the machine and have it read into an ad."""
+  for field,put in (('voice',lambda m,p:m['voice'].__setitem__('file',p)),
+                    ('music',lambda m,p:m['music'].__setitem__('file',p)),
+                    ('sfx',lambda m,p:m['sfx'][0].__setitem__('file',p))):
+   m=self.manifest();put(m,'../'*6+'Windows/win.ini')
+   bad=self.root/('examples/escape-%s.json'%field)
+   bad.write_text(json.dumps(m,ensure_ascii=False),encoding='utf-8')
+   run=subprocess.run([sys.executable,'scripts/render_motion.py',str(bad),
+                       '--root','.','--apply','--formats','9:16'],
+                      cwd=str(self.root),capture_output=True,text=True)
+   self.assertEqual(run.returncode,2,field+': '+(run.stdout or '')+(run.stderr or ''))
+   self.assertIn('climbing out',run.stdout,field)
+ def test_a_render_that_fails_reports_instead_of_printing_a_traceback(self):
+  """An exit status nobody chose and a stack trace on the terminal is not a result.
+  The failure is stated and `rendered` says plainly that nothing was delivered."""
+  m=self.manifest();m['music']['file']='fixtures/absent-bed.wav'
+  bad=self.root/'examples/absent.json'
+  bad.write_text(json.dumps(m,ensure_ascii=False),encoding='utf-8')
+  run=subprocess.run([sys.executable,'scripts/render_motion.py',str(bad),
+                      '--root','.','--apply','--formats','9:16'],
+                     cwd=str(self.root),capture_output=True,text=True)
+  self.assertIn(run.returncode,(2,4),(run.stdout or '')+(run.stderr or ''))
+  self.assertNotIn('Traceback',run.stderr)
+  self.assertIn('absent-bed.wav',run.stdout)
  def test_the_fixture_is_a_real_ad_length(self):
   scenes=self.manifest()['scenes']
   total=max(float(s['end']) for s in scenes)

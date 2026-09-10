@@ -108,6 +108,9 @@ measures something.
 | Without `--apply` nothing renders and nothing is written | `test_a_preview_renders_nothing_and_changes_nothing` |
 | A resume reuses only clips whose frames are counted and match. A file that exists is not a file that is finished | `test_a_truncated_clip_is_not_mistaken_for_a_finished_one`, `test_resume_reuses_the_clips_that_survived_and_rebuilds_the_rest` |
 | An asset path that leaves the project stops the render before anything is encoded | `test_an_asset_outside_the_project_is_refused` |
+| A sound path that leaves the project does the same. `voice.file`, `music.file` and `sfx[].file` skipped this check until 4.3.2, so a manifest could name a file anywhere on the machine and have it read into an ad | `test_a_sound_file_that_climbs_out_of_the_project_is_refused` |
+| Every declared file is resolved against `--root` and not against the working directory, so the one shot produces the same result from any directory | `test_the_one_shot_runs_from_a_directory_that_is_not_the_project` |
+| A render that fails partway reports it and says nothing was delivered, rather than printing a traceback under an exit status nobody chose | `test_a_render_that_fails_reports_instead_of_printing_a_traceback` |
 | A layer nothing can draw, a picture naming an asset that does not exist, text with nothing to say, a pixel count in a field that holds a fraction, or a layer starting after its own scene has ended | `test_a_layer_the_engine_cannot_draw_is_refused_before_rendering`, `test_a_picture_layer_must_name_an_asset_that_exists`, `test_a_text_layer_with_nothing_to_say_is_refused`, `test_a_pixel_value_in_a_fraction_field_is_refused`, `test_a_layer_cannot_start_after_its_own_scene_ends`, `test_layers_must_be_a_list`, `test_the_shipped_render_example_validates_on_its_own` |
 
 What the engine does not enforce is what it does not do: it composes, it does not
